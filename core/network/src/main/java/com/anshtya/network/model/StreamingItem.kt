@@ -2,11 +2,13 @@ package com.anshtya.network.model
 
 import com.squareup.moshi.Json
 
-data class NetworkMovie(
+data class StreamingItem(
     val adult: Boolean,
     @field:Json(name = "backdrop_path") val backdropPath: String,
+    @field:Json(name = "first_air_date") val firstAirDate: String,
     @field:Json(name = "genre_ids") val genreIds: List<Int>,
     val id: Int,
+    @field:Json(name = "origin_country") val originCountry: List<String>,
     @field:Json(name = "media_type") val mediaType: String,
     @field:Json(name = "original_language") val originalLanguage: String,
     @field:Json(name = "original_title") val originalTitle: String,

@@ -8,6 +8,6 @@ class HomeRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi
 ): HomeRepository {
     override suspend fun getTrendingMovies(timeWindow: String): StreamingItemResponse {
-        return tmdbApi.getTrendingMovies("")
+        return tmdbApi.getTrendingMovies(timeWindow)
     }
 }

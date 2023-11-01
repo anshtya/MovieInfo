@@ -54,6 +54,8 @@ android {
 
 dependencies {
 
+    implementation(project(":feature:home"))
+
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
@@ -72,4 +74,6 @@ dependencies {
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    implementation(libs.androidx.navigation.compose)
 }

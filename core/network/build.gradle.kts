@@ -51,13 +51,14 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.okhttp.logging.interceptor)
-//    implementation(libs.okhttp.mockwebserver)
+    implementation(libs.okhttp.mockwebserver)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

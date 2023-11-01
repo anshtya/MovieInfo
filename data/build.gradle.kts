@@ -37,9 +37,10 @@ android {
 
 dependencies {
 
+    implementation(project(":core:network"))
+
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
-    implementation(project(":core:network"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

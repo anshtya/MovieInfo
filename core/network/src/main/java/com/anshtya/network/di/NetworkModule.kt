@@ -8,7 +8,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -24,14 +23,12 @@ object NetworkModule {
             .setLevel(HttpLoggingInterceptor.Level.BODY)
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
-            .addInterceptor(object: Interceptor {
-                override fun intercept(chain: Interceptor.Chain): Response {
-                    val newRequest = chain.request().newBuilder()
-                        .addHeader("Authorization", BuildConfig.ACCESS_TOKEN)
-                        .build()
+            .addInterceptor(Interceptor { chain ->
+                val newRequest = chain.request().newBuilder()
+                    .addHeader("Authorization", BuildConfig.ACCESS_TOKEN)
+                    .build()
 
-                    return chain.proceed(newRequest)
-                }
+                chain.proceed(newRequest)
             })
             .build()
         return Retrofit.Builder()

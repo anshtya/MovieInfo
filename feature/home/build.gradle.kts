@@ -33,17 +33,28 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.3"
+    }
 }
 
 dependencies {
 
+    implementation(project(":data"))
+    implementation(project(":core:network"))
+
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
-    implementation(project(":data"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    implementation(libs.androidx.lifecycle.runtime.compose)
+
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 }

@@ -2,7 +2,7 @@ package com.anshtya.network.model
 
 import com.squareup.moshi.Json
 
-data class StreamingItem(
+data class NetworkStreamingItem(
     val adult: Boolean,
     @field:Json(name = "backdrop_path") val backdropPath: String,
     @field:Json(name = "first_air_date") val firstAirDate: String,

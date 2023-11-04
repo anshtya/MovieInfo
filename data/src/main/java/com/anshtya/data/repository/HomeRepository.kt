@@ -1,7 +1,9 @@
 package com.anshtya.data.repository
 
-import com.anshtya.network.model.StreamingItemResponse
+import androidx.paging.PagingData
+import com.anshtya.data.model.StreamingItem
+import kotlinx.coroutines.flow.Flow
 
 interface HomeRepository {
-    suspend fun getTrendingMovies(timeWindow: String): StreamingItemResponse
+    fun getTrendingMovies(timeWindow: String): Flow<PagingData<StreamingItem>>
 }

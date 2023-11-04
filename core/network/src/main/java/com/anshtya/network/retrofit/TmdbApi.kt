@@ -32,6 +32,7 @@ interface TmdbApi {
 
     @GET("trending/movie/{time_window}?language=en-US")
     suspend fun getTrendingMovies(
-        @Path("time_window") timeWindow: String
+        @Path("time_window") timeWindow: String,
+        @Query("page") page: Int
     ): StreamingItemResponse
 }

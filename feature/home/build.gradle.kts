@@ -45,14 +45,16 @@ dependencies {
 
     implementation(project(":data"))
     implementation(project(":core:network"))
-
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    implementation(platform(libs.compose.bom))
+    implementation(libs.material3)
+    implementation(libs.ui.tooling.preview)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    debugImplementation(libs.ui.tooling)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

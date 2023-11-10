@@ -9,17 +9,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
-): ViewModel() {
+    homeRepository: HomeRepository,
+) : ViewModel() {
     /*
     as on tmdb home page
     1. all 4 endpoints
-    2. hotstar top view (popular)
+    2. top view (popular)
     3. search
     */
 
-
     val trendingMovies = homeRepository.getTrendingMovies("day")
         .cachedIn(viewModelScope)
-
 }

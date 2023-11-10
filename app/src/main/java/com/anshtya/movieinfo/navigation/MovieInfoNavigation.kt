@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.anshtya.home.Home
+import com.anshtya.home.HomeRoute
 
 @Composable
 fun MovieInfoNavigation(
@@ -16,7 +16,7 @@ fun MovieInfoNavigation(
         startDestination = "home"
     ) {
         composable("home") {
-            Home()
+            HomeRoute()
         }
     }
 }

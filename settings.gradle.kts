@@ -14,7 +14,9 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Movie Info"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+rootProject.name = "MovieInfo"
 include(":app")
 include(":core:network")
 include(":data")

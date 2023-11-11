@@ -9,7 +9,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:network"))
+    implementation(projects.core.network)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

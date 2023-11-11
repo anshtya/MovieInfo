@@ -10,7 +10,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":data"))
+    implementation(projects.data)
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

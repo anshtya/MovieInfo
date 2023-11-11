@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature:home"))
+    implementation(projects.feature.home)
 
     implementation(libs.activity.compose)
     implementation(libs.androidx.navigation.compose)

@@ -2,9 +2,8 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    kotlin("kapt")
     id("movieinfo.android.library")
-    alias(libs.plugins.hilt)
+    id("movieinfo.android.hilt")
 }
 
 android {
@@ -23,7 +22,6 @@ android {
 }
 
 dependencies {
-
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -33,7 +31,4 @@ dependencies {
     implementation(libs.converter.moshi)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.okhttp.mockwebserver)
-
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
 }

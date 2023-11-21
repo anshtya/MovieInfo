@@ -2,23 +2,22 @@
 plugins {
     id("movieinfo.android.library")
     id("movieinfo.android.library.compose")
-    id("movieinfo.android.hilt")
 }
 
 android {
-    namespace = "com.anshtya.home"
+    namespace = "com.anshtya.ui"
 }
 
 dependencies {
-    implementation(projects.core.ui)
-    implementation(projects.data)
 
-    testImplementation(libs.junit)
+    implementation(projects.data)
+    
+    implementation(libs.appcompat)
+    implementation(libs.core.ktx)
+    implementation(libs.coil.kt.compose)
+
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    testImplementation(libs.junit)
 
-    implementation(libs.androidx.hilt.navigation.compose)
-
-    implementation(libs.androidx.paging.runtime)
-    implementation(libs.androidx.paging.compose)
 }

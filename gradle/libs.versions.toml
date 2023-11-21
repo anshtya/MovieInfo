@@ -8,6 +8,7 @@ androidx-paging = "3.2.1"
 androidx-paging-compose = "3.3.0-alpha02"
 androidx-test-ext-junit = "1.1.5"
 appcompat = "1.6.1"
+coil = "2.5.0"
 compose-bom = "2023.10.00"
 core-ktx = "1.12.0"
 coroutines-test = "1.7.1"
@@ -31,6 +32,8 @@ androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", 
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "androidx-paging"}
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+coil-kt = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
+coil-kt-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "moshi" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }

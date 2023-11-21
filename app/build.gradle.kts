@@ -40,6 +40,7 @@ dependencies {
 
     implementation(libs.activity.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.coil.kt)
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.ui)

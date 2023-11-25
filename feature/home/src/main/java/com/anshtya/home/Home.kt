@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -19,17 +20,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.anshtya.data.model.StreamingItem
@@ -40,9 +41,11 @@ fun HomeRoute(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val trendingMovies = homeViewModel.trendingMovies.collectAsLazyPagingItems()
+    val savedTimeWindow by homeViewModel.savedTimeWindow.collectAsStateWithLifecycle()
 
     Home(
         trendingMovies = trendingMovies,
+        savedTimeWindow = savedTimeWindow,
         onItemClick = { homeViewModel.setTrendingTimeWindow(it) }
     )
 }
@@ -50,7 +53,8 @@ fun HomeRoute(
 @Composable
 fun Home(
     trendingMovies: LazyPagingItems<StreamingItem>,
-    onItemClick: (String) -> Unit,
+    savedTimeWindow: TrendingTimeWindow,
+    onItemClick: (TrendingTimeWindow) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -60,7 +64,10 @@ fun Home(
             modifier = Modifier.fillMaxSize()
         ) {
             item {
-                val listItems = listOf("day", "week")
+                val lazyRowState = rememberLazyListState()
+                LaunchedEffect(savedTimeWindow) {
+                    lazyRowState.scrollToItem(0)
+                }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -71,7 +78,8 @@ fun Home(
                         style = MaterialTheme.typography.headlineMedium
                     )
                     MyDropdownMenu(
-                        listItems = listItems,
+                        listItems = TrendingTimeWindow.values().toList(),
+                        savedTimeWindow = savedTimeWindow,
                         onItemClick = onItemClick
                     )
                 }
@@ -79,6 +87,7 @@ fun Home(
                 LazyRow(
                     contentPadding = PaddingValues(5.dp),
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    state = lazyRowState,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(
@@ -96,35 +105,39 @@ fun Home(
 
 @Composable
 fun MyDropdownMenu(
-    listItems: List<String>,
-    onItemClick: (String) -> Unit
+    listItems: List<TrendingTimeWindow>,
+    savedTimeWindow: TrendingTimeWindow,
+    onItemClick: (TrendingTimeWindow) -> Unit
 ) {
-    var selectedIndex by remember { mutableIntStateOf(0) }
     var isExpanded by remember { mutableStateOf(false) }
     Box {
         Surface(
             shape = RoundedCornerShape(10.dp),
-            color = Color.Blue,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .size(height = 28.dp, width = 80.dp)
+                .size(height = 28.dp, width = 100.dp)
                 .clickable { isExpanded = !isExpanded }
         ) {
-            Text(
-                text = listItems[selectedIndex],
-                color = Color.White
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = stringResource(id = savedTimeWindow.uiLabel))
+            }
         }
         DropdownMenu(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false }
         ) {
-            listItems.forEachIndexed { index, s ->
-                if (selectedIndex != index) {
+            listItems.forEach {
+                if (it != savedTimeWindow) {
                     DropdownMenuItem(
-                        text = { Text(s) },
+                        text = {
+                            Text(text = stringResource(id = it.uiLabel))
+                        },
                         onClick = {
-                            selectedIndex = index
-                            onItemClick(s)
+                            onItemClick(it)
                             isExpanded = false
                         }
                     )

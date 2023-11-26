@@ -1,6 +1,7 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
+import util.getLibrary
 
 class AndroidHiltConventionPlugin: Plugin<Project> {
     override fun apply(target: Project) {
@@ -11,8 +12,8 @@ class AndroidHiltConventionPlugin: Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", deps.findLibrary("hilt-android").get())
-                add("kapt", deps.findLibrary("hilt-compiler").get())
+                add("implementation", getLibrary("hilt-android"))
+                add("kapt", getLibrary("hilt-compiler"))
             }
         }
     }

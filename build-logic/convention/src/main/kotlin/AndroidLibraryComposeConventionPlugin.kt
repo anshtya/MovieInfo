@@ -3,6 +3,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import util.getLibrary
 
 class AndroidLibraryComposeConventionPlugin: Plugin<Project> {
     override fun apply(target: Project) {
@@ -15,12 +16,12 @@ class AndroidLibraryComposeConventionPlugin: Plugin<Project> {
                     kotlinCompilerExtensionVersion = "1.4.3"
                 }
                 dependencies {
-                    val bom = deps.findLibrary("compose-bom").get()
+                    val bom = getLibrary("compose-bom")
                     add("implementation", platform(bom))
-                    add("implementation", deps.findLibrary("material3").get())
-                    add("implementation", deps.findLibrary("ui-tooling-preview").get())
-                    add("implementation", deps.findLibrary("androidx-lifecycle-runtime-compose").get())
-                    add("debugImplementation", deps.findLibrary("ui-tooling").get())
+                    add("implementation", getLibrary("material3"))
+                    add("implementation", getLibrary("ui-tooling-preview"))
+                    add("implementation", getLibrary("androidx-lifecycle-runtime-compose"))
+                    add("debugImplementation", getLibrary("ui-tooling"))
                 }
             }
         }

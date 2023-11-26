@@ -3,9 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.kotlin.gradlePlugin)
     implementation(libs.android.gradlePlugin)
-    implementation("com.squareup:javapoet:1.13.0")
+    implementation(libs.kotlin.gradlePlugin)
 }
 
 gradlePlugin {

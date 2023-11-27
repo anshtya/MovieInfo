@@ -1,5 +1,6 @@
 package com.anshtya.home
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,21 +42,46 @@ import com.anshtya.ui.StreamingItemCard
 fun HomeRoute(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
+    val timeWindowOptions = homeViewModel.timeWindowOptions
+    val popularContentFilters = homeViewModel.popularContentFilters
+    val freeContentTypes = homeViewModel.freeContentTypes
     val trendingMovies = homeViewModel.trendingMovies.collectAsLazyPagingItems()
-    val savedTimeWindow by homeViewModel.savedTimeWindow.collectAsStateWithLifecycle()
+    val popularContent = homeViewModel.popularContent.collectAsLazyPagingItems()
+    val freeContent = homeViewModel.freeContent.collectAsLazyPagingItems()
+    val selectedTimeWindow by homeViewModel.selectedTimeWindowIndex.collectAsStateWithLifecycle()
+    val selectedContentFilter by homeViewModel.selectedContentFilterIndex.collectAsStateWithLifecycle()
+    val selectedFreeContent by homeViewModel.selectedFreeContentIndex.collectAsStateWithLifecycle()
 
     Home(
         trendingMovies = trendingMovies,
-        savedTimeWindow = savedTimeWindow,
-        onItemClick = { homeViewModel.setTrendingTimeWindow(it) }
+        popularContent = popularContent,
+        freeContent = freeContent,
+        timeWindowOptions = timeWindowOptions,
+        popularContentFilters = popularContentFilters,
+        freeContentTypes = freeContentTypes,
+        selectedTimeWindow = selectedTimeWindow,
+        selectedContentFilter = selectedContentFilter,
+        selectedFreeContent = selectedFreeContent,
+        onTimeWindowClick = homeViewModel::setTrendingTimeWindow,
+        onFilterClick = homeViewModel::setPopularContentFilter,
+        onFreeContentClick = homeViewModel::setFreeContentType,
     )
 }
 
 @Composable
 fun Home(
     trendingMovies: LazyPagingItems<StreamingItem>,
-    savedTimeWindow: TrendingTimeWindow,
-    onItemClick: (TrendingTimeWindow) -> Unit,
+    popularContent: LazyPagingItems<StreamingItem>,
+    freeContent: LazyPagingItems<StreamingItem>,
+    @StringRes timeWindowOptions: List<Int>,
+    @StringRes popularContentFilters: List<Int>,
+    @StringRes freeContentTypes: List<Int>,
+    selectedTimeWindow: Int,
+    selectedContentFilter: Int,
+    selectedFreeContent: Int,
+    onTimeWindowClick: (Int) -> Unit,
+    onFilterClick: (Int) -> Unit,
+    onFreeContentClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -63,51 +90,132 @@ fun Home(
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            item {
-                val lazyRowState = rememberLazyListState()
-                LaunchedEffect(savedTimeWindow) {
-                    lazyRowState.scrollToItem(0)
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.trending),
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    MyDropdownMenu(
-                        listItems = TrendingTimeWindow.values().toList(),
-                        savedTimeWindow = savedTimeWindow,
-                        onItemClick = onItemClick
-                    )
-                }
-                Spacer(Modifier.height(12.dp))
-                LazyRow(
-                    contentPadding = PaddingValues(5.dp),
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    state = lazyRowState,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(
-                        count = trendingMovies.itemCount
-                    ) { index ->
-                        trendingMovies[index]?.let { streamingItem ->
-                            StreamingItemCard(streamingItem = streamingItem)
-                        }
-                    }
-                }
+            trendingSection(
+                trendingMovies = trendingMovies,
+                timeWindowOptions = timeWindowOptions,
+                selectedTimeWindow = selectedTimeWindow,
+                onTimeWindowClick = onTimeWindowClick
+            )
+            popularContentSection(
+                popularContent = popularContent,
+                popularContentFilters = popularContentFilters,
+                selectedContentFilter = selectedContentFilter,
+                onFilterClick = onFilterClick
+            )
+            freeToWatchSection(
+                freeContent = freeContent,
+                freeContentTypes = freeContentTypes,
+                selectedContentType = selectedFreeContent,
+                onTypeClick = onFreeContentClick
+            )
+        }
+    }
+}
+
+fun LazyListScope.trendingSection(
+    trendingMovies: LazyPagingItems<StreamingItem>,
+    @StringRes timeWindowOptions: List<Int>,
+    selectedTimeWindow: Int,
+    onTimeWindowClick: (Int) -> Unit
+) {
+    item {
+        ContentSectionWithDropdownMenu(
+            sectionName = R.string.trending,
+            contentList = trendingMovies,
+            options = timeWindowOptions,
+            selectedOptionIndex = selectedTimeWindow,
+            onOptionClick = onTimeWindowClick
+        )
+    }
+}
+
+fun LazyListScope.popularContentSection(
+    popularContent: LazyPagingItems<StreamingItem>,
+    @StringRes popularContentFilters: List<Int>,
+    selectedContentFilter: Int,
+    onFilterClick: (Int) -> Unit
+) {
+    item {
+        ContentSectionWithDropdownMenu(
+            sectionName = R.string.popular,
+            contentList = popularContent,
+            options = popularContentFilters,
+            selectedOptionIndex = selectedContentFilter,
+            onOptionClick = onFilterClick
+        )
+    }
+}
+
+fun LazyListScope.freeToWatchSection(
+    freeContent: LazyPagingItems<StreamingItem>,
+    @StringRes freeContentTypes: List<Int>,
+    selectedContentType: Int,
+    onTypeClick: (Int) -> Unit
+) {
+    item {
+        ContentSectionWithDropdownMenu(
+            sectionName = R.string.free_to_watch,
+            contentList = freeContent,
+            options = freeContentTypes,
+            selectedOptionIndex = selectedContentType,
+            onOptionClick = onTypeClick
+        )
+    }
+}
+
+@Composable
+fun ContentSectionWithDropdownMenu(
+    @StringRes sectionName: Int,
+    contentList: LazyPagingItems<StreamingItem>,
+    @StringRes options: List<Int>,
+    selectedOptionIndex: Int,
+    onOptionClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val selectedOptionName = options[selectedOptionIndex]
+    val lazyRowState = rememberLazyListState()
+    LaunchedEffect(selectedOptionIndex) {
+        lazyRowState.scrollToItem(0)
+    }
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(
+            text = stringResource(id = sectionName),
+            style = MaterialTheme.typography.headlineMedium
+        )
+        OptionsDropdownMenu(
+            options = options,
+            selectedOptionIndex = selectedOptionIndex,
+            selectedOption = selectedOptionName,
+            onOptionClick = onOptionClick
+        )
+    }
+    Spacer(Modifier.height(12.dp))
+    LazyRow(
+        contentPadding = PaddingValues(5.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        state = lazyRowState,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(
+            count = contentList.itemCount
+        ) { index ->
+            contentList[index]?.let { streamingItem ->
+                StreamingItemCard(streamingItem = streamingItem)
             }
         }
     }
 }
 
 @Composable
-fun MyDropdownMenu(
-    listItems: List<TrendingTimeWindow>,
-    savedTimeWindow: TrendingTimeWindow,
-    onItemClick: (TrendingTimeWindow) -> Unit
+fun OptionsDropdownMenu(
+    options: List<Int>,
+    @StringRes selectedOption: Int,
+    selectedOptionIndex: Int,
+    onOptionClick: (Int)-> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     Box {
@@ -123,21 +231,21 @@ fun MyDropdownMenu(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = stringResource(id = savedTimeWindow.uiLabel))
+                Text(text = stringResource(id = selectedOption))
             }
         }
         DropdownMenu(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false }
         ) {
-            listItems.forEach {
-                if (it != savedTimeWindow) {
+            options.forEachIndexed { index, option ->
+                if (index != selectedOptionIndex) {
                     DropdownMenuItem(
                         text = {
-                            Text(text = stringResource(id = it.uiLabel))
+                            Text(text = stringResource(id = option))
                         },
                         onClick = {
-                            onItemClick(it)
+                            onOptionClick(index)
                             isExpanded = false
                         }
                     )

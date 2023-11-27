@@ -6,28 +6,37 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TmdbApi {
+    @GET("discover/{content_type}?include_video=false&with_watch_monetization_types=free&sort_by=popularity.desc")
+    suspend fun getFreeContent(
+        @Path("content_type") contentType: String,
+        @Query("page") page: Int = 1,
+        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("watch_region") watchRegion: String = "US",
+        @Query("language") language: String ="en-US"
+    ): StreamingItemResponse
+
     @GET("discover/movie?include_video=false&with_watch_monetization_types=flatrate&sort_by=popularity.desc")
     suspend fun getPopularStreamingTitles(
         @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean,
-        @Query("watch_region") watchRegion: String,
-        @Query("language") language: String
+        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("watch_region") watchRegion: String = "US",
+        @Query("language") language: String ="en-US"
     ): StreamingItemResponse
 
     @GET("discover/movie?include_video=false&with_watch_monetization_types=rent&sort_by=popularity.desc")
     suspend fun getPopularTitlesOnRent(
         @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean,
-        @Query("watch_region") watchRegion: String,
-        @Query("language") language: String
+        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("watch_region") watchRegion: String = "US",
+        @Query("language") language: String ="en-US"
     ): StreamingItemResponse
 
     @GET("discover/movie?include_video=false&with_release_type=3|2&sort_by=popularity.desc")
     suspend fun getPopularTitlesInTheatres(
         @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean,
-        @Query("watch_region") watchRegion: String,
-        @Query("language") language: String
+        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("watch_region") watchRegion: String = "US",
+        @Query("language") language: String ="en-US"
     ): StreamingItemResponse
 
     @GET("trending/movie/{time_window}?language=en-US")

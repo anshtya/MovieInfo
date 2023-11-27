@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="trending">Trending</string>
+    <string name="popular">Popular</string>
+    <string name="free_to_watch">Free To Watch</string>
     <string name="today">Today</string>
     <string name="this_week">This Week</string>
+    <string name="streaming">Streaming</string>
+    <string name="in_theatres">In Theatres</string>
+    <string name="for_rent">For Rent</string>
+    <string name="movies">Movies</string>
+    <string name="tv">TV</string>
 </resources>

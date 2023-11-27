@@ -34,8 +34,10 @@ fun StreamingItemCard(
             StreamingItemImage(imageUrl = streamingItem.posterPath)
         }
         Spacer(Modifier.height(10.dp))
+        val title = streamingItem.title
+        val name = streamingItem.name
         Text(
-            text = streamingItem.title,
+            text = title.ifEmpty { name },
             style = MaterialTheme.typography.titleMedium
         )
     }

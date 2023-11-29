@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.anshtya.data.model.StreamingItem
@@ -169,16 +173,16 @@ fun ContentSectionWithDropdownMenu(
     contentList: LazyPagingItems<StreamingItem>,
     @StringRes options: List<Int>,
     selectedOptionIndex: Int,
-    onOptionClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    onOptionClick: (Int) -> Unit
 ) {
     val selectedOptionName = options[selectedOptionIndex]
     val lazyRowState = rememberLazyListState()
     LaunchedEffect(selectedOptionIndex) {
         lazyRowState.scrollToItem(0)
     }
+
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Bottom
     ) {
@@ -194,17 +198,36 @@ fun ContentSectionWithDropdownMenu(
         )
     }
     Spacer(Modifier.height(12.dp))
-    LazyRow(
-        contentPadding = PaddingValues(5.dp),
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
-        state = lazyRowState,
-        modifier = Modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(270.dp)
     ) {
-        items(
-            count = contentList.itemCount
-        ) { index ->
-            contentList[index]?.let { streamingItem ->
-                StreamingItemCard(streamingItem = streamingItem)
+        val isLoading by remember(contentList.loadState.source) {
+            derivedStateOf { contentList.loadState.source.refresh is LoadState.Loading }
+        }
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        } else {
+            LazyRow(
+                contentPadding = PaddingValues(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                state = lazyRowState,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(
+                    count = contentList.itemCount
+                ) { index ->
+                    contentList[index]?.let { streamingItem ->
+                        StreamingItemCard(
+                            streamingItem = streamingItem,
+                            modifier = Modifier.fillMaxHeight()
+                        )
+                    }
+                }
             }
         }
     }
@@ -215,7 +238,7 @@ fun OptionsDropdownMenu(
     options: List<Int>,
     @StringRes selectedOption: Int,
     selectedOptionIndex: Int,
-    onOptionClick: (Int)-> Unit
+    onOptionClick: (Int) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     Box {

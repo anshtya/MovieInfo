@@ -22,16 +22,17 @@ fun StreamingItemCard(
     streamingItem: StreamingItem,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.width(140.dp)
-    ) {
+    Column(modifier.width(140.dp)) {
         Card(
             shape = RoundedCornerShape(5.dp),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 10.dp
             )
         ) {
-            StreamingItemImage(imageUrl = streamingItem.posterPath)
+            StreamingItemImage(
+                imageUrl = streamingItem.posterPath,
+                modifier = Modifier.height(200.dp)
+            )
         }
         Spacer(Modifier.height(10.dp))
         val title = streamingItem.title
@@ -48,7 +49,7 @@ fun StreamingItemImage(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier.height(200.dp)) {
+    Box(modifier) {
         AsyncImage(
             model = "https://image.tmdb.org/t/p/w500$imageUrl",
             contentDescription = null,

@@ -1,15 +1,10 @@
 package com.anshtya.ui
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -22,24 +17,15 @@ fun StreamingItemCard(
     streamingItem: StreamingItem,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.width(140.dp)) {
-        Card(
-            shape = RoundedCornerShape(5.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 10.dp
-            )
-        ) {
-            StreamingItemImage(
-                imageUrl = streamingItem.posterPath,
-                modifier = Modifier.height(200.dp)
-            )
-        }
-        Spacer(Modifier.height(10.dp))
-        val title = streamingItem.title
-        val name = streamingItem.name
-        Text(
-            text = title.ifEmpty { name },
-            style = MaterialTheme.typography.titleMedium
+    Card(
+        shape = RoundedCornerShape(5.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 10.dp
+        ),
+        modifier = modifier.width(140.dp)
+    ) {
+        StreamingItemImage(
+            imageUrl = streamingItem.posterPath
         )
     }
 }

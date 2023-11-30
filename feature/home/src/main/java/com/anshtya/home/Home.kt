@@ -92,7 +92,8 @@ fun Home(
         modifier = modifier.fillMaxSize()
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             trendingSection(
                 trendingMovies = trendingMovies,
@@ -201,7 +202,7 @@ fun ContentSectionWithDropdownMenu(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(270.dp)
+            .height(200.dp)
     ) {
         val isLoading by remember(contentList.loadState.source) {
             derivedStateOf { contentList.loadState.source.refresh is LoadState.Loading }

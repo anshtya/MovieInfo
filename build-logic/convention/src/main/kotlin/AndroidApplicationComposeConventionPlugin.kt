@@ -4,8 +4,9 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import util.getLibrary
+import util.getVersion
 
-class AndroidApplicationComposeConventionPlugin: Plugin<Project> {
+class AndroidApplicationComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             extensions.configure<ApplicationExtension>() {
@@ -13,7 +14,7 @@ class AndroidApplicationComposeConventionPlugin: Plugin<Project> {
                     compose = true
                 }
                 composeOptions {
-                    kotlinCompilerExtensionVersion = "1.4.3"
+                    kotlinCompilerExtensionVersion = getVersion("androidx-compose-compiler")
                 }
                 dependencies {
                     val bom = getLibrary("compose-bom")

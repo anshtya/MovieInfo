@@ -9,3 +9,10 @@ fun Project.getLibrary(alias: String) = extensions
         .named("libs")
         .findLibrary(alias)
         .get()
+
+fun Project.getVersion(alias: String) = extensions
+        .getByType<VersionCatalogsExtension>()
+        .named("libs")
+        .findVersion(alias)
+        .get()
+        .toString()

@@ -36,6 +36,7 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 coil-kt = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 coil-kt-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
 converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "moshi" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }

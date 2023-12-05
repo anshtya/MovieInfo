@@ -4,23 +4,31 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +49,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.anshtya.data.model.StreamingItem
 import com.anshtya.ui.StreamingItemCard
+
+private val horizontalPadding = 10.dp
 
 @Composable
 fun HomeRoute(
@@ -72,6 +82,7 @@ fun HomeRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
     trendingMovies: LazyPagingItems<StreamingItem>,
@@ -88,31 +99,70 @@ fun Home(
     onFreeContentClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier.fillMaxSize()
-    ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+    var text by remember { mutableStateOf("") }
+    var active by remember { mutableStateOf(false) }
+    Surface {
+        Column(
+            modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            trendingSection(
-                trendingMovies = trendingMovies,
-                timeWindowOptions = timeWindowOptions,
-                selectedTimeWindow = selectedTimeWindow,
-                onTimeWindowClick = onTimeWindowClick
-            )
-            popularContentSection(
-                popularContent = popularContent,
-                popularContentFilters = popularContentFilters,
-                selectedContentFilter = selectedContentFilter,
-                onFilterClick = onFilterClick
-            )
-            freeToWatchSection(
-                freeContent = freeContent,
-                freeContentTypes = freeContentTypes,
-                selectedContentType = selectedFreeContent,
-                onTypeClick = onFreeContentClick
-            )
+            SearchBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = horizontalPadding),
+                query = text,
+                onQueryChange = { text = it },
+                active = active,
+                onActiveChange = { active = it },
+                onSearch = { active = false },
+                placeholder = {
+                    Text(stringResource(id = R.string.search))
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = stringResource(id = R.string.search)
+                    )
+                },
+                trailingIcon = {
+                    if (text.isNotEmpty()) {
+                        IconButton(
+                            onClick = { text = "" }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(id = R.string.clear_search)
+                            )
+                        }
+                    }
+                }
+            ) {
+                // TODO: implement search
+            }
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                trendingSection(
+                    trendingMovies = trendingMovies,
+                    timeWindowOptions = timeWindowOptions,
+                    selectedTimeWindow = selectedTimeWindow,
+                    onTimeWindowClick = onTimeWindowClick
+                )
+                popularContentSection(
+                    popularContent = popularContent,
+                    popularContentFilters = popularContentFilters,
+                    selectedContentFilter = selectedContentFilter,
+                    onFilterClick = onFilterClick
+                )
+                freeToWatchSection(
+                    freeContent = freeContent,
+                    freeContentTypes = freeContentTypes,
+                    selectedContentType = selectedFreeContent,
+                    onTypeClick = onFreeContentClick
+                )
+            }
         }
     }
 }
@@ -182,51 +232,56 @@ fun ContentSectionWithDropdownMenu(
         lazyRowState.scrollToItem(0)
     }
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.Bottom
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text(
-            text = stringResource(id = sectionName),
-            style = MaterialTheme.typography.headlineMedium
-        )
-        OptionsDropdownMenu(
-            options = options,
-            selectedOptionIndex = selectedOptionIndex,
-            selectedOption = selectedOptionName,
-            onOptionClick = onOptionClick
-        )
-    }
-    Spacer(Modifier.height(12.dp))
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-    ) {
-        val isLoading by remember(contentList.loadState.source) {
-            derivedStateOf { contentList.loadState.source.refresh is LoadState.Loading }
-        }
-        if (isLoading) {
-            CircularProgressIndicator(
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.align(Alignment.Center)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = sectionName),
+                style = MaterialTheme.typography.headlineMedium
             )
-        } else {
-            LazyRow(
-                contentPadding = PaddingValues(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                state = lazyRowState,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(
-                    count = contentList.itemCount
-                ) { index ->
-                    contentList[index]?.let { streamingItem ->
-                        StreamingItemCard(
-                            streamingItem = streamingItem,
-                            modifier = Modifier.fillMaxHeight()
-                        )
+            OptionsDropdownMenu(
+                options = options,
+                selectedOptionIndex = selectedOptionIndex,
+                selectedOption = selectedOptionName,
+                onOptionClick = onOptionClick
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        ) {
+            val isLoading by remember(contentList.loadState.source) {
+                derivedStateOf { contentList.loadState.source.refresh is LoadState.Loading }
+            }
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            } else {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = horizontalPadding),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    state = lazyRowState,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(
+                        count = contentList.itemCount
+                    ) { index ->
+                        contentList[index]?.let { streamingItem ->
+                            StreamingItemCard(
+                                streamingItem = streamingItem,
+                                modifier = Modifier.fillMaxHeight()
+                            )
+                        }
                     }
                 }
             }

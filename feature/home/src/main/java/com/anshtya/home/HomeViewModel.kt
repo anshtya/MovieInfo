@@ -4,13 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.anshtya.data.model.SearchSuggestion
 import com.anshtya.data.model.StreamingItem
 import com.anshtya.data.repository.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -22,14 +26,32 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository
 ) : ViewModel() {
-    private val _timeWindowOptions = TrendingTimeWindow.values().toList()
+    private val _timeWindowOptions = TrendingTimeWindow.entries.toList()
     val timeWindowOptions = _timeWindowOptions.map { it.uiLabel }
 
-    private val _popularContentFilters = PopularContentFilter.values().toList()
+    private val _popularContentFilters = PopularContentFilter.entries.toList()
     val popularContentFilters = _popularContentFilters.map { it.uiLabel }
 
-    private val _freeContentTypes = FreeContentType.values().toList()
+    private val _freeContentTypes = FreeContentType.entries.toList()
     val freeContentTypes = _freeContentTypes.map { it.uiLabel }
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    val searchSuggestions: StateFlow<List<SearchSuggestion>> = _searchQuery
+        .mapLatest { query ->
+            delay(500)
+            if (query.isNotEmpty()) {
+                homeRepository.multiSearch(query)
+            } else {
+                emptyList()
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = emptyList()
+        )
 
     private val _selectedTimeWindow = MutableStateFlow(TrendingTimeWindow.TODAY)
     val selectedTimeWindowIndex = _selectedTimeWindow
@@ -92,6 +114,10 @@ class HomeViewModel @Inject constructor(
 
     fun setFreeContentType(contentTypeIndex: Int) {
         _selectedFreeContent.update { _freeContentTypes[contentTypeIndex] }
+    }
+
+    fun changeSearchQuery(query: String) {
+        _searchQuery.update { query }
     }
 
     private fun getTimeWindowParameter(timeWindow: TrendingTimeWindow): String {

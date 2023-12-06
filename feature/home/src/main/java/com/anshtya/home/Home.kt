@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -47,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.anshtya.data.model.SearchSuggestion
 import com.anshtya.data.model.StreamingItem
 import com.anshtya.ui.StreamingItemCard
 
@@ -65,8 +67,12 @@ fun HomeRoute(
     val selectedTimeWindow by homeViewModel.selectedTimeWindowIndex.collectAsStateWithLifecycle()
     val selectedContentFilter by homeViewModel.selectedContentFilterIndex.collectAsStateWithLifecycle()
     val selectedFreeContent by homeViewModel.selectedFreeContentIndex.collectAsStateWithLifecycle()
+    val searchQuery by homeViewModel.searchQuery.collectAsStateWithLifecycle()
+    val searchSuggestions by homeViewModel.searchSuggestions.collectAsStateWithLifecycle()
 
     Home(
+        searchQuery = searchQuery,
+        searchSuggestions = searchSuggestions,
         trendingMovies = trendingMovies,
         popularContent = popularContent,
         freeContent = freeContent,
@@ -79,12 +85,15 @@ fun HomeRoute(
         onTimeWindowClick = homeViewModel::setTrendingTimeWindow,
         onFilterClick = homeViewModel::setPopularContentFilter,
         onFreeContentClick = homeViewModel::setFreeContentType,
+        onSearchQueryChange = homeViewModel::changeSearchQuery
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
+    searchQuery: String,
+    searchSuggestions: List<SearchSuggestion>,
     trendingMovies: LazyPagingItems<StreamingItem>,
     popularContent: LazyPagingItems<StreamingItem>,
     freeContent: LazyPagingItems<StreamingItem>,
@@ -97,9 +106,9 @@ fun Home(
     onTimeWindowClick: (Int) -> Unit,
     onFilterClick: (Int) -> Unit,
     onFreeContentClick: (Int) -> Unit,
+    onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
     Surface {
         Column(
@@ -110,10 +119,13 @@ fun Home(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = horizontalPadding),
-                query = text,
-                onQueryChange = { text = it },
+                query = searchQuery,
+                onQueryChange = { onSearchQueryChange(it) },
                 active = active,
-                onActiveChange = { active = it },
+                onActiveChange = {
+                    active = it
+                    onSearchQueryChange("")
+                },
                 onSearch = { active = false },
                 placeholder = {
                     Text(stringResource(id = R.string.search))
@@ -125,9 +137,9 @@ fun Home(
                     )
                 },
                 trailingIcon = {
-                    if (text.isNotEmpty()) {
+                    if (searchQuery.isNotEmpty()) {
                         IconButton(
-                            onClick = { text = "" }
+                            onClick = { onSearchQueryChange("") }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
@@ -137,7 +149,19 @@ fun Home(
                     }
                 }
             ) {
-                // TODO: implement search
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        items = searchSuggestions.take(6),
+                        key = { it.id }
+                    ) {
+                        Text(
+                            text = it.name,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                }
             }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -278,7 +302,7 @@ fun ContentSectionWithDropdownMenu(
                     ) { index ->
                         contentList[index]?.let { streamingItem ->
                             StreamingItemCard(
-                                streamingItem = streamingItem,
+                                posterPath = streamingItem.posterPath,
                                 modifier = Modifier.fillMaxHeight()
                             )
                         }

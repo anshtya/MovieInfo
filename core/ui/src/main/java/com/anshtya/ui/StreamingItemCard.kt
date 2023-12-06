@@ -10,11 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.anshtya.data.model.StreamingItem
 
 @Composable
 fun StreamingItemCard(
-    streamingItem: StreamingItem,
+    posterPath: String,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -25,7 +24,7 @@ fun StreamingItemCard(
         modifier = modifier.width(140.dp)
     ) {
         StreamingItemImage(
-            imageUrl = streamingItem.posterPath
+            imageUrl = posterPath
         )
     }
 }

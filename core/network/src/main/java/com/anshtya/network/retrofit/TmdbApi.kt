@@ -1,5 +1,7 @@
 package com.anshtya.network.retrofit
 
+import com.anshtya.network.model.MultiSearchResponse
+import com.anshtya.network.model.SearchResponse
 import com.anshtya.network.model.StreamingItemResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -44,4 +46,32 @@ interface TmdbApi {
         @Path("time_window") timeWindow: String,
         @Query("page") page: Int
     ): StreamingItemResponse
+
+    @GET("search/multi")
+    suspend fun multiSearch(
+        @Query("page") page: Int = 1,
+        @Query("query") query: String,
+        @Query("include_adult") includeAdult: Boolean = false
+    ): MultiSearchResponse
+
+//    @GET("search/movie")
+//    suspend fun searchMovie(
+//        @Query("page") page: Int = 1,
+//        @Query("query") query: String,
+//        @Query("include_adult") includeAdult: Boolean = false
+//    ): SearchResponse
+//
+//    @GET("search/tv")
+//    suspend fun searchTV(
+//        @Query("page") page: Int = 1,
+//        @Query("query") query: String,
+//        @Query("include_adult") includeAdult: Boolean = false
+//    ): SearchResponse
+//
+//    @GET("search/movie")
+//    suspend fun searchPeople(
+//        @Query("query") query: String,
+//        @Query("page") page: Int = 1,
+//        @Query("include_adult") includeAdult: Boolean = false
+//    ): SearchResponse
 }

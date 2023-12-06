@@ -3,7 +3,9 @@ package com.anshtya.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.anshtya.data.model.SearchSuggestion
 import com.anshtya.data.model.StreamingItem
+import com.anshtya.data.model.asModel
 import com.anshtya.data.paging.FreeContentPagingSource
 import com.anshtya.data.paging.PopularStreamingTitlesPagingSource
 import com.anshtya.data.paging.PopularTitlesInTheatresPagingSource
@@ -69,6 +71,13 @@ class HomeRepositoryImpl @Inject constructor(
                 TrendingMoviesPagingSource(tmdbApi, timeWindow)
             }
         ).flow
+    }
+
+    override suspend fun multiSearch(query: String): List<SearchSuggestion> {
+        return tmdbApi.multiSearch(query = query).results
+            .map { suggestion ->
+                suggestion.asModel()
+            }
     }
 }
 

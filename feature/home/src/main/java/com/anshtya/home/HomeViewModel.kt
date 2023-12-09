@@ -9,7 +9,6 @@ import com.anshtya.data.model.StreamingItem
 import com.anshtya.data.repository.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,7 +39,6 @@ class HomeViewModel @Inject constructor(
 
     val searchSuggestions: StateFlow<List<SearchSuggestion>> = _searchQuery
         .mapLatest { query ->
-            delay(500)
             if (query.isNotEmpty()) {
                 homeRepository.multiSearch(query)
             } else {

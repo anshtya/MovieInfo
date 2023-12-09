@@ -89,7 +89,6 @@ fun HomeRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
     searchQuery: String,
@@ -115,54 +114,15 @@ fun Home(
             modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            SearchBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = horizontalPadding),
-                query = searchQuery,
-                onQueryChange = { onSearchQueryChange(it) },
+            HomeSearchBar(
                 active = active,
+                searchQuery = searchQuery,
+                searchSuggestions = searchSuggestions,
+                onSearchQueryChange = onSearchQueryChange,
                 onActiveChange = {
                     active = it
-                    onSearchQueryChange("")
-                },
-                onSearch = { active = false },
-                placeholder = {
-                    Text(stringResource(id = R.string.search))
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(id = R.string.search)
-                    )
-                },
-                trailingIcon = {
-                    if (searchQuery.isNotEmpty()) {
-                        IconButton(
-                            onClick = { onSearchQueryChange("") }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(id = R.string.clear_search)
-                            )
-                        }
-                    }
                 }
-            ) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(
-                        items = searchSuggestions.take(6),
-                        key = { it.id }
-                    ) {
-                        Text(
-                            text = it.name,
-                            modifier = Modifier.padding(10.dp)
-                        )
-                    }
-                }
-            }
+            )
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 8.dp),
@@ -191,7 +151,7 @@ fun Home(
     }
 }
 
-fun LazyListScope.trendingSection(
+private fun LazyListScope.trendingSection(
     trendingMovies: LazyPagingItems<StreamingItem>,
     @StringRes timeWindowOptions: List<Int>,
     selectedTimeWindow: Int,
@@ -208,7 +168,7 @@ fun LazyListScope.trendingSection(
     }
 }
 
-fun LazyListScope.popularContentSection(
+private fun LazyListScope.popularContentSection(
     popularContent: LazyPagingItems<StreamingItem>,
     @StringRes popularContentFilters: List<Int>,
     selectedContentFilter: Int,
@@ -225,7 +185,7 @@ fun LazyListScope.popularContentSection(
     }
 }
 
-fun LazyListScope.freeToWatchSection(
+private fun LazyListScope.freeToWatchSection(
     freeContent: LazyPagingItems<StreamingItem>,
     @StringRes freeContentTypes: List<Int>,
     selectedContentType: Int,
@@ -353,6 +313,62 @@ fun OptionsDropdownMenu(
                         }
                     )
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeSearchBar(
+    active: Boolean,
+    searchQuery: String,
+    searchSuggestions: List<SearchSuggestion>,
+    onSearchQueryChange: (String) -> Unit,
+    onActiveChange: (Boolean) -> Unit
+) {
+    SearchBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = horizontalPadding),
+        query = searchQuery,
+        onQueryChange = { onSearchQueryChange(it) },
+        active = active,
+        onActiveChange = {
+            onActiveChange(it)
+            onSearchQueryChange("")
+        },
+        onSearch = { onActiveChange(false) },
+        placeholder = {
+            Text(stringResource(id = R.string.search))
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = stringResource(id = R.string.search)
+            )
+        },
+        trailingIcon = {
+            if (searchQuery.isNotEmpty()) {
+                IconButton(
+                    onClick = { onSearchQueryChange("") }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(id = R.string.clear_search)
+                    )
+                }
+            }
+        }
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(
+                items = searchSuggestions.take(6),
+                key = { it.id }
+            ) {
+                SearchSuggestionItem(name = it.name, imagePath = it.imagePath)
             }
         }
     }

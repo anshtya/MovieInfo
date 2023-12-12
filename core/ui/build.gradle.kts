@@ -10,7 +10,8 @@ android {
 dependencies {
 
     implementation(projects.data)
-    
+
+    implementation(libs.activity.compose)
     implementation(libs.appcompat)
     implementation(libs.core.ktx)
     implementation(libs.coil.kt.compose)

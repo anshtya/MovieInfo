@@ -16,20 +16,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,6 +42,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.anshtya.data.model.SearchSuggestion
 import com.anshtya.data.model.StreamingItem
+import com.anshtya.ui.MovieInfoSearchBar
 import com.anshtya.ui.StreamingItemCard
 
 private val horizontalPadding = 10.dp
@@ -109,23 +102,22 @@ fun Home(
     modifier: Modifier = Modifier
 ) {
     var active by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf("") }
     Surface {
-        Column(
-            modifier = modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            HomeSearchBar(
+        Column(modifier.fillMaxSize()) {
+            MovieInfoSearchBar(
                 active = active,
-                searchQuery = searchQuery,
-                searchSuggestions = searchSuggestions,
-                onSearchQueryChange = onSearchQueryChange,
+                query = text,
+                onQueryChange = { text = it },
                 onActiveChange = {
                     active = it
-                }
+                },
+                onSearchClick = {},
+                modifier = Modifier.padding(10.dp)
             )
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 8.dp),
+                contentPadding = PaddingValues(bottom = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 trendingSection(
@@ -313,62 +305,6 @@ fun OptionsDropdownMenu(
                         }
                     )
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HomeSearchBar(
-    active: Boolean,
-    searchQuery: String,
-    searchSuggestions: List<SearchSuggestion>,
-    onSearchQueryChange: (String) -> Unit,
-    onActiveChange: (Boolean) -> Unit
-) {
-    SearchBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = horizontalPadding),
-        query = searchQuery,
-        onQueryChange = { onSearchQueryChange(it) },
-        active = active,
-        onActiveChange = {
-            onActiveChange(it)
-            onSearchQueryChange("")
-        },
-        onSearch = { onActiveChange(false) },
-        placeholder = {
-            Text(stringResource(id = R.string.search))
-        },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(id = R.string.search)
-            )
-        },
-        trailingIcon = {
-            if (searchQuery.isNotEmpty()) {
-                IconButton(
-                    onClick = { onSearchQueryChange("") }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(id = R.string.clear_search)
-                    )
-                }
-            }
-        }
-    ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(
-                items = searchSuggestions.take(6),
-                key = { it.id }
-            ) {
-                SearchSuggestionItem(name = it.name, imagePath = it.imagePath)
             }
         }
     }

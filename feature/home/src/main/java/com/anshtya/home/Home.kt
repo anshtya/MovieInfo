@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -102,19 +103,29 @@ fun Home(
     modifier: Modifier = Modifier
 ) {
     var active by remember { mutableStateOf(false) }
-    var text by remember { mutableStateOf("") }
     Surface {
         Column(modifier.fillMaxSize()) {
             MovieInfoSearchBar(
                 active = active,
-                query = text,
-                onQueryChange = { text = it },
+                value = searchQuery,
+                onQueryChange = onSearchQueryChange,
                 onActiveChange = {
                     active = it
                 },
                 onSearchClick = {},
                 modifier = Modifier.padding(10.dp)
-            )
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        items = searchSuggestions.take(6),
+                        key = { it.id }
+                    ) {
+                        SearchSuggestionItem(name = it.name, imagePath = it.imagePath)
+                    }
+                }
+            }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 10.dp),

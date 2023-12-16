@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,9 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.anshtya.data.model.SearchSuggestion
 import com.anshtya.data.model.StreamingItem
-import com.anshtya.ui.MovieInfoSearchBar
 import com.anshtya.ui.StreamingItemCard
 
 private val horizontalPadding = 10.dp
@@ -61,12 +58,8 @@ fun HomeRoute(
     val selectedTimeWindow by homeViewModel.selectedTimeWindowIndex.collectAsStateWithLifecycle()
     val selectedContentFilter by homeViewModel.selectedContentFilterIndex.collectAsStateWithLifecycle()
     val selectedFreeContent by homeViewModel.selectedFreeContentIndex.collectAsStateWithLifecycle()
-    val searchQuery by homeViewModel.searchQuery.collectAsStateWithLifecycle()
-    val searchSuggestions by homeViewModel.searchSuggestions.collectAsStateWithLifecycle()
 
-    Home(
-        searchQuery = searchQuery,
-        searchSuggestions = searchSuggestions,
+    HomeScreen(
         trendingMovies = trendingMovies,
         popularContent = popularContent,
         freeContent = freeContent,
@@ -78,15 +71,12 @@ fun HomeRoute(
         selectedFreeContent = selectedFreeContent,
         onTimeWindowClick = homeViewModel::setTrendingTimeWindow,
         onFilterClick = homeViewModel::setPopularContentFilter,
-        onFreeContentClick = homeViewModel::setFreeContentType,
-        onSearchQueryChange = homeViewModel::changeSearchQuery
+        onFreeContentClick = homeViewModel::setFreeContentType
     )
 }
 
 @Composable
-fun Home(
-    searchQuery: String,
-    searchSuggestions: List<SearchSuggestion>,
+fun HomeScreen(
     trendingMovies: LazyPagingItems<StreamingItem>,
     popularContent: LazyPagingItems<StreamingItem>,
     freeContent: LazyPagingItems<StreamingItem>,
@@ -98,58 +88,32 @@ fun Home(
     selectedFreeContent: Int,
     onTimeWindowClick: (Int) -> Unit,
     onFilterClick: (Int) -> Unit,
-    onFreeContentClick: (Int) -> Unit,
-    onSearchQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onFreeContentClick: (Int) -> Unit
 ) {
-    var active by remember { mutableStateOf(false) }
     Surface {
-        Column(modifier.fillMaxSize()) {
-            MovieInfoSearchBar(
-                active = active,
-                value = searchQuery,
-                onQueryChange = onSearchQueryChange,
-                onActiveChange = {
-                    active = it
-                },
-                onSearchClick = {},
-                modifier = Modifier.padding(10.dp)
-            ) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(
-                        items = searchSuggestions.take(6),
-                        key = { it.id }
-                    ) {
-                        SearchSuggestionItem(name = it.name, imagePath = it.imagePath)
-                    }
-                }
-            }
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                trendingSection(
-                    trendingMovies = trendingMovies,
-                    timeWindowOptions = timeWindowOptions,
-                    selectedTimeWindow = selectedTimeWindow,
-                    onTimeWindowClick = onTimeWindowClick
-                )
-                popularContentSection(
-                    popularContent = popularContent,
-                    popularContentFilters = popularContentFilters,
-                    selectedContentFilter = selectedContentFilter,
-                    onFilterClick = onFilterClick
-                )
-                freeToWatchSection(
-                    freeContent = freeContent,
-                    freeContentTypes = freeContentTypes,
-                    selectedContentType = selectedFreeContent,
-                    onTypeClick = onFreeContentClick
-                )
-            }
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            trendingSection(
+                trendingMovies = trendingMovies,
+                timeWindowOptions = timeWindowOptions,
+                selectedTimeWindow = selectedTimeWindow,
+                onTimeWindowClick = onTimeWindowClick
+            )
+            popularContentSection(
+                popularContent = popularContent,
+                popularContentFilters = popularContentFilters,
+                selectedContentFilter = selectedContentFilter,
+                onFilterClick = onFilterClick
+            )
+            freeToWatchSection(
+                freeContent = freeContent,
+                freeContentTypes = freeContentTypes,
+                selectedContentType = selectedFreeContent,
+                onTypeClick = onFreeContentClick
+            )
         }
     }
 }

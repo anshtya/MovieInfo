@@ -1,4 +1,4 @@
-package com.anshtya.home
+package com.anshtya.search
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

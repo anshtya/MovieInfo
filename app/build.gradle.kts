@@ -36,6 +36,7 @@ android {
 
 dependencies {
     implementation(projects.feature.home)
+    implementation(projects.feature.search)
 
     implementation(libs.activity.compose)
     implementation(libs.compose.material.iconsExtended)

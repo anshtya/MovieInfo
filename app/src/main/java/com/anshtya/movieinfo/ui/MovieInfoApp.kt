@@ -9,25 +9,37 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
+import com.anshtya.home.navigateToHome
 import com.anshtya.movieinfo.navigation.MovieInfoDestination
 import com.anshtya.movieinfo.navigation.MovieInfoNavigation
+import com.anshtya.search.navigateToSearch
 
 @Composable
 fun MovieInfoApp(
     navController: NavHostController = rememberNavController()
 ) {
     val destinations = MovieInfoDestination.entries.toList()
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
     Scaffold(
         bottomBar = {
             MovieInfoNavigationBar(
                 destinations = destinations,
-                currentRoute = currentRoute
+                currentDestination = currentDestination,
+                onNavigateToDestination = { destination ->
+                    navController.navigateToDestination(destination)
+                }
             )
         }
     ) { padding ->
@@ -44,22 +56,46 @@ fun MovieInfoApp(
 @Composable
 fun MovieInfoNavigationBar(
     destinations: List<MovieInfoDestination>,
-    currentRoute: String?
+    currentDestination: NavDestination?,
+    onNavigateToDestination: (MovieInfoDestination) -> Unit
 ) {
     NavigationBar {
-        destinations.forEach {
-            val selected = currentRoute == it.route
+        destinations.forEach { destination ->
+            val selected = currentDestination.isDestinationInHierarchy(destination)
             NavigationBarItem(
                 selected = selected,
-                onClick = { /*TODO*/ },
+                onClick = { onNavigateToDestination(destination) },
                 icon = {
                     Icon(
-                        imageVector = if (selected) it.selectedIcon else it.icon,
+                        imageVector = if (selected) destination.selectedIcon else destination.icon,
                         contentDescription = null
                     )
                 },
-                label = { Text(stringResource(it.titleId))}
+                label = { Text(stringResource(id = destination.titleId)) }
             )
         }
+    }
+}
+
+private fun NavDestination?.isDestinationInHierarchy(destination: MovieInfoDestination): Boolean {
+    return this?.hierarchy?.any {
+        it.route?.contains(destination.name, true) ?: false
+    } ?: false
+}
+
+private fun NavController.navigateToDestination(destination: MovieInfoDestination) {
+    val navOptions = navOptions {
+        popUpTo(graph.findStartDestination().id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+
+    when (destination) {
+        MovieInfoDestination.HOME -> navigateToHome(navOptions)
+        MovieInfoDestination.SEARCH -> navigateToSearch(navOptions)
+        MovieInfoDestination.MY_LIBRARY -> {}
+        MovieInfoDestination.YOU -> {}
     }
 }

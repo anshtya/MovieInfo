@@ -3,8 +3,10 @@ package com.anshtya.movieinfo.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import com.anshtya.home.HomeRoute
+import com.anshtya.home.homeScreen
+import com.anshtya.home.homeNavigationRoute
+import com.anshtya.search.navigateToSearchResults
+import com.anshtya.search.searchScreen
 
 @Composable
 fun MovieInfoNavigation(
@@ -12,10 +14,12 @@ fun MovieInfoNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = homeNavigationRoute
     ) {
-        composable("home") {
-            HomeRoute()
-        }
+        homeScreen()
+        searchScreen(
+            onSearch = navController::navigateToSearchResults,
+            onBackClick = { navController.popBackStack() }
+        )
     }
 }

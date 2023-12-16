@@ -38,7 +38,6 @@ dependencies {
     implementation(projects.feature.home)
 
     implementation(libs.activity.compose)
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.compose.material.iconsExtended)
     implementation(libs.coil.kt)
     implementation(libs.core.ktx)

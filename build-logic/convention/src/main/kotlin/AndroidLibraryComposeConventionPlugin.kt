@@ -22,6 +22,7 @@ class AndroidLibraryComposeConventionPlugin: Plugin<Project> {
                     add("implementation", getLibrary("material3"))
                     add("implementation", getLibrary("ui-tooling-preview"))
                     add("implementation", getLibrary("androidx-lifecycle-runtime-compose"))
+                    add("implementation", getLibrary("androidx-hilt-navigation-compose"))
                     add("debugImplementation", getLibrary("ui-tooling"))
                 }
             }

@@ -2,7 +2,6 @@ package com.anshtya.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +41,7 @@ import androidx.compose.ui.unit.dp
 fun MovieInfoSearchBar(
     value: String,
     onQueryChange: (String) -> Unit,
-    onSearchClick: (String) -> Unit,
+    onSearch: () -> Unit,
     active: Boolean,
     onActiveChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -50,65 +49,59 @@ fun MovieInfoSearchBar(
     colors: TextFieldColors = TextFieldDefaults.colors(
         focusedIndicatorColor = Color.Transparent,
         unfocusedIndicatorColor = Color.Transparent,
-        unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-        focusedContainerColor = MaterialTheme.colorScheme.primaryContainer
+        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant
     ),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    content: @Composable () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
     var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
     val textFieldValue = textFieldValueState.copy(text = value)
-    val text = remember(active, textFieldValue) {
-        if(active) textFieldValue.text else TextFieldValue("").text
-    }
 
-    Column {
-        BasicTextField(
-            value = if (active) textFieldValue else TextFieldValue(""),
-            onValueChange = { newTextFieldValueState ->
-                textFieldValueState = newTextFieldValueState
-                onQueryChange(newTextFieldValueState.text)
-            },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = { onSearchClick(value) }),
-            modifier = modifier
-                .fillMaxWidth()
-                .height(42.dp)
-                .focusRequester(focusRequester)
-                .onFocusChanged { if (it.isFocused) onActiveChange(true) }
-        ) { innerTextField ->
-            TextFieldDefaults.DecorationBox(
-                value = text,
-                innerTextField = innerTextField,
-                enabled = enabled,
-                singleLine = true,
-                colors = colors,
-                shape = RoundedCornerShape(12.dp),
-                visualTransformation = VisualTransformation.None,
-                interactionSource = interactionSource,
-                placeholder = { if (text.isEmpty()) Text(stringResource(id = R.string.search)) },
-                trailingIcon = {
-                    if (text.isNotEmpty()) {
-                        IconButton(onClick = { onQueryChange("") }) {
-                            Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = stringResource(id = R.string.clear)
-                            )
-                        }
+    BasicTextField(
+        value = textFieldValue,
+        onValueChange = { newTextFieldValueState ->
+            textFieldValueState = newTextFieldValueState
+            onQueryChange(newTextFieldValueState.text)
+        },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = {
+            onSearch()
+            onActiveChange(false)
+        }),
+        maxLines = 1,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(42.dp)
+            .focusRequester(focusRequester)
+            .onFocusChanged { if (it.isFocused) onActiveChange(true) }
+    ) { innerTextField ->
+        TextFieldDefaults.DecorationBox(
+            value = textFieldValue.text,
+            innerTextField = innerTextField,
+            enabled = enabled,
+            singleLine = true,
+            colors = colors,
+            shape = RoundedCornerShape(12.dp),
+            visualTransformation = VisualTransformation.None,
+            interactionSource = interactionSource,
+            placeholder = { if (textFieldValue.text.isEmpty()) Text(stringResource(id=R.string.search)) },
+            trailingIcon = {
+                if (textFieldValue.text.isNotEmpty() && active) {
+                    IconButton(onClick = { onQueryChange("") }) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = stringResource(id = R.string.clear)
+                        )
                     }
-                },
-                contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
-                    top = 0.dp, bottom = 0.dp
-                )
+                }
+            },
+            contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
+                top = 0.dp, bottom = 0.dp
             )
-        }
-
-        if (active) {
-            content()
-        }
+        )
     }
 
     LaunchedEffect(active) {
@@ -126,9 +119,8 @@ fun MovieInfoSearchBarPreview() {
     MovieInfoSearchBar(
         value = "query",
         onQueryChange = {},
-        onSearchClick = {},
+        onSearch = {},
         active = true,
-        onActiveChange = {},
-        content = {}
+        onActiveChange = {}
     )
 }

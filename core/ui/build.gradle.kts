@@ -8,9 +8,6 @@ android {
 }
 
 dependencies {
-
-    implementation(projects.data)
-
     implementation(libs.activity.compose)
     implementation(libs.appcompat)
     implementation(libs.core.ktx)
@@ -19,5 +16,4 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     testImplementation(libs.junit)
-
 }

@@ -54,24 +54,17 @@ interface TmdbApi {
         @Query("include_adult") includeAdult: Boolean = false
     ): MultiSearchResponse
 
-//    @GET("search/movie")
-//    suspend fun searchMovie(
-//        @Query("page") page: Int = 1,
-//        @Query("query") query: String,
-//        @Query("include_adult") includeAdult: Boolean = false
-//    ): SearchResponse
-//
-//    @GET("search/tv")
-//    suspend fun searchTV(
-//        @Query("page") page: Int = 1,
-//        @Query("query") query: String,
-//        @Query("include_adult") includeAdult: Boolean = false
-//    ): SearchResponse
-//
-//    @GET("search/movie")
-//    suspend fun searchPeople(
-//        @Query("query") query: String,
-//        @Query("page") page: Int = 1,
-//        @Query("include_adult") includeAdult: Boolean = false
-//    ): SearchResponse
+    @GET("search/movie")
+    suspend fun searchMovie(
+        @Query("page") page: Int = 1,
+        @Query("query") query: String,
+        @Query("include_adult") includeAdult: Boolean = false
+    ): SearchResponse
+
+    @GET("search/tv")
+    suspend fun searchTV(
+        @Query("page") page: Int = 1,
+        @Query("query") query: String,
+        @Query("include_adult") includeAdult: Boolean = false
+    ): SearchResponse
 }

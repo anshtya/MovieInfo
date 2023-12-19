@@ -8,11 +8,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -20,43 +19,36 @@ import androidx.compose.ui.unit.dp
 fun MovieInfoTopAppBar(
     query: String,
     onQueryChange: (String) -> Unit,
-    onSearchClick: (String) -> Unit,
+    onSearch: () -> Unit,
     onBackClick: () -> Unit,
     active: Boolean,
     onActiveChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    modifier: Modifier = Modifier
 ) {
-    Surface(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
-        color = MaterialTheme.colorScheme.primary
+            .height(56.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (active || query.isNotEmpty()) {
-                IconButton(
-                    onClick = onBackClick
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "back"
-                    )
-                }
+        if (active || query.isNotEmpty()) {
+            IconButton(
+                onClick = onBackClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back)
+                )
             }
-            MovieInfoSearchBar(
-                value = query,
-                onQueryChange = onQueryChange,
-                onSearchClick = onSearchClick,
-                active = active,
-                onActiveChange = onActiveChange,
-                modifier = Modifier.padding(10.dp),
-                content = content
-            )
         }
+        MovieInfoSearchBar(
+            value = query,
+            onQueryChange = onQueryChange,
+            onSearch = onSearch,
+            active = active,
+            onActiveChange = onActiveChange,
+            modifier = Modifier.padding(10.dp)
+        )
     }
 }
 
@@ -66,10 +58,9 @@ fun TopAppBarWithSearchPreview() {
     MovieInfoTopAppBar(
         query = "Some random text",
         onQueryChange = {},
-        onSearchClick = {},
+        onSearch = {},
         onBackClick = {},
         active = true,
-        onActiveChange = {},
-        content = {}
+        onActiveChange = {}
     )
 }

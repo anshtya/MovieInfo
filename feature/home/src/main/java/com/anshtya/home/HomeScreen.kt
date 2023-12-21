@@ -80,9 +80,9 @@ fun HomeScreen(
     trendingMovies: LazyPagingItems<StreamingItem>,
     popularContent: LazyPagingItems<StreamingItem>,
     freeContent: LazyPagingItems<StreamingItem>,
-    @StringRes timeWindowOptions: List<Int>,
-    @StringRes popularContentFilters: List<Int>,
-    @StringRes freeContentTypes: List<Int>,
+    timeWindowOptions: List<Int>,
+    popularContentFilters: List<Int>,
+    freeContentTypes: List<Int>,
     selectedTimeWindow: Int,
     selectedContentFilter: Int,
     selectedFreeContent: Int,
@@ -120,7 +120,7 @@ fun HomeScreen(
 
 private fun LazyListScope.trendingSection(
     trendingMovies: LazyPagingItems<StreamingItem>,
-    @StringRes timeWindowOptions: List<Int>,
+    timeWindowOptions: List<Int>,
     selectedTimeWindow: Int,
     onTimeWindowClick: (Int) -> Unit
 ) {
@@ -137,7 +137,7 @@ private fun LazyListScope.trendingSection(
 
 private fun LazyListScope.popularContentSection(
     popularContent: LazyPagingItems<StreamingItem>,
-    @StringRes popularContentFilters: List<Int>,
+    popularContentFilters: List<Int>,
     selectedContentFilter: Int,
     onFilterClick: (Int) -> Unit
 ) {
@@ -154,7 +154,7 @@ private fun LazyListScope.popularContentSection(
 
 private fun LazyListScope.freeToWatchSection(
     freeContent: LazyPagingItems<StreamingItem>,
-    @StringRes freeContentTypes: List<Int>,
+    freeContentTypes: List<Int>,
     selectedContentType: Int,
     onTypeClick: (Int) -> Unit
 ) {
@@ -173,11 +173,10 @@ private fun LazyListScope.freeToWatchSection(
 fun ContentSectionWithDropdownMenu(
     @StringRes sectionName: Int,
     contentList: LazyPagingItems<StreamingItem>,
-    @StringRes options: List<Int>,
+    options: List<Int>,
     selectedOptionIndex: Int,
     onOptionClick: (Int) -> Unit
 ) {
-    val selectedOptionName = options[selectedOptionIndex]
     val lazyRowState = rememberLazyListState()
     LaunchedEffect(selectedOptionIndex) {
         lazyRowState.scrollToItem(0)
@@ -200,7 +199,6 @@ fun ContentSectionWithDropdownMenu(
             OptionsDropdownMenu(
                 options = options,
                 selectedOptionIndex = selectedOptionIndex,
-                selectedOption = selectedOptionName,
                 onOptionClick = onOptionClick
             )
         }
@@ -243,15 +241,15 @@ fun ContentSectionWithDropdownMenu(
 @Composable
 fun OptionsDropdownMenu(
     options: List<Int>,
-    @StringRes selectedOption: Int,
     selectedOptionIndex: Int,
     onOptionClick: (Int) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
+    val selectedOption = options[selectedOptionIndex]
     Box {
         Surface(
             shape = RoundedCornerShape(10.dp),
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier
                 .size(height = 28.dp, width = 100.dp)
                 .clickable { isExpanded = !isExpanded }
@@ -266,7 +264,7 @@ fun OptionsDropdownMenu(
         }
         DropdownMenu(
             expanded = isExpanded,
-            onDismissRequest = { isExpanded = false }
+            onDismissRequest = { isExpanded = !isExpanded }
         ) {
             options.forEachIndexed { index, option ->
                 if (index != selectedOptionIndex) {
@@ -276,7 +274,7 @@ fun OptionsDropdownMenu(
                         },
                         onClick = {
                             onOptionClick(index)
-                            isExpanded = false
+                            isExpanded = !isExpanded
                         }
                     )
                 }

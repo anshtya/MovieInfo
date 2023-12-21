@@ -12,10 +12,10 @@ data class SearchItem(
 fun NetworkSearchItem.asModel() = SearchItem(
     id = id,
     name = when {
-        title.isNullOrEmpty() -> name!!
-        name.isNullOrEmpty() -> title!!
+        !title.isNullOrEmpty() -> title!!
+        !name.isNullOrEmpty() -> name!!
         else -> ""
     },
-    overview = overview,
+    overview = overview ?: "",
     posterPath = posterPath ?: ""
 )

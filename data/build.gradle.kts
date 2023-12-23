@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.local)
     implementation(projects.core.network)
 
     testImplementation(libs.junit)
@@ -15,4 +16,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.room.ktx)
 }

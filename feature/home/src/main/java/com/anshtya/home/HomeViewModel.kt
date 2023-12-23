@@ -2,13 +2,11 @@ package com.anshtya.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.anshtya.data.model.StreamingItem
-import com.anshtya.data.repository.HomeRepository
+import com.anshtya.data.model.PopularContentType
+import com.anshtya.data.repository.ContentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
@@ -20,7 +18,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    private val contentRepository: ContentRepository
 ) : ViewModel() {
     private val _timeWindowOptions = TrendingTimeWindow.entries.toList()
     val timeWindowOptions = _timeWindowOptions.map { it.uiLabel }
@@ -66,19 +64,19 @@ class HomeViewModel @Inject constructor(
 
     val trendingMovies = _selectedTimeWindow
         .flatMapLatest { timeWindow ->
-            homeRepository.getTrendingMovies(getTimeWindowParameter(timeWindow))
+            contentRepository.getTrendingMovies(timeWindow.toParameter())
         }
         .cachedIn(viewModelScope)
 
     val popularContent = _selectedContentFilter
         .flatMapLatest { contentFilter ->
-            getFilteredPopularContent(contentFilter)
+            contentRepository.getPopularContent(contentFilter.toContentTypeParameter())
         }
         .cachedIn(viewModelScope)
 
     val freeContent = _selectedFreeContent
         .flatMapLatest { contentType ->
-            homeRepository.getFreeContent(getFreeContentParameter(contentType))
+            contentRepository.getFreeContent(contentType.toParameter())
         }
         .cachedIn(viewModelScope)
 
@@ -94,25 +92,25 @@ class HomeViewModel @Inject constructor(
         _selectedFreeContent.update { _freeContentTypes[contentTypeIndex] }
     }
 
-    private fun getTimeWindowParameter(timeWindow: TrendingTimeWindow): String {
-        return when (timeWindow) {
+    private fun TrendingTimeWindow.toParameter(): String {
+        return when(this) {
             TrendingTimeWindow.TODAY -> "day"
             TrendingTimeWindow.THIS_WEEK -> "week"
         }
     }
 
-    private fun getFilteredPopularContent(contentFilter: PopularContentFilter): Flow<PagingData<StreamingItem>> {
-        return when (contentFilter) {
-            PopularContentFilter.STREAMING -> homeRepository.getPopularStreamingTitles()
-            PopularContentFilter.IN_THEATRES -> homeRepository.getPopularTitlesInTheatres()
-            PopularContentFilter.FOR_RENT -> homeRepository.getPopularTitlesOnRent()
+    private fun FreeContentType.toParameter(): String {
+        return when (this) {
+            FreeContentType.MOVIES -> "movie"
+            FreeContentType.TV -> "tv"
         }
     }
 
-    private fun getFreeContentParameter(contentType: FreeContentType): String {
-        return when (contentType) {
-            FreeContentType.MOVIES -> "movie"
-            FreeContentType.TV -> "tv"
+    private fun PopularContentFilter.toContentTypeParameter(): PopularContentType {
+        return when (this) {
+            PopularContentFilter.STREAMING -> PopularContentType.STREAMING
+            PopularContentFilter.IN_THEATRES -> PopularContentType.IN_THEATRES
+            PopularContentFilter.FOR_RENT -> PopularContentType.FOR_RENT
         }
     }
 }

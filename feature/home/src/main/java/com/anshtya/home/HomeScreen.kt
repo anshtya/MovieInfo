@@ -40,7 +40,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.anshtya.data.model.StreamingItem
+import com.anshtya.data.model.FreeItem
+import com.anshtya.data.model.PopularItem
+import com.anshtya.data.model.TrendingItem
 import com.anshtya.ui.StreamingItemCard
 
 private val horizontalPadding = 10.dp
@@ -77,9 +79,9 @@ fun HomeRoute(
 
 @Composable
 fun HomeScreen(
-    trendingMovies: LazyPagingItems<StreamingItem>,
-    popularContent: LazyPagingItems<StreamingItem>,
-    freeContent: LazyPagingItems<StreamingItem>,
+    trendingMovies: LazyPagingItems<TrendingItem>,
+    popularContent: LazyPagingItems<PopularItem>,
+    freeContent: LazyPagingItems<FreeItem>,
     timeWindowOptions: List<Int>,
     popularContentFilters: List<Int>,
     freeContentTypes: List<Int>,
@@ -119,122 +121,208 @@ fun HomeScreen(
 }
 
 private fun LazyListScope.trendingSection(
-    trendingMovies: LazyPagingItems<StreamingItem>,
+    trendingMovies: LazyPagingItems<TrendingItem>,
     timeWindowOptions: List<Int>,
     selectedTimeWindow: Int,
     onTimeWindowClick: (Int) -> Unit
 ) {
     item {
-        ContentSectionWithDropdownMenu(
-            sectionName = R.string.trending,
-            contentList = trendingMovies,
-            options = timeWindowOptions,
-            selectedOptionIndex = selectedTimeWindow,
-            onOptionClick = onTimeWindowClick
-        )
-    }
-}
-
-private fun LazyListScope.popularContentSection(
-    popularContent: LazyPagingItems<StreamingItem>,
-    popularContentFilters: List<Int>,
-    selectedContentFilter: Int,
-    onFilterClick: (Int) -> Unit
-) {
-    item {
-        ContentSectionWithDropdownMenu(
-            sectionName = R.string.popular,
-            contentList = popularContent,
-            options = popularContentFilters,
-            selectedOptionIndex = selectedContentFilter,
-            onOptionClick = onFilterClick
-        )
-    }
-}
-
-private fun LazyListScope.freeToWatchSection(
-    freeContent: LazyPagingItems<StreamingItem>,
-    freeContentTypes: List<Int>,
-    selectedContentType: Int,
-    onTypeClick: (Int) -> Unit
-) {
-    item {
-        ContentSectionWithDropdownMenu(
-            sectionName = R.string.free_to_watch,
-            contentList = freeContent,
-            options = freeContentTypes,
-            selectedOptionIndex = selectedContentType,
-            onOptionClick = onTypeClick
-        )
-    }
-}
-
-@Composable
-fun ContentSectionWithDropdownMenu(
-    @StringRes sectionName: Int,
-    contentList: LazyPagingItems<StreamingItem>,
-    options: List<Int>,
-    selectedOptionIndex: Int,
-    onOptionClick: (Int) -> Unit
-) {
-    val lazyRowState = rememberLazyListState()
-    LaunchedEffect(selectedOptionIndex) {
-        lazyRowState.scrollToItem(0)
-    }
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = horizontalPadding),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(id = sectionName),
-                style = MaterialTheme.typography.headlineMedium
-            )
-            OptionsDropdownMenu(
-                options = options,
-                selectedOptionIndex = selectedOptionIndex,
-                onOptionClick = onOptionClick
-            )
+        val lazyRowState = rememberLazyListState()
+        LaunchedEffect(selectedTimeWindow) {
+            lazyRowState.scrollToItem(0)
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            val isLoading by remember(contentList.loadState.source) {
-                derivedStateOf { contentList.loadState.source.refresh is LoadState.Loading }
-            }
-            if (isLoading) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            } else {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = horizontalPadding),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    state = lazyRowState,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(
-                        count = contentList.itemCount
-                    ) { index ->
-                        contentList[index]?.let { streamingItem ->
-                            StreamingItemCard(
-                                posterPath = streamingItem.posterPath,
-                                modifier = Modifier.fillMaxHeight()
-                            )
+            ContentSection(
+                sectionName = R.string.trending,
+                options = timeWindowOptions,
+                selectedOptionIndex = selectedTimeWindow,
+                onOptionClick = onTimeWindowClick
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ) {
+                if (trendingMovies.loadState.mediator?.refresh is LoadState.Loading) {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                } else {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = horizontalPadding),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        state = lazyRowState,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(
+                            count = trendingMovies.itemCount
+                        ) { index ->
+                            trendingMovies[index]?.let { streamingItem ->
+                                StreamingItemCard(
+                                    posterPath = streamingItem.imagePath,
+                                    modifier = Modifier.fillMaxHeight()
+                                )
+                            }
+                        }
+                        item {
+                            if (trendingMovies.loadState.mediator?.append is LoadState.Loading) {
+                                Box(Modifier.fillMaxHeight()) {
+                                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+private fun LazyListScope.popularContentSection(
+    popularContent: LazyPagingItems<PopularItem>,
+    popularContentFilters: List<Int>,
+    selectedContentFilter: Int,
+    onFilterClick: (Int) -> Unit
+) {
+    item {
+        val lazyRowState = rememberLazyListState()
+        LaunchedEffect(selectedContentFilter) {
+            lazyRowState.scrollToItem(0)
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            ContentSection(
+                sectionName = R.string.popular,
+                options = popularContentFilters,
+                selectedOptionIndex = selectedContentFilter,
+                onOptionClick = onFilterClick
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ) {
+                val isLoading by remember(popularContent.loadState.source) {
+                    derivedStateOf { popularContent.loadState.source.refresh is LoadState.Loading }
+                }
+                if (isLoading) {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                } else {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = horizontalPadding),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        state = lazyRowState,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(
+                            count = popularContent.itemCount
+                        ) { index ->
+                            popularContent[index]?.let { streamingItem ->
+                                StreamingItemCard(
+                                    posterPath = streamingItem.imagePath,
+                                    modifier = Modifier.fillMaxHeight()
+                                )
+                            }
+                        }
+                        item {
+                            if (popularContent.loadState.mediator?.append is LoadState.Loading) {
+                                Box(Modifier.fillMaxHeight()) {
+                                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun LazyListScope.freeToWatchSection(
+    freeContent: LazyPagingItems<FreeItem>,
+    freeContentTypes: List<Int>,
+    selectedContentType: Int,
+    onTypeClick: (Int) -> Unit
+) {
+    item {
+        val lazyRowState = rememberLazyListState()
+        LaunchedEffect(selectedContentType) {
+            lazyRowState.scrollToItem(0)
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            ContentSection(
+                sectionName = R.string.free_to_watch,
+                options = freeContentTypes,
+                selectedOptionIndex = selectedContentType,
+                onOptionClick = onTypeClick
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ) {
+                val isLoading by remember(freeContent.loadState.source) {
+                    derivedStateOf { freeContent.loadState.source.refresh is LoadState.Loading }
+                }
+                if (isLoading) {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                } else {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = horizontalPadding),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        state = lazyRowState,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(
+                            count = freeContent.itemCount
+                        ) { index ->
+                            freeContent[index]?.let { streamingItem ->
+                                StreamingItemCard(
+                                    posterPath = streamingItem.imagePath,
+                                    modifier = Modifier.fillMaxHeight()
+                                )
+                            }
+                        }
+                        item {
+                            if (freeContent.loadState.mediator?.append is LoadState.Loading) {
+                                Box(Modifier.fillMaxHeight()) {
+                                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ContentSection(
+    @StringRes sectionName: Int,
+    options: List<Int>,
+    selectedOptionIndex: Int,
+    onOptionClick: (Int) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = horizontalPadding),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(id = sectionName),
+            style = MaterialTheme.typography.headlineMedium
+        )
+        OptionsDropdownMenu(
+            options = options,
+            selectedOptionIndex = selectedOptionIndex,
+            onOptionClick = onOptionClick
+        )
     }
 }
 

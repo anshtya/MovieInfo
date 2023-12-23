@@ -1,7 +1,7 @@
 package com.anshtya.data.di
 
-import com.anshtya.data.repository.HomeRepository
-import com.anshtya.data.repository.HomeRepositoryImpl
+import com.anshtya.data.repository.ContentRepository
+import com.anshtya.data.repository.ContentRepositoryImpl
 import com.anshtya.data.repository.SearchRepository
 import com.anshtya.data.repository.SearchRepositoryImpl
 import dagger.Binds
@@ -13,9 +13,9 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
     @Binds
-    abstract fun bindHomeRepository(
-        homeRepositoryImpl: HomeRepositoryImpl
-    ): HomeRepository
+    abstract fun bindContentRepository(
+        contentRepositoryImpl: ContentRepositoryImpl
+    ): ContentRepository
 
     @Binds
     abstract fun bindSearchRepository(

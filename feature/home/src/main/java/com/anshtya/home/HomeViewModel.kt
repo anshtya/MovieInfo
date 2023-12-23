@@ -5,91 +5,91 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.anshtya.data.model.PopularContentType
 import com.anshtya.data.repository.ContentRepository
+import com.anshtya.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val contentRepository: ContentRepository
+    private val contentRepository: ContentRepository,
+    private val userDataRepository: UserDataRepository
 ) : ViewModel() {
-    private val _timeWindowOptions = TrendingTimeWindow.entries.toList()
-    val timeWindowOptions = _timeWindowOptions.map { it.uiLabel }
+    private val _trendingContentFilters = TrendingTimeWindow.entries.toList()
+    val trendingContentFilters = _trendingContentFilters.map { it.uiLabel }
 
     private val _popularContentFilters = PopularContentFilter.entries.toList()
     val popularContentFilters = _popularContentFilters.map { it.uiLabel }
 
-    private val _freeContentTypes = FreeContentType.entries.toList()
-    val freeContentTypes = _freeContentTypes.map { it.uiLabel }
+    private val _freeContentFilters = FreeContentType.entries.toList()
+    val freeContentFilters = _freeContentFilters.map { it.uiLabel }
 
-    private val _selectedTimeWindow = MutableStateFlow(TrendingTimeWindow.TODAY)
-    val selectedTimeWindowIndex = _selectedTimeWindow
-        .mapLatest { timeWindow ->
-            _timeWindowOptions.indexOf(timeWindow)
-        }
+    val selectedTrendingContentFilterIndex = userDataRepository.trendingContentFilterIndex
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = 0
         )
 
-    private val _selectedContentFilter = MutableStateFlow(PopularContentFilter.STREAMING)
-    val selectedContentFilterIndex = _selectedContentFilter
-        .mapLatest { contentFilter ->
-            _popularContentFilters.indexOf(contentFilter)
-        }
+    val selectedPopularContentFilterIndex = userDataRepository.popularContentFilterIndex
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = 0
         )
 
-    private val _selectedFreeContent = MutableStateFlow(FreeContentType.MOVIES)
-    val selectedFreeContentIndex = _selectedFreeContent
-        .mapLatest { contentType ->
-            _freeContentTypes.indexOf(contentType)
-        }
+    val selectedFreeContentFilterIndex = userDataRepository.freeContentFilterIndex
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = 0
         )
 
-    val trendingMovies = _selectedTimeWindow
-        .flatMapLatest { timeWindow ->
-            contentRepository.getTrendingMovies(timeWindow.toParameter())
+    val trendingMovies = selectedTrendingContentFilterIndex
+        .flatMapLatest { selectedIndex ->
+            contentRepository.getTrendingMovies(
+                _trendingContentFilters[selectedIndex].toParameter()
+            )
         }
         .cachedIn(viewModelScope)
 
-    val popularContent = _selectedContentFilter
-        .flatMapLatest { contentFilter ->
-            contentRepository.getPopularContent(contentFilter.toContentTypeParameter())
+    val popularContent = selectedPopularContentFilterIndex
+        .flatMapLatest { selectedIndex ->
+            contentRepository.getPopularContent(
+                _popularContentFilters[selectedIndex].toParameter()
+            )
         }
         .cachedIn(viewModelScope)
 
-    val freeContent = _selectedFreeContent
-        .flatMapLatest { contentType ->
-            contentRepository.getFreeContent(contentType.toParameter())
+    val freeContent = selectedFreeContentFilterIndex
+        .flatMapLatest { selectedIndex ->
+            contentRepository.getFreeContent(
+                _freeContentFilters[selectedIndex].toParameter()
+            )
         }
         .cachedIn(viewModelScope)
 
-    fun setTrendingTimeWindow(timeWindowIndex: Int) {
-        _selectedTimeWindow.update { _timeWindowOptions[timeWindowIndex] }
+    fun setTrendingContentFilterIndex(index: Int) {
+        viewModelScope.launch {
+            userDataRepository.setTrendingContentFilterIndex(index)
+        }
     }
 
-    fun setPopularContentFilter(contentFilterIndex: Int) {
-        _selectedContentFilter.update { _popularContentFilters[contentFilterIndex] }
+    fun setPopularContentFilterIndex(index: Int) {
+        viewModelScope.launch {
+            userDataRepository.setPopularContentFilterIndex(index)
+        }
     }
 
-    fun setFreeContentType(contentTypeIndex: Int) {
-        _selectedFreeContent.update { _freeContentTypes[contentTypeIndex] }
+    fun setFreeContentFilterIndex(index: Int) {
+        viewModelScope.launch {
+            userDataRepository.setFreeContentFilterIndex(index)
+        }
     }
 
     private fun TrendingTimeWindow.toParameter(): String {
@@ -106,7 +106,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun PopularContentFilter.toContentTypeParameter(): PopularContentType {
+    private fun PopularContentFilter.toParameter(): PopularContentType {
         return when (this) {
             PopularContentFilter.STREAMING -> PopularContentType.STREAMING
             PopularContentFilter.IN_THEATRES -> PopularContentType.IN_THEATRES

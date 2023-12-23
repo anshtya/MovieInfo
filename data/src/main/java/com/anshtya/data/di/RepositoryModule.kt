@@ -4,6 +4,8 @@ import com.anshtya.data.repository.ContentRepository
 import com.anshtya.data.repository.ContentRepositoryImpl
 import com.anshtya.data.repository.SearchRepository
 import com.anshtya.data.repository.SearchRepositoryImpl
+import com.anshtya.data.repository.UserDataRepository
+import com.anshtya.data.repository.UserDataRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,4 +23,9 @@ abstract class RepositoryModule {
     abstract fun bindSearchRepository(
         searchRepositoryImpl: SearchRepositoryImpl
     ): SearchRepository
+
+    @Binds
+    abstract fun bindUserDataRepository(
+        userDataRepository: UserDataRepositoryImpl
+    ): UserDataRepository
 }

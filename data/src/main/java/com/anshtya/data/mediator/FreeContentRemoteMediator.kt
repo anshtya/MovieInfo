@@ -9,17 +9,35 @@ import com.anshtya.data.model.asFreeContentEntity
 import com.anshtya.local.database.MovieInfoDatabase
 import com.anshtya.local.database.entity.FreeContentEntity
 import com.anshtya.local.database.entity.FreeContentRemoteKey
+import com.anshtya.local.datastore.UserPreferencesDataStore
 import com.anshtya.network.retrofit.TmdbApi
+import kotlinx.coroutines.flow.first
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
 class FreeContentRemoteMediator @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
+    private val dataStore: UserPreferencesDataStore,
     private val contentType: String
 ) : RemoteMediator<Int, FreeContentEntity>() {
     private val freeContentDao = db.freeContentDao()
     private val remoteKeyDao = db.freeContentRemoteKeyDao()
+
+    override suspend fun initialize(): InitializeAction {
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
+        return if (
+            dataStore.freeContentFilterString.first() == contentType
+            && System.currentTimeMillis() - dataStore.dbLastUpdateTime.first() <= cacheTimeout
+        ) {
+            // Cached data is up-to-date, so there is no need to re-fetch from the network.
+            InitializeAction.SKIP_INITIAL_REFRESH
+        } else {
+            // Need to refresh cached data from network
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        }
+    }
 
     override suspend fun load(
         loadType: LoadType,
@@ -57,6 +75,9 @@ class FreeContentRemoteMediator @Inject constructor(
                 }
                 freeContentDao.insertAll(entities)
                 remoteKeyDao.insert(keys)
+
+                dataStore.setFreeContentFilterString(contentType)
+                dataStore.setDbLastUpdateTime(System.currentTimeMillis())
             }
             MediatorResult.Success(endOfPaginationReached)
         } catch (e: Exception) {

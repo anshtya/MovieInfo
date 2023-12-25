@@ -1,5 +1,6 @@
 package com.anshtya.search
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,8 +34,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.anshtya.data.model.SearchItem
 import com.anshtya.data.model.SearchSuggestion
+import com.anshtya.ui.ErrorView
 import com.anshtya.ui.MovieInfoTopAppBar
 import com.anshtya.ui.SearchResultCard
 
@@ -47,6 +51,7 @@ fun SearchRoute(
     val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
     val isSearching by viewModel.isSearching.collectAsStateWithLifecycle()
     val selectedResultTab by viewModel.selectedResultTab.collectAsStateWithLifecycle()
+    val showError by viewModel.showError.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
 
     SearchScreen(
@@ -55,12 +60,14 @@ fun SearchRoute(
         searchInput = searchInput,
         searchQuery = searchQuery,
         isSearching = isSearching,
+        showError = showError,
         searchSuggestions = searchSuggestions,
         onSearchQueryChange = viewModel::changeSearchQuery,
         onSearch = viewModel::onSearch,
         onBack = viewModel::onBack,
         onChangeSearchResultTab = viewModel::changeSearchResultTab,
-        onSearchResultClick = onSearchResultClick
+        onSearchResultClick = onSearchResultClick,
+        onErrorShown = viewModel::onErrorShown
     )
 }
 
@@ -71,18 +78,38 @@ fun SearchScreen(
     searchQuery: String,
     searchInput: String,
     isSearching: Boolean,
+    showError: Boolean?,
     searchSuggestions: List<SearchSuggestion>,
     onSearchQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
     onBack: () -> Unit,
     onChangeSearchResultTab: (SearchResultTab) -> Unit,
-    onSearchResultClick: (Int) -> Unit
+    onSearchResultClick: (Int) -> Unit,
+    onErrorShown: () -> Unit
 ) {
     var active by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    showError?.let {
+        Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_SHORT).show()
+        onErrorShown()
+    }
+
+    val pagingError by remember(searchResults.loadState.source.append) {
+        derivedStateOf { searchResults.loadState.source.append is LoadState.Error }
+    }
+    if (pagingError) {
+        Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_SHORT).show()
+    }
+
     Column(Modifier.fillMaxSize()) {
         MovieInfoTopAppBar(
             query = if (active) searchQuery else searchInput,
-            onQueryChange = onSearchQueryChange,
+            onQueryChange = {
+                if (active) {
+                    onSearchQueryChange(it)
+                }
+            },
             onSearch = onSearch,
             onBackClick = {
                 if (active) {
@@ -92,9 +119,7 @@ fun SearchScreen(
                 }
             },
             active = active,
-            onActiveChange = {
-                active = it
-            }
+            onActiveChange = { active = it }
         )
         if (active) {
             LazyColumn(
@@ -167,9 +192,8 @@ fun SearchResultContent(
 ) {
     BackHandler(isSearching && !active) { onBack() }
 
-    val isLoading by remember(searchResults.loadState.source) {
-        derivedStateOf { searchResults.loadState.source.refresh is LoadState.Loading }
-    }
+    val isLoading = searchResults.loadState.source.refresh is LoadState.Loading
+    val isError = searchResults.loadState.source.refresh is LoadState.Error
     val tabs = SearchResultTab.entries
     val selectedIndex by remember(selectedResultTab) {
         mutableIntStateOf(tabs.indexOf(selectedResultTab))
@@ -190,6 +214,11 @@ fun SearchResultContent(
         Box(Modifier.fillMaxSize()) {
             if (isLoading) {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
+            } else if (isError) {
+                ErrorView(
+                    onRetryButtonClick = { searchResults.retry() },
+                    modifier = Modifier.align(Alignment.Center)
+                )
             } else {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -197,7 +226,8 @@ fun SearchResultContent(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(
-                        count = searchResults.itemCount
+                        count = searchResults.itemCount,
+                        key = searchResults.itemKey { it.id }
                     ) { index ->
                         searchResults[index]?.let { searchItem ->
                             SearchResultCard(

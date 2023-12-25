@@ -3,4 +3,6 @@
     <string name="back">Go Back</string>
     <string name="search">Search</string>
     <string name="clear">Clear</string>
+    <string name="error">An error occurred</string>
+    <string name="retry">Retry</string>
 </resources>

@@ -5,6 +5,8 @@ import androidx.paging.PagingState
 import com.anshtya.data.model.SearchItem
 import com.anshtya.data.model.asModel
 import com.anshtya.network.retrofit.TmdbApi
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
 class SearchMoviePagingSource @Inject constructor(
@@ -27,7 +29,9 @@ class SearchMoviePagingSource @Inject constructor(
                 prevKey = if (pageNumber == 1) null else pageNumber - 1,
                 nextKey = if (response.totalPages == pageNumber) null else pageNumber + 1
             )
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            LoadResult.Error(e)
+        } catch (e: HttpException) {
             LoadResult.Error(e)
         }
     }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.anshtya.data.model.Response
 import com.anshtya.data.model.SearchItem
 import com.anshtya.data.model.SearchSuggestion
 import com.anshtya.data.repository.SearchRepository
@@ -39,6 +40,9 @@ class SearchViewModel @Inject constructor(
     private val _selectedResultTab = MutableStateFlow(SearchResultTab.MOVIES)
     val selectedResultTab = _selectedResultTab.asStateFlow()
 
+    private val _showError = MutableStateFlow<Boolean?>(null)
+    val showError = _showError.asStateFlow()
+
     val searchResults: Flow<PagingData<SearchItem>> =
         combine(_selectedResultTab, _searchInput, ::Pair)
             .flatMapLatest { (tab, inputQuery) ->
@@ -56,7 +60,13 @@ class SearchViewModel @Inject constructor(
     val searchSuggestions: StateFlow<List<SearchSuggestion>> = _searchQuery
         .mapLatest { query ->
             if (query.isNotEmpty()) {
-                searchRepository.multiSearch(query).take(6)
+                when(val response = searchRepository.multiSearch(query)) {
+                    is Response.Success -> response.data
+                    is Response.Error -> {
+                        _showError.update { true }
+                        emptyList()
+                    }
+                }
             } else {
                 emptyList()
             }
@@ -76,7 +86,6 @@ class SearchViewModel @Inject constructor(
         _isSearching.update { true }
         _searchInput.update { _searchQuery.value }
         _selectedResultTab.update { SearchResultTab.MOVIES }
-        _searchQuery.update { "" }
     }
 
     fun changeSearchResultTab(resultTab: SearchResultTab) {
@@ -87,5 +96,9 @@ class SearchViewModel @Inject constructor(
         _isSearching.update { false }
         _searchInput.update { "" }
         _searchQuery.update { "" }
+    }
+
+    fun onErrorShown() {
+        _showError.update { null }
     }
 }

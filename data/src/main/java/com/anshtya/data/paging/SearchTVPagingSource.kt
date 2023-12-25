@@ -5,12 +5,14 @@ import androidx.paging.PagingState
 import com.anshtya.data.model.SearchItem
 import com.anshtya.data.model.asModel
 import com.anshtya.network.retrofit.TmdbApi
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
 class SearchTVPagingSource @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val query: String
-): PagingSource<Int, SearchItem>() {
+) : PagingSource<Int, SearchItem>() {
     override fun getRefreshKey(state: PagingState<Int, SearchItem>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)
@@ -27,7 +29,9 @@ class SearchTVPagingSource @Inject constructor(
                 prevKey = if (pageNumber == 1) null else pageNumber - 1,
                 nextKey = if (response.totalPages == pageNumber) null else pageNumber + 1
             )
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            LoadResult.Error(e)
+        } catch (e: HttpException) {
             LoadResult.Error(e)
         }
     }

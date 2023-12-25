@@ -68,8 +68,10 @@ fun MovieInfoSearchBar(
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = {
-            onSearch()
-            onActiveChange(false)
+            if (value.isNotEmpty()) {
+                onSearch()
+                onActiveChange(false)
+            }
         }),
         maxLines = 1,
         modifier = modifier
@@ -87,7 +89,7 @@ fun MovieInfoSearchBar(
             shape = RoundedCornerShape(12.dp),
             visualTransformation = VisualTransformation.None,
             interactionSource = interactionSource,
-            placeholder = { if (textFieldValue.text.isEmpty()) Text(stringResource(id=R.string.search)) },
+            placeholder = { if (textFieldValue.text.isEmpty()) Text(stringResource(id = R.string.search)) },
             trailingIcon = {
                 if (textFieldValue.text.isNotEmpty() && active) {
                     IconButton(onClick = { onQueryChange("") }) {

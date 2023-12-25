@@ -26,7 +26,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    implementation(libs.retrofit)
+    api(libs.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.okhttp.mockwebserver)

@@ -16,5 +16,4 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation(libs.androidx.paging.runtime)
-    implementation(libs.androidx.room.ktx)
 }

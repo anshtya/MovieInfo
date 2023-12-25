@@ -20,7 +20,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.room.ktx)
+    api(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
     implementation(libs.androidx.room.runtime)
 

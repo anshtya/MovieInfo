@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.anshtya.data.model.PopularContentType
 import com.anshtya.data.repository.ContentRepository
-import com.anshtya.data.repository.UserDataRepository
+import com.anshtya.data.repository.ContentPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val contentRepository: ContentRepository,
-    private val userDataRepository: UserDataRepository
+    private val contentPreferencesRepository: ContentPreferencesRepository
 ) : ViewModel() {
     private val _trendingContentFilters = TrendingTimeWindow.entries.toList()
     val trendingContentFilters = _trendingContentFilters.map { it.uiLabel }
@@ -29,21 +29,21 @@ class HomeViewModel @Inject constructor(
     private val _freeContentFilters = FreeContentType.entries.toList()
     val freeContentFilters = _freeContentFilters.map { it.uiLabel }
 
-    val selectedTrendingContentFilterIndex = userDataRepository.trendingContentFilterIndex
+    val selectedTrendingContentFilterIndex = contentPreferencesRepository.trendingContentFilterIndex
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = 0
         )
 
-    val selectedPopularContentFilterIndex = userDataRepository.popularContentFilterIndex
+    val selectedPopularContentFilterIndex = contentPreferencesRepository.popularContentFilterIndex
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = 0
         )
 
-    val selectedFreeContentFilterIndex = userDataRepository.freeContentFilterIndex
+    val selectedFreeContentFilterIndex = contentPreferencesRepository.freeContentFilterIndex
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
@@ -76,24 +76,24 @@ class HomeViewModel @Inject constructor(
 
     fun setTrendingContentFilterIndex(index: Int) {
         viewModelScope.launch {
-            userDataRepository.setTrendingContentFilterIndex(index)
+            contentPreferencesRepository.setTrendingContentFilterIndex(index)
         }
     }
 
     fun setPopularContentFilterIndex(index: Int) {
         viewModelScope.launch {
-            userDataRepository.setPopularContentFilterIndex(index)
+            contentPreferencesRepository.setPopularContentFilterIndex(index)
         }
     }
 
     fun setFreeContentFilterIndex(index: Int) {
         viewModelScope.launch {
-            userDataRepository.setFreeContentFilterIndex(index)
+            contentPreferencesRepository.setFreeContentFilterIndex(index)
         }
     }
 
     private fun TrendingTimeWindow.toParameter(): String {
-        return when(this) {
+        return when (this) {
             TrendingTimeWindow.TODAY -> "day"
             TrendingTimeWindow.THIS_WEEK -> "week"
         }

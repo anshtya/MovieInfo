@@ -10,7 +10,7 @@ import com.anshtya.data.model.asPopularContentEntity
 import com.anshtya.local.database.MovieInfoDatabase
 import com.anshtya.local.database.entity.PopularContentEntity
 import com.anshtya.local.database.entity.PopularContentRemoteKey
-import com.anshtya.local.datastore.UserPreferencesDataStore
+import com.anshtya.local.datastore.ContentPreferencesDataStore
 import com.anshtya.network.retrofit.TmdbApi
 import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 internal class PopularContentRemoteMediator(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
-    private val dataStore: UserPreferencesDataStore,
+    private val dataStore: ContentPreferencesDataStore,
     private val contentType: PopularContentType
 ) : RemoteMediator<Int, PopularContentEntity>() {
     private val popularContentDao = db.popularContentDao()

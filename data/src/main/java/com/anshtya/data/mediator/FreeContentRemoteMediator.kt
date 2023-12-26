@@ -9,7 +9,7 @@ import com.anshtya.data.model.asFreeContentEntity
 import com.anshtya.local.database.MovieInfoDatabase
 import com.anshtya.local.database.entity.FreeContentEntity
 import com.anshtya.local.database.entity.FreeContentRemoteKey
-import com.anshtya.local.datastore.UserPreferencesDataStore
+import com.anshtya.local.datastore.ContentPreferencesDataStore
 import com.anshtya.network.retrofit.TmdbApi
 import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
@@ -19,7 +19,7 @@ import javax.inject.Inject
 internal class FreeContentRemoteMediator @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
-    private val dataStore: UserPreferencesDataStore,
+    private val dataStore: ContentPreferencesDataStore,
     private val contentType: String
 ) : RemoteMediator<Int, FreeContentEntity>() {
     private val freeContentDao = db.freeContentDao()

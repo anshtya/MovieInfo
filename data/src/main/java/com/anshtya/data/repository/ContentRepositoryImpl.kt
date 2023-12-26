@@ -14,7 +14,7 @@ import com.anshtya.data.model.PopularItem
 import com.anshtya.data.model.TrendingItem
 import com.anshtya.data.model.asModel
 import com.anshtya.local.database.MovieInfoDatabase
-import com.anshtya.local.datastore.UserPreferencesDataStore
+import com.anshtya.local.datastore.ContentPreferencesDataStore
 import com.anshtya.network.retrofit.TmdbApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -26,7 +26,7 @@ private const val PAGE_SIZE = 20
 internal class ContentRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
-    private val dataStore: UserPreferencesDataStore
+    private val dataStore: ContentPreferencesDataStore
 ) : ContentRepository {
 
     private val pagingConfig = PagingConfig(

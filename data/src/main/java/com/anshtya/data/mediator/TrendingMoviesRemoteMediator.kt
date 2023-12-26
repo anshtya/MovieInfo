@@ -9,7 +9,7 @@ import com.anshtya.data.model.asTrendingContentEntity
 import com.anshtya.local.database.MovieInfoDatabase
 import com.anshtya.local.database.entity.TrendingContentEntity
 import com.anshtya.local.database.entity.TrendingContentRemoteKey
-import com.anshtya.local.datastore.UserPreferencesDataStore
+import com.anshtya.local.datastore.ContentPreferencesDataStore
 import com.anshtya.network.retrofit.TmdbApi
 import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 internal class TrendingMoviesRemoteMediator(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
-    private val dataStore: UserPreferencesDataStore,
+    private val dataStore: ContentPreferencesDataStore,
     private val timeWindow: String
 ) : RemoteMediator<Int, TrendingContentEntity>() {
     private val trendingContentDao = db.trendingContentDao()

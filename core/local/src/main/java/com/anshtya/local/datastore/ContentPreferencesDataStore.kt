@@ -9,7 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class UserPreferencesDataStore @Inject constructor(
+class ContentPreferencesDataStore @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
     companion object {

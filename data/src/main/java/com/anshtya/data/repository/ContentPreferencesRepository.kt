@@ -2,7 +2,7 @@ package com.anshtya.data.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface UserDataRepository {
+interface ContentPreferencesRepository {
     val trendingContentFilterIndex: Flow<Int>
     val freeContentFilterIndex: Flow<Int>
     val popularContentFilterIndex: Flow<Int>

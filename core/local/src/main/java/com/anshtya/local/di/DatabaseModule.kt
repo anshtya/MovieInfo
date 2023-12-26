@@ -21,10 +21,12 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DatabaseModule {
+internal object DatabaseModule {
     @Singleton
     @Provides
-    fun provideMovieInfoDatabase(@ApplicationContext context: Context): MovieInfoDatabase {
+    fun provideMovieInfoDatabase(
+        @ApplicationContext context: Context
+    ): MovieInfoDatabase {
         return Room
             .databaseBuilder(context, MovieInfoDatabase::class.java, "movie_info.db")
             .addMigrations(
@@ -37,37 +39,49 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideTrendingContentDao(db: MovieInfoDatabase): TrendingContentDao {
+    internal fun provideTrendingContentDao(
+        db: MovieInfoDatabase
+    ): TrendingContentDao {
         return db.trendingContentDao()
     }
 
     @Singleton
     @Provides
-    fun providePopularContentDao(db: MovieInfoDatabase): PopularContentDao {
+    internal fun providePopularContentDao(
+        db: MovieInfoDatabase
+    ): PopularContentDao {
         return db.popularContentDao()
     }
 
     @Singleton
     @Provides
-    fun provideFreeContentDao(db: MovieInfoDatabase): FreeContentDao {
+    internal fun provideFreeContentDao(
+        db: MovieInfoDatabase
+    ): FreeContentDao {
         return db.freeContentDao()
     }
 
     @Singleton
     @Provides
-    fun provideTrendingContentRemoteKeyDao(db: MovieInfoDatabase): TrendingContentRemoteKeyDao {
+    internal fun provideTrendingContentRemoteKeyDao(
+        db: MovieInfoDatabase
+    ): TrendingContentRemoteKeyDao {
         return db.trendingContentRemoteKeyDao()
     }
 
     @Singleton
     @Provides
-    fun provideFreeContentRemoteKeyDao(db: MovieInfoDatabase): FreeContentRemoteKeyDao {
+    internal fun provideFreeContentRemoteKeyDao(
+        db: MovieInfoDatabase
+    ): FreeContentRemoteKeyDao {
         return db.freeContentRemoteKeyDao()
     }
 
     @Singleton
     @Provides
-    fun providePopularContentRemoteKeyDao(db: MovieInfoDatabase): PopularContentRemoteKeyDao {
+    internal fun providePopularContentRemoteKeyDao(
+        db: MovieInfoDatabase
+    ): PopularContentRemoteKeyDao {
         return db.popularContentRemoteKeyDao()
     }
 }

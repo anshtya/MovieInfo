@@ -3,7 +3,7 @@ package com.anshtya.data.repository
 import com.anshtya.local.datastore.UserPreferencesDataStore
 import javax.inject.Inject
 
-class UserDataRepositoryImpl @Inject constructor(
+internal class UserDataRepositoryImpl @Inject constructor(
     private val userPreferencesDataStore: UserPreferencesDataStore
 ) : UserDataRepository {
     override val trendingContentFilterIndex = userPreferencesDataStore.trendingContentFilterIndex

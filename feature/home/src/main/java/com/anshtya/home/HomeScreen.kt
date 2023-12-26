@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.anshtya.data.model.FreeItem
 import com.anshtya.data.model.PopularItem
 import com.anshtya.data.model.TrendingItem
@@ -40,7 +41,7 @@ import com.anshtya.ui.StreamingItemCard
 private val horizontalPadding = 10.dp
 
 @Composable
-fun HomeRoute(
+internal fun HomeRoute(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val trendingContentFilters = homeViewModel.trendingContentFilters
@@ -70,7 +71,7 @@ fun HomeRoute(
 }
 
 @Composable
-fun HomeScreen(
+internal fun HomeScreen(
     trendingMovies: LazyPagingItems<TrendingItem>,
     popularContent: LazyPagingItems<PopularItem>,
     freeContent: LazyPagingItems<FreeItem>,
@@ -144,7 +145,8 @@ private fun LazyListScope.trendingSection(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(
-                        count = trendingMovies.itemCount
+                        count = trendingMovies.itemCount,
+                        key = trendingMovies.itemKey { it.id }
                     ) { index ->
                         trendingMovies[index]?.let { streamingItem ->
                             StreamingItemCard(
@@ -198,7 +200,8 @@ private fun LazyListScope.popularContentSection(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(
-                        count = popularContent.itemCount
+                        count = popularContent.itemCount,
+                        key = popularContent.itemKey { it.id }
                     ) { index ->
                         popularContent[index]?.let { streamingItem ->
                             StreamingItemCard(
@@ -252,7 +255,8 @@ private fun LazyListScope.freeToWatchSection(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(
-                        count = freeContent.itemCount
+                        count = freeContent.itemCount,
+                        key = freeContent.itemKey { it.id }
                     ) { index ->
                         freeContent[index]?.let { streamingItem ->
                             StreamingItemCard(
@@ -275,7 +279,7 @@ private fun LazyListScope.freeToWatchSection(
 }
 
 @Composable
-fun ContentSection(
+private fun ContentSection(
     @StringRes sectionName: Int,
     filters: List<Int>,
     selectedFilterIndex: Int,

@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
-class FreeContentRemoteMediator @Inject constructor(
+internal class FreeContentRemoteMediator @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
     private val dataStore: UserPreferencesDataStore,

@@ -23,7 +23,7 @@ import javax.inject.Inject
 private const val PAGE_SIZE = 20
 
 @OptIn(ExperimentalPagingApi::class)
-class ContentRepositoryImpl @Inject constructor(
+internal class ContentRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
     private val dataStore: UserPreferencesDataStore

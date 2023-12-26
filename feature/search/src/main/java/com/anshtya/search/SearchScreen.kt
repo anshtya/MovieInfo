@@ -2,7 +2,6 @@ package com.anshtya.search
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,7 +40,7 @@ import com.anshtya.ui.MovieInfoTopAppBar
 import com.anshtya.ui.SearchResultCard
 
 @Composable
-fun SearchRoute(
+internal fun SearchRoute(
     onSearchResultClick: (Int) -> Unit = {},
     viewModel: SearchViewModel = hiltViewModel()
 ) {
@@ -50,12 +48,14 @@ fun SearchRoute(
     val searchInput by viewModel.searchInput.collectAsStateWithLifecycle()
     val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
     val isSearching by viewModel.isSearching.collectAsStateWithLifecycle()
-    val selectedResultTab by viewModel.selectedResultTab.collectAsStateWithLifecycle()
+    val searchResultTabs = viewModel.searchResultTabs
+    val selectedResultTab by viewModel.selectedResultTabIndex.collectAsStateWithLifecycle()
     val showError by viewModel.showError.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
 
     SearchScreen(
         searchResults = searchResults,
+        searchResultTabs = searchResultTabs,
         selectedResultTab = selectedResultTab,
         searchInput = searchInput,
         searchQuery = searchQuery,
@@ -72,9 +72,10 @@ fun SearchRoute(
 }
 
 @Composable
-fun SearchScreen(
+internal fun SearchScreen(
     searchResults: LazyPagingItems<SearchItem>,
-    selectedResultTab: SearchResultTab,
+    searchResultTabs: List<Int>,
+    selectedResultTab: Int,
     searchQuery: String,
     searchInput: String,
     isSearching: Boolean,
@@ -83,7 +84,7 @@ fun SearchScreen(
     onSearchQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    onChangeSearchResultTab: (SearchResultTab) -> Unit,
+    onChangeSearchResultTab: (Int) -> Unit,
     onSearchResultClick: (Int) -> Unit,
     onErrorShown: () -> Unit
 ) {
@@ -141,7 +142,8 @@ fun SearchScreen(
             ScreenType.SearchResult -> {
                 SearchResultContent(
                     searchResults = searchResults,
-                    selectedResultTab = selectedResultTab,
+                    searchResultTabs = searchResultTabs,
+                    selectedResultTabIndex = selectedResultTab,
                     isSearching = isSearching,
                     active = active,
                     onBack = onBack,
@@ -154,7 +156,7 @@ fun SearchScreen(
 }
 
 @Composable
-fun SearchHistoryContent(
+private fun SearchHistoryContent(
     history: List<String>
 ) {
     Box(Modifier.fillMaxSize()) {
@@ -181,33 +183,30 @@ fun SearchHistoryContent(
 }
 
 @Composable
-fun SearchResultContent(
+private fun SearchResultContent(
     searchResults: LazyPagingItems<SearchItem>,
-    selectedResultTab: SearchResultTab,
+    searchResultTabs: List<Int>,
+    selectedResultTabIndex: Int,
     isSearching: Boolean,
     active: Boolean,
     onBack: () -> Unit,
-    onChangeSearchResultTab: (SearchResultTab) -> Unit,
+    onChangeSearchResultTab: (Int) -> Unit,
     onSearchResultClick: (Int) -> Unit
 ) {
     BackHandler(isSearching && !active) { onBack() }
 
     val isLoading = searchResults.loadState.source.refresh is LoadState.Loading
     val isError = searchResults.loadState.source.refresh is LoadState.Error
-    val tabs = SearchResultTab.entries
-    val selectedIndex by remember(selectedResultTab) {
-        mutableIntStateOf(tabs.indexOf(selectedResultTab))
-    }
     Column {
         TabRow(
-            selectedTabIndex = selectedIndex,
+            selectedTabIndex = selectedResultTabIndex,
             modifier = Modifier.fillMaxWidth()
         ) {
-            tabs.forEachIndexed { index, tab ->
+            searchResultTabs.forEachIndexed { index, tab ->
                 Tab(
-                    selected = selectedIndex == index,
-                    onClick = { onChangeSearchResultTab(tab) },
-                    text = { Text(stringResource(id = tab.displayName)) }
+                    selected = selectedResultTabIndex == index,
+                    onClick = { onChangeSearchResultTab(index) },
+                    text = { Text(stringResource(id = tab)) }
                 )
             }
         }
@@ -257,8 +256,4 @@ private fun getScreenType(
 
 private enum class ScreenType {
     SearchHistory, SearchResult
-}
-
-enum class SearchResultTab(@StringRes val displayName: Int) {
-    MOVIES(R.string.movies), TV(R.string.tv)
 }

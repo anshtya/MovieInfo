@@ -2,14 +2,14 @@ package com.anshtya.home
 
 import androidx.annotation.StringRes
 
-enum class TrendingTimeWindow(
+internal enum class TrendingTimeWindow(
     @StringRes val uiLabel: Int
 ) {
     TODAY(R.string.today),
     THIS_WEEK(R.string.this_week)
 }
 
-enum class PopularContentFilter(
+internal enum class PopularContentFilter(
     @StringRes val uiLabel: Int
 ) {
     STREAMING(R.string.streaming),
@@ -17,7 +17,7 @@ enum class PopularContentFilter(
     FOR_RENT(R.string.for_rent),
 }
 
-enum class FreeContentType(
+internal enum class FreeContentType(
     @StringRes val uiLabel: Int
 ) {
     MOVIES(R.string.movies),

@@ -37,8 +37,19 @@ class SearchViewModel @Inject constructor(
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
-    private val _selectedResultTab = MutableStateFlow(SearchResultTab.MOVIES)
-    val selectedResultTab = _selectedResultTab.asStateFlow()
+    private val _searchResultTabs = SearchResultTab.entries.toList()
+    val searchResultTabs = _searchResultTabs.map { it.displayName }
+
+    private val _selectedResultTabIndex = MutableStateFlow(0)
+    val selectedResultTabIndex = _selectedResultTabIndex.asStateFlow()
+
+    private val _selectedResultTab = _selectedResultTabIndex
+        .mapLatest { index -> _searchResultTabs[index] }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = SearchResultTab.MOVIES
+        )
 
     private val _showError = MutableStateFlow<Boolean?>(null)
     val showError = _showError.asStateFlow()
@@ -60,7 +71,7 @@ class SearchViewModel @Inject constructor(
     val searchSuggestions: StateFlow<List<SearchSuggestion>> = _searchQuery
         .mapLatest { query ->
             if (query.isNotEmpty()) {
-                when(val response = searchRepository.multiSearch(query)) {
+                when (val response = searchRepository.multiSearch(query)) {
                     is Response.Success -> response.data
                     is Response.Error -> {
                         _showError.update { true }
@@ -85,11 +96,11 @@ class SearchViewModel @Inject constructor(
     fun onSearch() {
         _isSearching.update { true }
         _searchInput.update { _searchQuery.value }
-        _selectedResultTab.update { SearchResultTab.MOVIES }
+        _selectedResultTabIndex.update { 0 }
     }
 
-    fun changeSearchResultTab(resultTab: SearchResultTab) {
-        _selectedResultTab.update { resultTab }
+    fun changeSearchResultTab(index: Int) {
+        _selectedResultTabIndex.update { index }
     }
 
     fun onBack() {

@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.anshtya.ui.StreamingItemImage
 
 @Composable
-fun SearchSuggestionItem(
+internal fun SearchSuggestionItem(
     name: String,
     imagePath: String
 ) {

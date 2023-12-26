@@ -9,7 +9,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class SearchTVPagingSource @Inject constructor(
+internal class SearchTVPagingSource @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val query: String
 ) : PagingSource<Int, SearchItem>() {

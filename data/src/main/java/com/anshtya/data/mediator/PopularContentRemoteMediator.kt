@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
-class PopularContentRemoteMediator(
+internal class PopularContentRemoteMediator(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
     private val dataStore: UserPreferencesDataStore,

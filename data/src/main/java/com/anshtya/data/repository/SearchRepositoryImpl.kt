@@ -15,7 +15,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class SearchRepositoryImpl @Inject constructor(
+internal class SearchRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi
 ) : SearchRepository {
     private val pagingConfig = PagingConfig(

@@ -24,6 +24,7 @@ import com.anshtya.home.navigateToHome
 import com.anshtya.movieinfo.navigation.MovieInfoDestination
 import com.anshtya.movieinfo.navigation.MovieInfoNavigation
 import com.anshtya.search.navigateToSearch
+import com.anshtya.you.navigateToYou
 
 @Composable
 fun MovieInfoApp(
@@ -96,6 +97,6 @@ private fun NavController.navigateToDestination(destination: MovieInfoDestinatio
         MovieInfoDestination.HOME -> navigateToHome(navOptions)
         MovieInfoDestination.SEARCH -> navigateToSearch(navOptions)
         MovieInfoDestination.MY_LIBRARY -> {}
-        MovieInfoDestination.YOU -> {}
+        MovieInfoDestination.YOU -> navigateToYou(navOptions)
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_dialog_title">Settings</string>
+    <string name="settings_dialog_dismiss_text">OK</string>
+    <string name="settings_dialog_theme">Theme</string>
+    <string name="settings_dialog_dark_mode">Dark mode</string>
+    <string name="settings_dialog_adult">Include adult results</string>
+    <string name="settings_dialog_theme_default">Default</string>
+    <string name="settings_dialog_theme_dynamic">Dynamic Color</string>
+    <string name="settings_dialog_dark_default">System default</string>
+    <string name="settings_dialog_dark_yes">Dark</string>
+    <string name="settings_dialog_dark_no">Light</string>
+</resources>

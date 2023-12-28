@@ -5,12 +5,12 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
+import com.anshtya.core.local.database.MovieInfoDatabase
+import com.anshtya.core.local.database.entity.TrendingContentEntity
+import com.anshtya.core.local.database.entity.TrendingContentRemoteKey
+import com.anshtya.core.local.datastore.ContentPreferencesDataStore
+import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.model.asTrendingContentEntity
-import com.anshtya.local.database.MovieInfoDatabase
-import com.anshtya.local.database.entity.TrendingContentEntity
-import com.anshtya.local.database.entity.TrendingContentRemoteKey
-import com.anshtya.local.datastore.ContentPreferencesDataStore
-import com.anshtya.network.retrofit.TmdbApi
 import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
 

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.search"
+    namespace = "com.anshtya.feature.search"
 }
 
 dependencies {

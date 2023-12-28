@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.local"
+    namespace = "com.example.core.local"
 
     defaultConfig {
         ksp {

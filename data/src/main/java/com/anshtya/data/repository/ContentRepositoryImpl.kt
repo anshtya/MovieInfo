@@ -5,6 +5,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import com.anshtya.core.local.database.MovieInfoDatabase
+import com.anshtya.core.local.datastore.ContentPreferencesDataStore
+import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.mediator.FreeContentRemoteMediator
 import com.anshtya.data.mediator.PopularContentRemoteMediator
 import com.anshtya.data.mediator.TrendingMoviesRemoteMediator
@@ -13,9 +16,6 @@ import com.anshtya.data.model.PopularContentType
 import com.anshtya.data.model.PopularItem
 import com.anshtya.data.model.TrendingItem
 import com.anshtya.data.model.asModel
-import com.anshtya.local.database.MovieInfoDatabase
-import com.anshtya.local.datastore.ContentPreferencesDataStore
-import com.anshtya.network.retrofit.TmdbApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

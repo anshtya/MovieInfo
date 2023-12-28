@@ -1,7 +1,7 @@
 package com.anshtya.data.model
 
-import com.anshtya.local.database.entity.FreeContentEntity
-import com.anshtya.network.model.NetworkStreamingItem
+import com.anshtya.core.local.database.entity.FreeContentEntity
+import com.anshtya.core.network.model.NetworkStreamingItem
 
 data class FreeItem(
     val id: Long,

@@ -1,6 +1,6 @@
 package com.anshtya.data.model
 
-import com.anshtya.network.model.NetworkSearchSuggestion
+import com.anshtya.core.network.model.NetworkSearchSuggestion
 
 data class SearchSuggestion(
     val id: Int,

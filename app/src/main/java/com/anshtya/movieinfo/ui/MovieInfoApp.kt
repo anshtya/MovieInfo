@@ -20,11 +20,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.anshtya.home.navigateToHome
+import com.anshtya.feature.home.navigateToHome
 import com.anshtya.movieinfo.navigation.MovieInfoDestination
 import com.anshtya.movieinfo.navigation.MovieInfoNavigation
-import com.anshtya.search.navigateToSearch
-import com.anshtya.you.navigateToYou
+import com.anshtya.feature.search.navigateToSearch
+import com.anshtya.feature.you.navigateToYou
 
 @Composable
 fun MovieInfoApp(

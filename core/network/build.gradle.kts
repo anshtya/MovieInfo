@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.network"
+    namespace = "com.anshtya.core.network"
 
     buildFeatures {
         buildConfig = true

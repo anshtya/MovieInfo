@@ -1,6 +1,6 @@
 package com.anshtya.data.repository
 
-import com.anshtya.local.datastore.ContentPreferencesDataStore
+import com.anshtya.core.local.datastore.ContentPreferencesDataStore
 import javax.inject.Inject
 
 internal class ContentPreferencesRepositoryImpl @Inject constructor(

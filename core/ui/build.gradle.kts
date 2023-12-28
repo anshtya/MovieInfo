@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.ui"
+    namespace = "com.anshtya.core.ui"
 }
 
 dependencies {

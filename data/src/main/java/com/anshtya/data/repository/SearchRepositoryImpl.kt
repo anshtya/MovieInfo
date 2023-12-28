@@ -3,13 +3,13 @@ package com.anshtya.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.model.Response
 import com.anshtya.data.model.SearchItem
 import com.anshtya.data.model.SearchSuggestion
 import com.anshtya.data.model.asModel
 import com.anshtya.data.paging.SearchMoviePagingSource
 import com.anshtya.data.paging.SearchTVPagingSource
-import com.anshtya.network.retrofit.TmdbApi
 import kotlinx.coroutines.flow.Flow
 import retrofit2.HttpException
 import java.io.IOException

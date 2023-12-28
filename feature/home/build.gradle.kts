@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.home"
+    namespace = "com.anshtya.feature.home"
 }
 
 dependencies {

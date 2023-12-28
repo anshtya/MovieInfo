@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.you"
+    namespace = "com.anshtya.feature.you"
 }
 
 dependencies {

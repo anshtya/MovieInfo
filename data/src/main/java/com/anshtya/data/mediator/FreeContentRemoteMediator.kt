@@ -20,7 +20,8 @@ internal class FreeContentRemoteMediator @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
     private val dataStore: ContentPreferencesDataStore,
-    private val contentType: String
+    private val contentType: String,
+    private val includeAdult: Boolean
 ) : RemoteMediator<Int, FreeContentEntity>() {
     private val freeContentDao = db.freeContentDao()
     private val remoteKeyDao = db.freeContentRemoteKeyDao()
@@ -54,7 +55,11 @@ internal class FreeContentRemoteMediator @Inject constructor(
                     )
                 }
             }
-            val response = tmdbApi.getFreeContent(contentType, page)
+            val response = tmdbApi.getFreeContent(
+                contentType = contentType,
+                page = page,
+                includeAdult = includeAdult
+            )
             val currentPage = response.page
             val totalPages = response.totalPages
             val endOfPaginationReached = currentPage == totalPages

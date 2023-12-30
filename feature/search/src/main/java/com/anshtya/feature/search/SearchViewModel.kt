@@ -8,6 +8,7 @@ import com.anshtya.data.model.Response
 import com.anshtya.data.model.SearchItem
 import com.anshtya.data.model.SearchSuggestion
 import com.anshtya.data.repository.SearchRepository
+import com.anshtya.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -16,9 +17,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -26,8 +30,17 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    userDataRepository: UserDataRepository,
     private val searchRepository: SearchRepository
 ) : ViewModel() {
+    private val _includeAdult = userDataRepository.userData
+        .map { it.includeAdultResults }
+        .shareIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            replay = 1
+        )
+
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
@@ -59,8 +72,15 @@ class SearchViewModel @Inject constructor(
             .flatMapLatest { (tab, inputQuery) ->
                 if (inputQuery.isNotEmpty()) {
                     when (tab) {
-                        SearchResultTab.MOVIES -> searchRepository.searchMovie(inputQuery)
-                        SearchResultTab.TV -> searchRepository.searchTV(inputQuery)
+                        SearchResultTab.MOVIES -> searchRepository.searchMovie(
+                            query = inputQuery,
+                            includeAdult = _includeAdult.first()
+                        )
+
+                        SearchResultTab.TV -> searchRepository.searchTV(
+                            query = inputQuery,
+                            includeAdult = _includeAdult.first()
+                        )
                     }
                 } else {
                     flow { PagingData.empty<SearchItem>() }
@@ -71,7 +91,11 @@ class SearchViewModel @Inject constructor(
     val searchSuggestions: StateFlow<List<SearchSuggestion>> = _searchQuery
         .mapLatest { query ->
             if (query.isNotEmpty()) {
-                when (val response = searchRepository.multiSearch(query)) {
+                val response = searchRepository.multiSearch(
+                    query = query,
+                    includeAdult = _includeAdult.first()
+                )
+                when (response) {
                     is Response.Success -> response.data
                     is Response.Error -> {
                         _showError.update { true }

@@ -20,7 +20,8 @@ internal class PopularContentRemoteMediator(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
     private val dataStore: ContentPreferencesDataStore,
-    private val contentType: PopularContentType
+    private val contentType: PopularContentType,
+    private val includeAdult: Boolean
 ) : RemoteMediator<Int, PopularContentEntity>() {
     private val popularContentDao = db.popularContentDao()
     private val remoteKeyDao = db.popularContentRemoteKeyDao()
@@ -55,9 +56,20 @@ internal class PopularContentRemoteMediator(
                 }
             }
             val response = when (contentType) {
-                PopularContentType.STREAMING -> tmdbApi.getPopularStreamingTitles(page)
-                PopularContentType.IN_THEATRES -> tmdbApi.getPopularTitlesInTheatres(page)
-                PopularContentType.FOR_RENT -> tmdbApi.getPopularTitlesOnRent(page)
+                PopularContentType.STREAMING -> tmdbApi.getPopularStreamingTitles(
+                    page = page,
+                    includeAdult = includeAdult
+                )
+
+                PopularContentType.IN_THEATRES -> tmdbApi.getPopularTitlesInTheatres(
+                    page = page,
+                    includeAdult = includeAdult
+                )
+
+                PopularContentType.FOR_RENT -> tmdbApi.getPopularTitlesOnRent(
+                    page = page,
+                    includeAdult = includeAdult
+                )
             }
             val currentPage = response.page
             val totalPages = response.totalPages

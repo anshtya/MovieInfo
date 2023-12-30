@@ -23,9 +23,16 @@ internal class SearchRepositoryImpl @Inject constructor(
         prefetchDistance = 2
     )
 
-    override suspend fun multiSearch(query: String): Response<List<SearchSuggestion>> {
+    override suspend fun multiSearch(
+        query: String,
+        includeAdult: Boolean
+    ): Response<List<SearchSuggestion>> {
         return try {
-            val result = tmdbApi.multiSearch(query = query).results.take(6)
+            val result = tmdbApi.multiSearch(
+                query = query,
+                includeAdult = includeAdult
+            )
+                .results.take(6)
                 .map { suggestion -> suggestion.asModel() }
             Response.Success(result)
         } catch (e: IOException) {
@@ -35,17 +42,25 @@ internal class SearchRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun searchMovie(query: String): Flow<PagingData<SearchItem>> {
+    override fun searchMovie(query: String, includeAdult: Boolean): Flow<PagingData<SearchItem>> {
         return Pager(
             config = pagingConfig,
-            pagingSourceFactory = { SearchMoviePagingSource(tmdbApi, query) }
+            pagingSourceFactory = { SearchMoviePagingSource(
+                tmdbApi = tmdbApi,
+                query = query,
+                includeAdult = includeAdult
+            ) }
         ).flow
     }
 
-    override fun searchTV(query: String): Flow<PagingData<SearchItem>> {
+    override fun searchTV(query: String, includeAdult: Boolean): Flow<PagingData<SearchItem>> {
         return Pager(
             config = pagingConfig,
-            pagingSourceFactory = { SearchTVPagingSource(tmdbApi, query) }
+            pagingSourceFactory = { SearchTVPagingSource(
+                tmdbApi = tmdbApi,
+                query = query,
+                includeAdult = includeAdult
+            ) }
         ).flow
     }
 }

@@ -35,10 +35,19 @@ internal class ContentRepositoryImpl @Inject constructor(
         prefetchDistance = 2
     )
 
-    override fun getFreeContent(contentType: String): Flow<PagingData<FreeItem>> {
+    override fun getFreeContent(
+        contentType: String,
+        includeAdult: Boolean
+    ): Flow<PagingData<FreeItem>> {
         return Pager(
             config = pagingConfig,
-            remoteMediator = FreeContentRemoteMediator(tmdbApi, db, dataStore, contentType),
+            remoteMediator = FreeContentRemoteMediator(
+                tmdbApi = tmdbApi,
+                db = db,
+                dataStore = dataStore,
+                contentType = contentType,
+                includeAdult = includeAdult
+            ),
             pagingSourceFactory = { db.freeContentDao().pagingSource() }
         )
             .flow
@@ -52,7 +61,12 @@ internal class ContentRepositoryImpl @Inject constructor(
     override fun getTrendingMovies(timeWindow: String): Flow<PagingData<TrendingItem>> {
         return Pager(
             config = pagingConfig,
-            remoteMediator = TrendingMoviesRemoteMediator(tmdbApi, db, dataStore, timeWindow),
+            remoteMediator = TrendingMoviesRemoteMediator(
+                tmdbApi = tmdbApi,
+                db = db,
+                dataStore = dataStore,
+                timeWindow = timeWindow
+            ),
             pagingSourceFactory = { db.trendingContentDao().pagingSource() }
         )
             .flow
@@ -63,10 +77,19 @@ internal class ContentRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun getPopularContent(contentType: PopularContentType): Flow<PagingData<PopularItem>> {
+    override fun getPopularContent(
+        contentType: PopularContentType,
+        includeAdult: Boolean
+    ): Flow<PagingData<PopularItem>> {
         return Pager(
             config = pagingConfig,
-            remoteMediator = PopularContentRemoteMediator(tmdbApi, db, dataStore, contentType),
+            remoteMediator = PopularContentRemoteMediator(
+                tmdbApi = tmdbApi,
+                db = db,
+                dataStore = dataStore,
+                contentType = contentType,
+                includeAdult = includeAdult
+            ),
             pagingSourceFactory = { db.popularContentDao().pagingSource() }
         )
             .flow

@@ -2,6 +2,7 @@ plugins {
     id("movieinfo.android.library")
     id("movieinfo.android.hilt")
     alias(libs.plugins.ksp)
+    alias(libs.plugins.protobuf)
 }
 
 android {
@@ -14,7 +15,28 @@ android {
     }
 }
 
+protobuf {
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
+    }
+
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+                create("kotlin") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
 dependencies {
+    implementation(projects.core.model)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -23,6 +45,7 @@ dependencies {
     api(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
     implementation(libs.androidx.room.runtime)
+    implementation(libs.protobuf.kotlin.lite)
 
     ksp(libs.androidx.room.compiler)
 }

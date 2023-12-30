@@ -7,7 +7,7 @@ import com.anshtya.data.model.SearchSuggestion
 import kotlinx.coroutines.flow.Flow
 
 interface SearchRepository {
-    suspend fun multiSearch(query: String): Response<List<SearchSuggestion>>
-    fun searchMovie(query: String): Flow<PagingData<SearchItem>>
-    fun searchTV(query: String): Flow<PagingData<SearchItem>>
+    suspend fun multiSearch(query: String, includeAdult: Boolean): Response<List<SearchSuggestion>>
+    fun searchMovie(query: String, includeAdult: Boolean): Flow<PagingData<SearchItem>>
+    fun searchTV(query: String, includeAdult: Boolean): Flow<PagingData<SearchItem>>
 }

@@ -4,12 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.anshtya.data.model.PopularContentType
-import com.anshtya.data.repository.ContentRepository
 import com.anshtya.data.repository.ContentPreferencesRepository
+import com.anshtya.data.repository.ContentRepository
+import com.anshtya.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,9 +21,17 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    userDataRepository: UserDataRepository,
     private val contentRepository: ContentRepository,
     private val contentPreferencesRepository: ContentPreferencesRepository
 ) : ViewModel() {
+    private val _includeAdult = userDataRepository.userData
+        .map { it.includeAdultResults }
+        .shareIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L)
+        )
+
     private val _trendingContentFilters = TrendingTimeWindow.entries.toList()
     val trendingContentFilters = _trendingContentFilters.map { it.uiLabel }
 
@@ -61,7 +73,8 @@ class HomeViewModel @Inject constructor(
     val popularContent = selectedPopularContentFilterIndex
         .flatMapLatest { selectedIndex ->
             contentRepository.getPopularContent(
-                _popularContentFilters[selectedIndex].toParameter()
+                contentType = _popularContentFilters[selectedIndex].toParameter(),
+                includeAdult = _includeAdult.first()
             )
         }
         .cachedIn(viewModelScope)
@@ -69,7 +82,8 @@ class HomeViewModel @Inject constructor(
     val freeContent = selectedFreeContentFilterIndex
         .flatMapLatest { selectedIndex ->
             contentRepository.getFreeContent(
-                _freeContentFilters[selectedIndex].toParameter()
+                contentType = _freeContentFilters[selectedIndex].toParameter(),
+                includeAdult = _includeAdult.first()
             )
         }
         .cachedIn(viewModelScope)

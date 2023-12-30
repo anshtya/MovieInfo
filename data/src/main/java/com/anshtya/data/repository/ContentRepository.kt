@@ -8,7 +8,10 @@ import com.anshtya.data.model.TrendingItem
 import kotlinx.coroutines.flow.Flow
 
 interface ContentRepository {
-    fun getFreeContent(contentType: String): Flow<PagingData<FreeItem>>
+    fun getFreeContent(contentType: String, includeAdult: Boolean): Flow<PagingData<FreeItem>>
     fun getTrendingMovies(timeWindow: String): Flow<PagingData<TrendingItem>>
-    fun getPopularContent(contentType: PopularContentType): Flow<PagingData<PopularItem>>
+    fun getPopularContent(
+        contentType: PopularContentType,
+        includeAdult: Boolean
+    ): Flow<PagingData<PopularItem>>
 }

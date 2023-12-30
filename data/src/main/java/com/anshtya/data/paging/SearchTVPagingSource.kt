@@ -11,7 +11,8 @@ import javax.inject.Inject
 
 internal class SearchTVPagingSource @Inject constructor(
     private val tmdbApi: TmdbApi,
-    private val query: String
+    private val query: String,
+    private val includeAdult: Boolean
 ) : PagingSource<Int, SearchItem>() {
     override fun getRefreshKey(state: PagingState<Int, SearchItem>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -23,7 +24,11 @@ internal class SearchTVPagingSource @Inject constructor(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SearchItem> {
         val pageNumber = params.key ?: 1
         return try {
-            val response = tmdbApi.searchTV(page = pageNumber, query = query)
+            val response = tmdbApi.searchTV(
+                page = pageNumber,
+                query = query,
+                includeAdult = includeAdult
+            )
             LoadResult.Page(
                 data = response.results.map { it.asModel() },
                 prevKey = if (pageNumber == 1) null else pageNumber - 1,

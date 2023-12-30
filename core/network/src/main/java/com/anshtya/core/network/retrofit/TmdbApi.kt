@@ -12,7 +12,7 @@ interface TmdbApi {
     suspend fun getFreeContent(
         @Path("content_type") contentType: String,
         @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
         @Query("language") language: String ="en-US"
     ): StreamingItemResponse
@@ -20,7 +20,7 @@ interface TmdbApi {
     @GET("discover/movie?include_video=false&with_watch_monetization_types=flatrate&sort_by=popularity.desc")
     suspend fun getPopularStreamingTitles(
         @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
         @Query("language") language: String ="en-US"
     ): StreamingItemResponse
@@ -28,7 +28,7 @@ interface TmdbApi {
     @GET("discover/movie?include_video=false&with_watch_monetization_types=rent&sort_by=popularity.desc")
     suspend fun getPopularTitlesOnRent(
         @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
         @Query("language") language: String ="en-US"
     ): StreamingItemResponse
@@ -36,7 +36,7 @@ interface TmdbApi {
     @GET("discover/movie?include_video=false&with_release_type=3|2&sort_by=popularity.desc")
     suspend fun getPopularTitlesInTheatres(
         @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
         @Query("language") language: String ="en-US"
     ): StreamingItemResponse
@@ -51,20 +51,20 @@ interface TmdbApi {
     suspend fun multiSearch(
         @Query("page") page: Int = 1,
         @Query("query") query: String,
-        @Query("include_adult") includeAdult: Boolean = false
+        @Query("include_adult") includeAdult: Boolean
     ): MultiSearchResponse
 
     @GET("search/movie")
     suspend fun searchMovie(
         @Query("page") page: Int = 1,
         @Query("query") query: String,
-        @Query("include_adult") includeAdult: Boolean = false
+        @Query("include_adult") includeAdult: Boolean
     ): SearchResponse
 
     @GET("search/tv")
     suspend fun searchTV(
         @Query("page") page: Int = 1,
         @Query("query") query: String,
-        @Query("include_adult") includeAdult: Boolean = false
+        @Query("include_adult") includeAdult: Boolean
     ): SearchResponse
 }

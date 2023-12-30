@@ -33,11 +33,11 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.anshtya.core.model.SearchItem
+import com.anshtya.core.model.SearchSuggestion
 import com.anshtya.core.ui.ErrorView
 import com.anshtya.core.ui.MovieInfoTopAppBar
 import com.anshtya.core.ui.SearchResultCard
-import com.anshtya.data.model.SearchItem
-import com.anshtya.data.model.SearchSuggestion
 
 @Composable
 internal fun SearchRoute(

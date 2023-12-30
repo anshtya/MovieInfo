@@ -1,9 +1,9 @@
 package com.anshtya.data.repository
 
 import androidx.paging.PagingData
+import com.anshtya.core.model.SearchItem
+import com.anshtya.core.model.SearchSuggestion
 import com.anshtya.data.model.Response
-import com.anshtya.data.model.SearchItem
-import com.anshtya.data.model.SearchSuggestion
 import kotlinx.coroutines.flow.Flow
 
 interface SearchRepository {

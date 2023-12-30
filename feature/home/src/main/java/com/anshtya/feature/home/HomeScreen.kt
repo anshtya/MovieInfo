@@ -32,11 +32,11 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.anshtya.core.model.FreeItem
+import com.anshtya.core.model.PopularItem
+import com.anshtya.core.model.TrendingItem
 import com.anshtya.core.ui.FilterDropdownMenu
 import com.anshtya.core.ui.StreamingItemCard
-import com.anshtya.data.model.FreeItem
-import com.anshtya.data.model.PopularItem
-import com.anshtya.data.model.TrendingItem
 
 private val horizontalPadding = 10.dp
 

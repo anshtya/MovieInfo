@@ -3,6 +3,7 @@ package com.anshtya.core.local.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.anshtya.core.model.PopularItem
 
 @Entity(tableName = "popular_content")
 data class PopularContentEntity(
@@ -14,4 +15,11 @@ data class PopularContentEntity(
     val imagePath: String,
     val name: String,
     val overview: String
+)
+
+fun PopularContentEntity.asModel() = PopularItem(
+    id = remoteId,
+    imagePath = imagePath,
+    name = name,
+    overview = overview
 )

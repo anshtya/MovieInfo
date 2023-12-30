@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.anshtya.core.model.SearchItem
+import com.anshtya.core.model.SearchSuggestion
 import com.anshtya.data.model.Response
-import com.anshtya.data.model.SearchItem
-import com.anshtya.data.model.SearchSuggestion
 import com.anshtya.data.repository.SearchRepository
 import com.anshtya.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

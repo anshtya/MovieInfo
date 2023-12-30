@@ -2,9 +2,9 @@ package com.anshtya.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.anshtya.core.model.SearchItem
+import com.anshtya.core.network.model.asModel
 import com.anshtya.core.network.retrofit.TmdbApi
-import com.anshtya.data.model.SearchItem
-import com.anshtya.data.model.asModel
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject

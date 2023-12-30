@@ -35,7 +35,7 @@ protobuf {
 }
 
 dependencies {
-    implementation(projects.core.model)
+    api(projects.core.model)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

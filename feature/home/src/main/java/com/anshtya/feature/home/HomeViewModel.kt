@@ -29,7 +29,8 @@ class HomeViewModel @Inject constructor(
         .map { it.includeAdultResults }
         .shareIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L)
+            started = SharingStarted.Eagerly,
+            replay = 1
         )
 
     private val _trendingContentFilters = TrendingTimeWindow.entries.toList()

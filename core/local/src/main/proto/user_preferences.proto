@@ -1,6 +1,9 @@
 syntax = "proto3";
 
 import "dark_mode.proto";
+import "free_content.proto";
+import "popular_content.proto";
+import "trending_content.proto";
 
 option java_package = "com.anshtya.core.local.proto";
 option java_multiple_files = true;
@@ -9,4 +12,8 @@ message UserPreferences {
   bool useDynamicColor = 1;
   DarkMode darkMode = 2;
   bool includeAdultResults = 3;
+
+  FreeContent selectedFreeContent = 4;
+  PopularContent selectedPopularContent = 5;
+  TrendingContent selectedTrendingContent = 6;
 }

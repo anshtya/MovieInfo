@@ -13,7 +13,3 @@ fun NetworkStreamingItem.asPopularContentEntity() = PopularContentEntity(
     },
     overview = overview ?: ""
 )
-
-enum class PopularContentType {
-    STREAMING, IN_THEATRES, FOR_RENT
-}

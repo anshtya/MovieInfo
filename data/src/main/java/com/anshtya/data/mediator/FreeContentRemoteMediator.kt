@@ -6,12 +6,12 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.anshtya.core.local.database.MovieInfoDatabase
+import com.anshtya.core.local.database.entity.EntityLastModified
 import com.anshtya.core.local.database.entity.FreeContentEntity
 import com.anshtya.core.local.database.entity.FreeContentRemoteKey
-import com.anshtya.core.local.datastore.ContentPreferencesDataStore
+import com.anshtya.core.model.FreeContentType
 import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.model.asFreeContentEntity
-import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -19,24 +19,23 @@ import javax.inject.Inject
 internal class FreeContentRemoteMediator @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
-    private val dataStore: ContentPreferencesDataStore,
-    private val contentType: String,
-    private val includeAdult: Boolean
+    private val contentType: FreeContentType,
+    private val includeAdult: Boolean,
+    private val shouldReload: Boolean
 ) : RemoteMediator<Int, FreeContentEntity>() {
+    private val entityName = db.freeContentEntityName
+    private val lastModifiedDao = db.entityLastModifiedDao()
     private val freeContentDao = db.freeContentDao()
     private val remoteKeyDao = db.freeContentRemoteKeyDao()
 
     override suspend fun initialize(): InitializeAction {
         val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
-        return if (
-            dataStore.freeContentFilterString.first() == contentType
-            && System.currentTimeMillis() - dataStore.dbLastUpdateTime.first() <= cacheTimeout
+        return if (shouldReload ||
+            System.currentTimeMillis() - lastModifiedDao.entityLastModified(entityName) >= cacheTimeout
         ) {
-            // Cached data is up-to-date, so there is no need to re-fetch from the network.
-            InitializeAction.SKIP_INITIAL_REFRESH
-        } else {
-            // Need to refresh cached data from network
             InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
         }
     }
 
@@ -56,7 +55,7 @@ internal class FreeContentRemoteMediator @Inject constructor(
                 }
             }
             val response = tmdbApi.getFreeContent(
-                contentType = contentType,
+                contentType = contentType.parameter,
                 page = page,
                 includeAdult = includeAdult
             )
@@ -81,8 +80,11 @@ internal class FreeContentRemoteMediator @Inject constructor(
                 freeContentDao.insertAll(entities)
                 remoteKeyDao.insert(keys)
 
-                dataStore.setFreeContentFilterString(contentType)
-                dataStore.setDbLastUpdateTime(System.currentTimeMillis())
+                val lastModifiedEntity = EntityLastModified(
+                    name = entityName,
+                    lastModified = System.currentTimeMillis()
+                )
+                lastModifiedDao.updateLastModifiedTime(lastModifiedEntity)
             }
             MediatorResult.Success(endOfPaginationReached)
         } catch (e: Exception) {

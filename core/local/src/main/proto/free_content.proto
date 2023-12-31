@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "com.anshtya.core.local.proto";
+option java_multiple_files = true;
+
+enum FreeContent {
+  FREE_CONTENT_MOVIE = 0;
+  FREE_CONTENT_TV = 1;
+}

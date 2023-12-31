@@ -6,35 +6,34 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.anshtya.core.local.database.MovieInfoDatabase
+import com.anshtya.core.local.database.entity.EntityLastModified
 import com.anshtya.core.local.database.entity.TrendingContentEntity
 import com.anshtya.core.local.database.entity.TrendingContentRemoteKey
-import com.anshtya.core.local.datastore.ContentPreferencesDataStore
+import com.anshtya.core.model.TrendingContentTimeWindow
 import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.model.asTrendingContentEntity
-import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
 internal class TrendingMoviesRemoteMediator(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
-    private val dataStore: ContentPreferencesDataStore,
-    private val timeWindow: String
+    private val timeWindow: TrendingContentTimeWindow,
+    private val shouldReload: Boolean
 ) : RemoteMediator<Int, TrendingContentEntity>() {
+    private val entityName = db.trendingContentEntityName
+    private val lastModifiedDao = db.entityLastModifiedDao()
     private val trendingContentDao = db.trendingContentDao()
     private val remoteKeyDao = db.trendingContentRemoteKeyDao()
 
     override suspend fun initialize(): InitializeAction {
         val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
-        return if (
-            dataStore.trendingContentFilterString.first() == timeWindow
-            && System.currentTimeMillis() - dataStore.dbLastUpdateTime.first() <= cacheTimeout
+        return if (shouldReload ||
+            System.currentTimeMillis() - lastModifiedDao.entityLastModified(entityName) >= cacheTimeout
         ) {
-            // Cached data is up-to-date, so there is no need to re-fetch from the network.
-            InitializeAction.SKIP_INITIAL_REFRESH
-        } else {
-            // Need to refresh cached data from network
             InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
         }
     }
 
@@ -53,7 +52,10 @@ internal class TrendingMoviesRemoteMediator(
                     )
                 }
             }
-            val response = tmdbApi.getTrendingMovies(timeWindow, page)
+            val response = tmdbApi.getTrendingMovies(
+                timeWindow = timeWindow.parameter,
+                page = page
+            )
             val currentPage = response.page
             val totalPages = response.totalPages
             val endOfPaginationReached = currentPage == totalPages
@@ -75,8 +77,11 @@ internal class TrendingMoviesRemoteMediator(
                 trendingContentDao.insertAll(entities)
                 remoteKeyDao.insert(keys)
 
-                dataStore.setTrendingContentFilterString(timeWindow)
-                dataStore.setDbLastUpdateTime(System.currentTimeMillis())
+                val lastModifiedEntity = EntityLastModified(
+                    name = entityName,
+                    lastModified = System.currentTimeMillis()
+                )
+                lastModifiedDao.updateLastModifiedTime(lastModifiedEntity)
             }
             MediatorResult.Success(endOfPaginationReached)
         } catch (e: Exception) {

@@ -3,13 +3,15 @@ package com.anshtya.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
-import com.anshtya.data.model.PopularContentType
-import com.anshtya.data.repository.ContentPreferencesRepository
+import com.anshtya.core.model.FreeContentType
+import com.anshtya.core.model.PopularContentType
+import com.anshtya.core.model.TrendingContentTimeWindow
 import com.anshtya.data.repository.ContentRepository
 import com.anshtya.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -21,42 +23,66 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    userDataRepository: UserDataRepository,
-    private val contentRepository: ContentRepository,
-    private val contentPreferencesRepository: ContentPreferencesRepository
+    private val userDataRepository: UserDataRepository,
+    private val contentRepository: ContentRepository
 ) : ViewModel() {
+    private var shouldReload = false
+
     private val _includeAdult = userDataRepository.userData
         .map { it.includeAdultResults }
+        .distinctUntilChanged()
         .shareIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             replay = 1
         )
 
-    private val _trendingContentFilters = TrendingTimeWindow.entries.toList()
-    val trendingContentFilters = _trendingContentFilters.map { it.uiLabel }
+    private val _trendingContentFilters = TrendingContentFilter.entries.toList()
+    val trendingContentFilters = _trendingContentFilters.map { it.uiText }
 
     private val _popularContentFilters = PopularContentFilter.entries.toList()
-    val popularContentFilters = _popularContentFilters.map { it.uiLabel }
+    val popularContentFilters = _popularContentFilters.map { it.uiText }
 
-    private val _freeContentFilters = FreeContentType.entries.toList()
-    val freeContentFilters = _freeContentFilters.map { it.uiLabel }
+    private val _freeContentFilters = FreeContentFilter.entries.toList()
+    val freeContentFilters = _freeContentFilters.map { it.uiText }
 
-    val selectedTrendingContentFilterIndex = contentPreferencesRepository.trendingContentFilterIndex
+    val selectedTrendingContentFilterIndex = userDataRepository.userData
+        .map {
+            val filter = when (it.selectedTrendingContentTimeWindow) {
+                TrendingContentTimeWindow.DAY -> TrendingContentFilter.TODAY
+                TrendingContentTimeWindow.WEEK -> TrendingContentFilter.THIS_WEEK
+            }
+            _trendingContentFilters.indexOf(filter)
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = 0
         )
 
-    val selectedPopularContentFilterIndex = contentPreferencesRepository.popularContentFilterIndex
+    val selectedPopularContentFilterIndex = userDataRepository.userData
+        .map {
+            val filter = when (it.selectedPopularContentType) {
+                PopularContentType.STREAMING -> PopularContentFilter.STREAMING
+                PopularContentType.IN_THEATRES -> PopularContentFilter.IN_THEATRES
+                PopularContentType.FOR_RENT -> PopularContentFilter.FOR_RENT
+            }
+            _popularContentFilters.indexOf(filter)
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = 0
         )
 
-    val selectedFreeContentFilterIndex = contentPreferencesRepository.freeContentFilterIndex
+    val selectedFreeContentFilterIndex = userDataRepository.userData
+        .map {
+            val filter = when (it.selectedFreeContentType) {
+                FreeContentType.MOVIE -> FreeContentFilter.MOVIES
+                FreeContentType.TV -> FreeContentFilter.TV
+            }
+            _freeContentFilters.indexOf(filter)
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
@@ -64,68 +90,55 @@ class HomeViewModel @Inject constructor(
         )
 
     val trendingMovies = selectedTrendingContentFilterIndex
-        .flatMapLatest { selectedIndex ->
+        .flatMapLatest { index ->
             contentRepository.getTrendingMovies(
-                _trendingContentFilters[selectedIndex].toParameter()
+                timeWindow = _trendingContentFilters[index].toTimeWindow(),
+                shouldReload = shouldReload
             )
         }
         .cachedIn(viewModelScope)
 
     val popularContent = selectedPopularContentFilterIndex
-        .flatMapLatest { selectedIndex ->
+        .flatMapLatest { index ->
             contentRepository.getPopularContent(
-                contentType = _popularContentFilters[selectedIndex].toParameter(),
-                includeAdult = _includeAdult.first()
+                contentType = _popularContentFilters[index].toContentType(),
+                includeAdult = _includeAdult.first(),
+                shouldReload = shouldReload
             )
         }
         .cachedIn(viewModelScope)
 
     val freeContent = selectedFreeContentFilterIndex
-        .flatMapLatest { selectedIndex ->
+        .flatMapLatest { index ->
             contentRepository.getFreeContent(
-                contentType = _freeContentFilters[selectedIndex].toParameter(),
-                includeAdult = _includeAdult.first()
+                contentType = _freeContentFilters[index].toContentType(),
+                includeAdult = _includeAdult.first(),
+                shouldReload = shouldReload
             )
         }
         .cachedIn(viewModelScope)
 
-    fun setTrendingContentFilterIndex(index: Int) {
+    fun setTrendingContentFilter(index: Int) {
+        shouldReload = true
         viewModelScope.launch {
-            contentPreferencesRepository.setTrendingContentFilterIndex(index)
+            val filter = _trendingContentFilters[index]
+            userDataRepository.setTrendingContentPreference(filter.toTimeWindow())
         }
     }
 
-    fun setPopularContentFilterIndex(index: Int) {
+    fun setPopularContentFilter(index: Int) {
+        shouldReload = true
         viewModelScope.launch {
-            contentPreferencesRepository.setPopularContentFilterIndex(index)
+            val filter = _popularContentFilters[index]
+            userDataRepository.setPopularContentPreference(filter.toContentType())
         }
     }
 
-    fun setFreeContentFilterIndex(index: Int) {
+    fun setFreeContentFilter(index: Int) {
+        shouldReload = true
         viewModelScope.launch {
-            contentPreferencesRepository.setFreeContentFilterIndex(index)
-        }
-    }
-
-    private fun TrendingTimeWindow.toParameter(): String {
-        return when (this) {
-            TrendingTimeWindow.TODAY -> "day"
-            TrendingTimeWindow.THIS_WEEK -> "week"
-        }
-    }
-
-    private fun FreeContentType.toParameter(): String {
-        return when (this) {
-            FreeContentType.MOVIES -> "movie"
-            FreeContentType.TV -> "tv"
-        }
-    }
-
-    private fun PopularContentFilter.toParameter(): PopularContentType {
-        return when (this) {
-            PopularContentFilter.STREAMING -> PopularContentType.STREAMING
-            PopularContentFilter.IN_THEATRES -> PopularContentType.IN_THEATRES
-            PopularContentFilter.FOR_RENT -> PopularContentType.FOR_RENT
+            val filter = _freeContentFilters[index]
+            userDataRepository.setFreeContentPreference(filter.toContentType())
         }
     }
 }

@@ -4,12 +4,14 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.anshtya.core.local.database.dao.EntityLastModifiedDao
 import com.anshtya.core.local.database.dao.FreeContentDao
 import com.anshtya.core.local.database.dao.FreeContentRemoteKeyDao
 import com.anshtya.core.local.database.dao.PopularContentDao
 import com.anshtya.core.local.database.dao.PopularContentRemoteKeyDao
 import com.anshtya.core.local.database.dao.TrendingContentDao
 import com.anshtya.core.local.database.dao.TrendingContentRemoteKeyDao
+import com.anshtya.core.local.database.entity.EntityLastModified
 import com.anshtya.core.local.database.entity.FreeContentEntity
 import com.anshtya.core.local.database.entity.FreeContentRemoteKey
 import com.anshtya.core.local.database.entity.PopularContentEntity
@@ -19,6 +21,7 @@ import com.anshtya.core.local.database.entity.TrendingContentRemoteKey
 
 @Database(
     entities = [
+        EntityLastModified::class,
         TrendingContentEntity::class,
         TrendingContentRemoteKey::class,
         PopularContentEntity::class,
@@ -26,10 +29,15 @@ import com.anshtya.core.local.database.entity.TrendingContentRemoteKey
         FreeContentEntity::class,
         FreeContentRemoteKey::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 abstract class MovieInfoDatabase : RoomDatabase() {
+    val trendingContentEntityName = "trending_content"
+    val freeContentEntityName = "free_content"
+    val popularContentEntityName = "popular_content"
+
+    abstract fun entityLastModifiedDao(): EntityLastModifiedDao
     abstract fun trendingContentDao(): TrendingContentDao
     abstract fun popularContentDao(): PopularContentDao
     abstract fun freeContentDao(): FreeContentDao
@@ -101,6 +109,23 @@ abstract class MovieInfoDatabase : RoomDatabase() {
                     nextKey INTEGER NULL, 
                     PRIMARY KEY(id))
                     """.trimIndent())
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS entity_last_modified (
+                    name TEXT PRIMARY KEY NOT NULL, 
+                    last_modified INTEGER NOT NULL)
+                    """.trimIndent())
+
+                db.execSQL("""
+                    INSERT INTO entity_last_modified VALUES
+                    ('trending_content', 0),
+                    ('free_content', 0),
+                    ('popular_content', 0)
+                """.trimIndent())
             }
         }
     }

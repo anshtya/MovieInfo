@@ -7,15 +7,16 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import com.anshtya.core.local.database.MovieInfoDatabase
 import com.anshtya.core.local.database.entity.asModel
-import com.anshtya.core.local.datastore.ContentPreferencesDataStore
+import com.anshtya.core.model.FreeContentType
 import com.anshtya.core.model.FreeItem
+import com.anshtya.core.model.PopularContentType
 import com.anshtya.core.model.PopularItem
+import com.anshtya.core.model.TrendingContentTimeWindow
 import com.anshtya.core.model.TrendingItem
 import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.mediator.FreeContentRemoteMediator
 import com.anshtya.data.mediator.PopularContentRemoteMediator
 import com.anshtya.data.mediator.TrendingMoviesRemoteMediator
-import com.anshtya.data.model.PopularContentType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -25,8 +26,7 @@ private const val PAGE_SIZE = 20
 @OptIn(ExperimentalPagingApi::class)
 internal class ContentRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi,
-    private val db: MovieInfoDatabase,
-    private val dataStore: ContentPreferencesDataStore
+    private val db: MovieInfoDatabase
 ) : ContentRepository {
 
     private val pagingConfig = PagingConfig(
@@ -36,17 +36,18 @@ internal class ContentRepositoryImpl @Inject constructor(
     )
 
     override fun getFreeContent(
-        contentType: String,
-        includeAdult: Boolean
+        contentType: FreeContentType,
+        includeAdult: Boolean,
+        shouldReload: Boolean
     ): Flow<PagingData<FreeItem>> {
         return Pager(
             config = pagingConfig,
             remoteMediator = FreeContentRemoteMediator(
                 tmdbApi = tmdbApi,
                 db = db,
-                dataStore = dataStore,
                 contentType = contentType,
-                includeAdult = includeAdult
+                includeAdult = includeAdult,
+                shouldReload = shouldReload
             ),
             pagingSourceFactory = { db.freeContentDao().pagingSource() }
         )
@@ -58,14 +59,14 @@ internal class ContentRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun getTrendingMovies(timeWindow: String): Flow<PagingData<TrendingItem>> {
+    override fun getTrendingMovies(timeWindow: TrendingContentTimeWindow, shouldReload: Boolean): Flow<PagingData<TrendingItem>> {
         return Pager(
             config = pagingConfig,
             remoteMediator = TrendingMoviesRemoteMediator(
                 tmdbApi = tmdbApi,
                 db = db,
-                dataStore = dataStore,
-                timeWindow = timeWindow
+                timeWindow = timeWindow,
+                shouldReload = shouldReload
             ),
             pagingSourceFactory = { db.trendingContentDao().pagingSource() }
         )
@@ -79,16 +80,17 @@ internal class ContentRepositoryImpl @Inject constructor(
 
     override fun getPopularContent(
         contentType: PopularContentType,
-        includeAdult: Boolean
+        includeAdult: Boolean,
+        shouldReload: Boolean
     ): Flow<PagingData<PopularItem>> {
         return Pager(
             config = pagingConfig,
             remoteMediator = PopularContentRemoteMediator(
                 tmdbApi = tmdbApi,
                 db = db,
-                dataStore = dataStore,
                 contentType = contentType,
-                includeAdult = includeAdult
+                includeAdult = includeAdult,
+                shouldReload = shouldReload
             ),
             pagingSourceFactory = { db.popularContentDao().pagingSource() }
         )

@@ -7,6 +7,8 @@ import com.anshtya.core.local.database.MovieInfoDatabase
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_1_2
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_2_3
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_3_4
+import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_4_5
+import com.anshtya.core.local.database.dao.EntityLastModifiedDao
 import com.anshtya.core.local.database.dao.FreeContentDao
 import com.anshtya.core.local.database.dao.FreeContentRemoteKeyDao
 import com.anshtya.core.local.database.dao.PopularContentDao
@@ -32,9 +34,18 @@ internal object DatabaseModule {
             .addMigrations(
                 MIGRATION_1_2,
                 MIGRATION_2_3,
-                MIGRATION_3_4
+                MIGRATION_3_4,
+                MIGRATION_4_5
             )
             .build()
+    }
+
+    @Singleton
+    @Provides
+    internal fun provideEntityLastModifiedDao(
+        db: MovieInfoDatabase
+    ): EntityLastModifiedDao {
+        return db.entityLastModifiedDao()
     }
 
     @Singleton

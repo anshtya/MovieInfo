@@ -1,7 +1,5 @@
 package com.anshtya.data.di
 
-import com.anshtya.data.repository.ContentPreferencesRepository
-import com.anshtya.data.repository.ContentPreferencesRepositoryImpl
 import com.anshtya.data.repository.ContentRepository
 import com.anshtya.data.repository.ContentRepositoryImpl
 import com.anshtya.data.repository.SearchRepository
@@ -25,11 +23,6 @@ internal abstract class RepositoryModule {
     internal abstract fun bindSearchRepository(
         searchRepositoryImpl: SearchRepositoryImpl
     ): SearchRepository
-
-    @Binds
-    internal abstract fun bindContentPreferencesRepository(
-        contentPreferencesRepositoryImpl: ContentPreferencesRepositoryImpl
-    ): ContentPreferencesRepository
 
     @Binds
     internal abstract fun bindUserDataRepository(

@@ -6,37 +6,35 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.anshtya.core.local.database.MovieInfoDatabase
+import com.anshtya.core.local.database.entity.EntityLastModified
 import com.anshtya.core.local.database.entity.PopularContentEntity
 import com.anshtya.core.local.database.entity.PopularContentRemoteKey
-import com.anshtya.core.local.datastore.ContentPreferencesDataStore
+import com.anshtya.core.model.PopularContentType
 import com.anshtya.core.network.retrofit.TmdbApi
-import com.anshtya.data.model.PopularContentType
 import com.anshtya.data.model.asPopularContentEntity
-import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
 internal class PopularContentRemoteMediator(
     private val tmdbApi: TmdbApi,
     private val db: MovieInfoDatabase,
-    private val dataStore: ContentPreferencesDataStore,
     private val contentType: PopularContentType,
-    private val includeAdult: Boolean
+    private val includeAdult: Boolean,
+    private val shouldReload: Boolean
 ) : RemoteMediator<Int, PopularContentEntity>() {
+    private val entityName = db.popularContentEntityName
+    private val lastModifiedDao = db.entityLastModifiedDao()
     private val popularContentDao = db.popularContentDao()
     private val remoteKeyDao = db.popularContentRemoteKeyDao()
 
     override suspend fun initialize(): InitializeAction {
         val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
-        return if (
-            dataStore.popularContentFilterString.first() == contentType.name
-            && System.currentTimeMillis() - dataStore.dbLastUpdateTime.first() <= cacheTimeout
+        return if (shouldReload ||
+            System.currentTimeMillis() - lastModifiedDao.entityLastModified(entityName) >= cacheTimeout
         ) {
-            // Cached data is up-to-date, so there is no need to re-fetch from the network.
-            InitializeAction.SKIP_INITIAL_REFRESH
-        } else {
-            // Need to refresh cached data from network
             InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
         }
     }
 
@@ -92,8 +90,11 @@ internal class PopularContentRemoteMediator(
                 popularContentDao.insertAll(entities)
                 remoteKeyDao.insert(keys)
 
-                dataStore.setPopularContentFilterString(contentType.name)
-                dataStore.setDbLastUpdateTime(System.currentTimeMillis())
+                val lastModifiedEntity = EntityLastModified(
+                    name = entityName,
+                    lastModified = System.currentTimeMillis()
+                )
+                lastModifiedDao.updateLastModifiedTime(lastModifiedEntity)
             }
             MediatorResult.Success(endOfPaginationReached)
         } catch (e: Exception) {

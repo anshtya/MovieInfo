@@ -50,9 +50,9 @@ internal fun HomeRoute(
     val trendingMovies = homeViewModel.trendingMovies.collectAsLazyPagingItems()
     val popularContent = homeViewModel.popularContent.collectAsLazyPagingItems()
     val freeContent = homeViewModel.freeContent.collectAsLazyPagingItems()
-    val selectedTrendingFilter by homeViewModel.selectedTrendingContentFilterIndex.collectAsStateWithLifecycle()
-    val selectedContentFilter by homeViewModel.selectedPopularContentFilterIndex.collectAsStateWithLifecycle()
-    val selectedFreeContent by homeViewModel.selectedFreeContentFilterIndex.collectAsStateWithLifecycle()
+    val selectedTrendingContentFilterIndex by homeViewModel.selectedTrendingContentFilterIndex.collectAsStateWithLifecycle()
+    val selectedPopularContentFilterIndex by homeViewModel.selectedPopularContentFilterIndex.collectAsStateWithLifecycle()
+    val selectedFreeContentFilterIndex by homeViewModel.selectedFreeContentFilterIndex.collectAsStateWithLifecycle()
 
     HomeScreen(
         trendingMovies = trendingMovies,
@@ -61,12 +61,12 @@ internal fun HomeRoute(
         trendingContentFilters = trendingContentFilters,
         popularContentFilters = popularContentFilters,
         freeContentFilters = freeContentFilters,
-        selectedTrendingFilter = selectedTrendingFilter,
-        selectedContentFilter = selectedContentFilter,
-        selectedFreeContent = selectedFreeContent,
-        onTrendingFilterClick = homeViewModel::setTrendingContentFilterIndex,
-        onPopularFilterClick = homeViewModel::setPopularContentFilterIndex,
-        onFreeContentClick = homeViewModel::setFreeContentFilterIndex
+        selectedTrendingContentFilterIndex = selectedTrendingContentFilterIndex,
+        selectedPopularContentFilterIndex = selectedPopularContentFilterIndex,
+        selectedFreeContentFilterIndex = selectedFreeContentFilterIndex,
+        onTrendingContentFilterClick = homeViewModel::setTrendingContentFilter,
+        onPopularContentFilterClick = homeViewModel::setPopularContentFilter,
+        onFreeContentFilterClick = homeViewModel::setFreeContentFilter
     )
 }
 
@@ -78,12 +78,12 @@ internal fun HomeScreen(
     trendingContentFilters: List<Int>,
     popularContentFilters: List<Int>,
     freeContentFilters: List<Int>,
-    selectedTrendingFilter: Int,
-    selectedContentFilter: Int,
-    selectedFreeContent: Int,
-    onTrendingFilterClick: (Int) -> Unit,
-    onPopularFilterClick: (Int) -> Unit,
-    onFreeContentClick: (Int) -> Unit
+    selectedTrendingContentFilterIndex: Int,
+    selectedPopularContentFilterIndex: Int,
+    selectedFreeContentFilterIndex: Int,
+    onTrendingContentFilterClick: (Int) -> Unit,
+    onPopularContentFilterClick: (Int) -> Unit,
+    onFreeContentFilterClick: (Int) -> Unit
 ) {
     Surface {
         LazyColumn(
@@ -93,21 +93,21 @@ internal fun HomeScreen(
         ) {
             trendingSection(
                 trendingMovies = trendingMovies,
-                trendingContentFilters = trendingContentFilters,
-                selectedTrendingFilter = selectedTrendingFilter,
-                onTrendingFilterClick = onTrendingFilterClick
+                filters = trendingContentFilters,
+                selectedFilterIndex = selectedTrendingContentFilterIndex,
+                onFilterClick = onTrendingContentFilterClick
             )
             popularContentSection(
                 popularContent = popularContent,
-                popularContentFilters = popularContentFilters,
-                selectedContentFilter = selectedContentFilter,
-                onFilterClick = onPopularFilterClick
+                filters = popularContentFilters,
+                selectedFilterIndex = selectedPopularContentFilterIndex,
+                onFilterClick = onPopularContentFilterClick
             )
             freeToWatchSection(
                 freeContent = freeContent,
-                freeContentFilters = freeContentFilters,
-                selectedContentFilter = selectedFreeContent,
-                onFilterClick = onFreeContentClick
+                filters = freeContentFilters,
+                selectedFilterIndex = selectedFreeContentFilterIndex,
+                onFilterClick = onFreeContentFilterClick
             )
         }
     }
@@ -115,13 +115,13 @@ internal fun HomeScreen(
 
 private fun LazyListScope.trendingSection(
     trendingMovies: LazyPagingItems<TrendingItem>,
-    trendingContentFilters: List<Int>,
-    selectedTrendingFilter: Int,
-    onTrendingFilterClick: (Int) -> Unit
+    filters: List<Int>,
+    selectedFilterIndex: Int,
+    onFilterClick: (Int) -> Unit
 ) {
     item {
         val lazyRowState = rememberLazyListState()
-        LaunchedEffect(selectedTrendingFilter) {
+        LaunchedEffect(selectedFilterIndex) {
             lazyRowState.scrollToItem(0)
         }
         Column(
@@ -129,9 +129,9 @@ private fun LazyListScope.trendingSection(
         ) {
             ContentSection(
                 sectionName = R.string.trending,
-                filters = trendingContentFilters,
-                selectedFilterIndex = selectedTrendingFilter,
-                onFilterClick = onTrendingFilterClick
+                filters = filters,
+                selectedFilterIndex = selectedFilterIndex,
+                onFilterClick = onFilterClick
             )
             Box(
                 modifier = Modifier
@@ -170,13 +170,13 @@ private fun LazyListScope.trendingSection(
 
 private fun LazyListScope.popularContentSection(
     popularContent: LazyPagingItems<PopularItem>,
-    popularContentFilters: List<Int>,
-    selectedContentFilter: Int,
+    filters: List<Int>,
+    selectedFilterIndex: Int,
     onFilterClick: (Int) -> Unit
 ) {
     item {
         val lazyRowState = rememberLazyListState()
-        LaunchedEffect(selectedContentFilter) {
+        LaunchedEffect(selectedFilterIndex) {
             lazyRowState.scrollToItem(0)
         }
         Column(
@@ -184,8 +184,8 @@ private fun LazyListScope.popularContentSection(
         ) {
             ContentSection(
                 sectionName = R.string.popular,
-                filters = popularContentFilters,
-                selectedFilterIndex = selectedContentFilter,
+                filters = filters,
+                selectedFilterIndex = selectedFilterIndex,
                 onFilterClick = onFilterClick
             )
             Box(
@@ -225,13 +225,13 @@ private fun LazyListScope.popularContentSection(
 
 private fun LazyListScope.freeToWatchSection(
     freeContent: LazyPagingItems<FreeItem>,
-    freeContentFilters: List<Int>,
-    selectedContentFilter: Int,
+    filters: List<Int>,
+    selectedFilterIndex: Int,
     onFilterClick: (Int) -> Unit
 ) {
     item {
         val lazyRowState = rememberLazyListState()
-        LaunchedEffect(selectedContentFilter) {
+        LaunchedEffect(selectedFilterIndex) {
             lazyRowState.scrollToItem(0)
         }
         Column(
@@ -239,8 +239,8 @@ private fun LazyListScope.freeToWatchSection(
         ) {
             ContentSection(
                 sectionName = R.string.free_to_watch,
-                filters = freeContentFilters,
-                selectedFilterIndex = selectedContentFilter,
+                filters = filters,
+                selectedFilterIndex = selectedFilterIndex,
                 onFilterClick = onFilterClick
             )
             Box(

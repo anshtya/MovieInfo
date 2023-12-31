@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -35,6 +36,7 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
     private val _includeAdult = userDataRepository.userData
         .map { it.includeAdultResults }
+        .distinctUntilChanged()
         .shareIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),

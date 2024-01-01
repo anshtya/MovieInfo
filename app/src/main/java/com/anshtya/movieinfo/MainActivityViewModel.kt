@@ -2,7 +2,7 @@ package com.anshtya.movieinfo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.core.model.UserData
+import com.anshtya.core.model.SelectedDarkMode
 import com.anshtya.data.repository.UserDataRepository
 import com.anshtya.movieinfo.MainActivityUiState.Loading
 import com.anshtya.movieinfo.MainActivityUiState.Success
@@ -18,7 +18,10 @@ class MainActivityViewModel @Inject constructor(
     userDataRepository: UserDataRepository
 ) : ViewModel() {
     val uiState: StateFlow<MainActivityUiState> = userDataRepository.userData.map {
-        Success(it)
+        Success(
+            useDynamicColor = it.useDynamicColor,
+            darkMode = it.darkMode
+        )
     }.stateIn(
         scope = viewModelScope,
         initialValue = Loading,
@@ -28,5 +31,8 @@ class MainActivityViewModel @Inject constructor(
 
 sealed interface MainActivityUiState {
     data object Loading : MainActivityUiState
-    data class Success(val userData: UserData) : MainActivityUiState
+    data class Success(
+        val useDynamicColor: Boolean,
+        val darkMode: SelectedDarkMode
+    ) : MainActivityUiState
 }

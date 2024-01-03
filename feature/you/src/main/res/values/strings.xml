@@ -10,4 +10,8 @@
     <string name="settings_dialog_dark_default">System default</string>
     <string name="settings_dialog_dark_yes">Dark</string>
     <string name="settings_dialog_dark_no">Light</string>
+    <string name="log_in">Log In</string>
+    <string name="log_in_description">Log in to view your profile</string>
+    <string name="log_out">Log Out</string>
+    <string name="error_message">An error occurred</string>
 </resources>

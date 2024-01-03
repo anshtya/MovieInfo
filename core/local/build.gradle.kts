@@ -45,6 +45,7 @@ dependencies {
     api(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.security.crypto)
     implementation(libs.protobuf.kotlin.lite)
 
     ksp(libs.androidx.room.compiler)

@@ -36,6 +36,7 @@ android {
 
 dependencies {
     implementation(projects.data)
+    implementation(projects.feature.auth)
     implementation(projects.feature.home)
     implementation(projects.feature.search)
     implementation(projects.feature.you)

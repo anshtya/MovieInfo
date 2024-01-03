@@ -7,100 +7,236 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anshtya.core.model.AccountDetails
 import com.anshtya.core.model.SelectedDarkMode
 import com.anshtya.core.model.SelectedDarkMode.DARK
 import com.anshtya.core.model.SelectedDarkMode.LIGHT
 import com.anshtya.core.model.SelectedDarkMode.SYSTEM
-import com.anshtya.feature.you.SettingsUiState.Loading
-import com.anshtya.feature.you.SettingsUiState.Success
+import com.anshtya.core.ui.ErrorText
+import com.anshtya.core.ui.UserImage
+import com.anshtya.feature.you.YouUiState.Loading
+import com.anshtya.feature.you.YouUiState.Success
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun YouRoute(
+    onNavigateToAuth: () -> Unit,
     viewModel: YouViewModel = hiltViewModel()
 ) {
-    val settingsUiState by viewModel.settingsUiState.collectAsStateWithLifecycle()
+    val youUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
 
     YouScreen(
-        settingsUiState = settingsUiState,
+        youUiState = youUiState,
+        errorMessage = errorMessage,
         onChangeTheme = viewModel::setDynamicColorPreference,
         onChangeDarkMode = viewModel::setDarkModePreference,
-        onChangeIncludeAdult = viewModel::setAdultResultPreference
+        onChangeIncludeAdult = viewModel::setAdultResultPreference,
+        onNavigateToAuth = onNavigateToAuth,
+        onLogOutClick = viewModel::logOut,
+        onErrorShown = viewModel::onErrorShown
     )
 }
 
 @Composable
 internal fun YouScreen(
-    settingsUiState: SettingsUiState,
+    youUiState: YouUiState,
+    errorMessage: ErrorText?,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
-    onChangeIncludeAdult: (Boolean) -> Unit
+    onChangeIncludeAdult: (Boolean) -> Unit,
+    onNavigateToAuth: () -> Unit,
+    onLogOutClick: () -> Unit,
+    onErrorShown: () -> Unit
 ) {
-    Box(Modifier.fillMaxSize()) {
-        val isLoggedIn by remember { mutableStateOf(false) }
-        var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-        if (showSettingsDialog) {
-            SettingsDialog(
-                settingsUiState = settingsUiState,
-                onChangeTheme = onChangeTheme,
-                onChangeDarkMode = onChangeDarkMode,
-                onChangeIncludeAdult = onChangeIncludeAdult,
-                onDismissRequest = { showSettingsDialog = !showSettingsDialog }
-            )
+    errorMessage?.let {
+        scope.launch {
+            snackbarHostState.showSnackbar(it.toText(context))
         }
+        onErrorShown()
+    }
 
-        when (getScreenType(isLoggedIn)) {
-            ScreenType.LOGGED_IN -> {}
-            ScreenType.LOGGED_OUT -> {}
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
-        IconButton(
-            onClick = { showSettingsDialog = true },
-            modifier = Modifier.align(Alignment.TopEnd)
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
         ) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = stringResource(id = R.string.settings_dialog_title)
-            )
+            when (youUiState) {
+                is Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
+                is Success -> {
+                    var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
+
+                    Column(Modifier.fillMaxSize()) {
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            IconButton(
+                                onClick = { showSettingsDialog = true }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = stringResource(
+                                        id = R.string.settings_dialog_title
+                                    )
+                                )
+                            }
+                        }
+
+                        when (getScreenType(youUiState.isLoggedIn)) {
+                            ScreenType.LOGGED_IN -> {
+                                LoggedInView(
+                                    accountDetails = youUiState.accountDetails,
+                                    onLogOutClick = onLogOutClick
+                                )
+                            }
+
+                            ScreenType.LOGGED_OUT -> {
+                                LoggedOutView(
+                                    onNavigateToAuth = onNavigateToAuth
+                                )
+                            }
+                        }
+                    }
+
+                    if (showSettingsDialog) {
+                        SettingsDialog(
+                            userSettings = youUiState.userSettings,
+                            onChangeTheme = onChangeTheme,
+                            onChangeDarkMode = onChangeDarkMode,
+                            onChangeIncludeAdult = onChangeIncludeAdult
+                        ) { showSettingsDialog = !showSettingsDialog }
+                    }
+                }
+            }
         }
     }
 }
 
+@Composable
+private fun LoggedInView(
+    accountDetails: AccountDetails,
+    onLogOutClick: () -> Unit
+) {
+    Box(Modifier.fillMaxSize()) {
+        Spacer(Modifier.height(24.dp))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            UserImage(
+                imageUrl = accountDetails.avatar,
+                modifier = Modifier.size(64.dp)
+            )
+            Text(
+                text = accountDetails.username,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = accountDetails.name,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
+        Button(
+            onClick = onLogOutClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        ) {
+            Text(stringResource(id = R.string.log_out))
+        }
+    }
+}
 
 @Composable
-fun SettingsDialog(
-    settingsUiState: SettingsUiState,
+private fun LoggedOutView(
+    onNavigateToAuth: () -> Unit
+) {
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.AccountCircle,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp)
+            )
+            Text(
+                text = stringResource(id = R.string.log_in_description),
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Button(
+                onClick = onNavigateToAuth,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(id = R.string.log_in))
+            }
+        }
+    }
+}
+
+@Composable
+private fun SettingsDialog(
+    userSettings: UserSettings,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
     onChangeIncludeAdult: (Boolean) -> Unit,
@@ -120,20 +256,12 @@ fun SettingsDialog(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
-                when (settingsUiState) {
-                    Loading -> {
-                        CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
-                    }
-
-                    is Success -> {
-                        SettingsPanel(
-                            settings = settingsUiState.userSettings,
-                            onChangeTheme = onChangeTheme,
-                            onChangeDarkMode = onChangeDarkMode,
-                            onChangeIncludeAdult = onChangeIncludeAdult
-                        )
-                    }
-                }
+                SettingsPanel(
+                    settings = userSettings,
+                    onChangeTheme = onChangeTheme,
+                    onChangeDarkMode = onChangeDarkMode,
+                    onChangeIncludeAdult = onChangeIncludeAdult
+                )
             }
         },
         confirmButton = {
@@ -258,16 +386,13 @@ private enum class ScreenType {
 @Composable
 private fun SettingsDialogPreview() {
     SettingsDialog(
-        settingsUiState = Success(
-            UserSettings(
-                useDynamicColor = true,
-                includeAdultResults = true,
-                darkMode = SYSTEM
-            )
+        userSettings = UserSettings(
+            useDynamicColor = true,
+            includeAdultResults = true,
+            darkMode = SYSTEM
         ),
         onChangeTheme = {},
         onChangeDarkMode = {},
-        onChangeIncludeAdult = {},
-        onDismissRequest = {}
-    )
+        onChangeIncludeAdult = {}
+    ) {}
 }

@@ -1,12 +1,15 @@
 package com.anshtya.core.local.datastore
 
 import androidx.datastore.core.DataStore
+import com.anshtya.core.local.model.asModel
+import com.anshtya.core.local.proto.AccountDetailsProto
 import com.anshtya.core.local.proto.DarkMode
 import com.anshtya.core.local.proto.FreeContent
 import com.anshtya.core.local.proto.PopularContent
 import com.anshtya.core.local.proto.TrendingContent
 import com.anshtya.core.local.proto.UserPreferences
 import com.anshtya.core.local.proto.copy
+import com.anshtya.core.model.AccountDetails
 import com.anshtya.core.model.FreeContentType
 import com.anshtya.core.model.PopularContentType
 import com.anshtya.core.model.SelectedDarkMode
@@ -18,11 +21,13 @@ import javax.inject.Inject
 class UserPreferencesDataStore @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>
 ) {
+    private val accountDetailsDefaultInstance = AccountDetailsProto.getDefaultInstance()
     val userData = userPreferences.data
         .map {
             UserData(
                 useDynamicColor = it.useDynamicColor,
                 includeAdultResults = it.includeAdultResults,
+                isLoggedIn = it.accountDetails != accountDetailsDefaultInstance,
                 darkMode = when (it.darkMode) {
                     null,
                     DarkMode.UNRECOGNIZED,
@@ -56,7 +61,8 @@ class UserPreferencesDataStore @Inject constructor(
                     -> TrendingContentTimeWindow.DAY
 
                     TrendingContent.TRENDING_CONTENT_WEEK -> TrendingContentTimeWindow.WEEK
-                }
+                },
+                accountDetails = it.accountDetails.asModel()
             )
         }
 
@@ -117,6 +123,27 @@ class UserPreferencesDataStore @Inject constructor(
                     TrendingContentTimeWindow.WEEK -> TrendingContent.TRENDING_CONTENT_WEEK
                 }
             }
+        }
+    }
+
+    suspend fun saveAccountDetails(accountDetails: AccountDetails) {
+        userPreferences.updateData {
+            it.copy {
+                this.accountDetails = this.accountDetails.copy {
+                    id = accountDetails.id
+                    name = accountDetails.name
+                    username = accountDetails.username
+                    gravatar = accountDetails.gravatar
+                    avatar = accountDetails.avatar
+                    includeAdult = accountDetails.includeAdult
+                }
+            }
+        }
+    }
+
+    suspend fun removeAccountDetails() {
+        userPreferences.updateData {
+            it.copy { this.accountDetails = accountDetailsDefaultInstance }
         }
     }
 }

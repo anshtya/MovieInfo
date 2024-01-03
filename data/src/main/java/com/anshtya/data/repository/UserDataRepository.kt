@@ -1,5 +1,6 @@
 package com.anshtya.data.repository
 
+import com.anshtya.core.model.AccountDetails
 import com.anshtya.core.model.FreeContentType
 import com.anshtya.core.model.PopularContentType
 import com.anshtya.core.model.SelectedDarkMode
@@ -17,4 +18,6 @@ interface UserDataRepository {
     suspend fun setTrendingContentPreference(
         selectedTrendingContentTimeWindow: TrendingContentTimeWindow
     )
+    suspend fun saveAccountDetails(accountDetails: AccountDetails)
+    suspend fun removeAccountDetails()
 }

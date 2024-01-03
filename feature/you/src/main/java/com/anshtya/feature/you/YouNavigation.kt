@@ -7,9 +7,9 @@ import androidx.navigation.compose.composable
 
 private const val youNavigationRoute = "com/anshtya/feature/you"
 
-fun NavGraphBuilder.youScreen() {
+fun NavGraphBuilder.youScreen(onNavigateToAuth: () -> Unit) {
     composable(route = youNavigationRoute) {
-        YouRoute()
+        YouRoute(onNavigateToAuth = onNavigateToAuth)
     }
 }
 

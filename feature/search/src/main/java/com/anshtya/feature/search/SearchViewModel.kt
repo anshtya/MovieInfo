@@ -6,7 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.anshtya.core.model.SearchItem
 import com.anshtya.core.model.SearchSuggestion
-import com.anshtya.data.model.Response
+import com.anshtya.data.model.NetworkResponse
 import com.anshtya.data.repository.SearchRepository
 import com.anshtya.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -98,8 +98,8 @@ class SearchViewModel @Inject constructor(
                     includeAdult = _includeAdult.first()
                 )
                 when (response) {
-                    is Response.Success -> response.data
-                    is Response.Error -> {
+                    is NetworkResponse.Success -> response.data
+                    is NetworkResponse.Error -> {
                         _showError.update { true }
                         emptyList()
                     }

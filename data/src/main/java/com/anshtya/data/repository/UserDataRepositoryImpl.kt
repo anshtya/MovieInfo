@@ -1,6 +1,7 @@
 package com.anshtya.data.repository
 
 import com.anshtya.core.local.datastore.UserPreferencesDataStore
+import com.anshtya.core.model.AccountDetails
 import com.anshtya.core.model.FreeContentType
 import com.anshtya.core.model.PopularContentType
 import com.anshtya.core.model.SelectedDarkMode
@@ -40,5 +41,13 @@ internal class UserDataRepositoryImpl @Inject constructor(
         selectedTrendingContentTimeWindow: TrendingContentTimeWindow
     ) {
         userPreferencesDataStore.setTrendingContentPreference(selectedTrendingContentTimeWindow)
+    }
+
+    override suspend fun saveAccountDetails(accountDetails: AccountDetails) {
+        userPreferencesDataStore.saveAccountDetails(accountDetails)
+    }
+
+    override suspend fun removeAccountDetails() {
+        userPreferencesDataStore.removeAccountDetails()
     }
 }

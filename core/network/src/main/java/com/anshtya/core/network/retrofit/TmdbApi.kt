@@ -1,9 +1,20 @@
 package com.anshtya.core.network.retrofit
 
+import com.anshtya.core.network.model.NetworkAccountDetails
+import com.anshtya.core.network.model.DeleteSessionRequest
+import com.anshtya.core.network.model.LoginRequest
+import com.anshtya.core.network.model.LoginResponse
 import com.anshtya.core.network.model.MultiSearchResponse
+import com.anshtya.core.network.model.RequestTokenResponse
 import com.anshtya.core.network.model.SearchResponse
+import com.anshtya.core.network.model.SessionRequest
+import com.anshtya.core.network.model.SessionResponse
 import com.anshtya.core.network.model.StreamingItemResponse
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.HTTP
+import retrofit2.http.Headers
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -67,4 +78,30 @@ interface TmdbApi {
         @Query("query") query: String,
         @Query("include_adult") includeAdult: Boolean
     ): SearchResponse
+
+    @GET("authentication/token/new")
+    suspend fun createRequestToken(): RequestTokenResponse
+
+    @Headers("content-type: application/json")
+    @POST("authentication/token/validate_with_login")
+    suspend fun validateWithLogin(
+        @Body loginRequest: LoginRequest
+    ): LoginResponse
+
+    @Headers("content-type: application/json")
+    @POST("authentication/session/new")
+    suspend fun createSession(
+        @Body sessionRequest: SessionRequest
+    ): SessionResponse
+
+    @GET("account")
+    suspend fun getAccountDetails(
+        @Query("session_id") sessionId: String
+    ): NetworkAccountDetails
+
+    @Headers("content-type: application/json")
+    @HTTP(method = "DELETE", path = "authentication/session",hasBody = true)
+    suspend fun deleteSession(
+        @Body deleteSessionRequest: DeleteSessionRequest
+    )
 }

@@ -7,7 +7,7 @@ import com.anshtya.core.model.SearchItem
 import com.anshtya.core.model.SearchSuggestion
 import com.anshtya.core.network.model.asModel
 import com.anshtya.core.network.retrofit.TmdbApi
-import com.anshtya.data.model.Response
+import com.anshtya.data.model.NetworkResponse
 import com.anshtya.data.paging.SearchMoviePagingSource
 import com.anshtya.data.paging.SearchTVPagingSource
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +26,7 @@ internal class SearchRepositoryImpl @Inject constructor(
     override suspend fun multiSearch(
         query: String,
         includeAdult: Boolean
-    ): Response<List<SearchSuggestion>> {
+    ): NetworkResponse<List<SearchSuggestion>> {
         return try {
             val result = tmdbApi.multiSearch(
                 query = query,
@@ -34,11 +34,11 @@ internal class SearchRepositoryImpl @Inject constructor(
             )
                 .results.take(6)
                 .map { suggestion -> suggestion.asModel() }
-            Response.Success(result)
+            NetworkResponse.Success(result)
         } catch (e: IOException) {
-            Response.Error
+            NetworkResponse.Error()
         } catch (e: HttpException) {
-            Response.Error
+            NetworkResponse.Error()
         }
     }
 

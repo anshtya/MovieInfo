@@ -9,7 +9,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -20,6 +22,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.anshtya.feature.auth.authScreenNavigationRoute
 import com.anshtya.feature.home.navigateToHome
 import com.anshtya.movieinfo.navigation.MovieInfoDestination
 import com.anshtya.movieinfo.navigation.MovieInfoNavigation
@@ -33,15 +36,20 @@ fun MovieInfoApp(
     val destinations = MovieInfoDestination.entries.toList()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val showBottomBar by remember(currentDestination) {
+        derivedStateOf { currentDestination?.route != authScreenNavigationRoute }
+    }
     Scaffold(
         bottomBar = {
-            MovieInfoNavigationBar(
-                destinations = destinations,
-                currentDestination = currentDestination,
-                onNavigateToDestination = { destination ->
-                    navController.navigateToDestination(destination)
-                }
-            )
+            if (showBottomBar) {
+                MovieInfoNavigationBar(
+                    destinations = destinations,
+                    currentDestination = currentDestination,
+                    onNavigateToDestination = { destination ->
+                        navController.navigateToDestination(destination)
+                    }
+                )
+            }
         }
     ) { padding ->
         Column(

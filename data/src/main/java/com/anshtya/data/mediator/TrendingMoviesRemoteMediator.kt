@@ -28,9 +28,8 @@ internal class TrendingMoviesRemoteMediator(
 
     override suspend fun initialize(): InitializeAction {
         val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)
-        return if (shouldReload ||
-            System.currentTimeMillis() - lastModifiedDao.entityLastModified(entityName) >= cacheTimeout
-        ) {
+        val lastModified = lastModifiedDao.entityLastModified(entityName)
+        return if (shouldReload || System.currentTimeMillis() - lastModified >= cacheTimeout) {
             InitializeAction.LAUNCH_INITIAL_REFRESH
         } else {
             InitializeAction.SKIP_INITIAL_REFRESH
@@ -81,7 +80,7 @@ internal class TrendingMoviesRemoteMediator(
                     name = entityName,
                     lastModified = System.currentTimeMillis()
                 )
-                lastModifiedDao.updateLastModifiedTime(lastModifiedEntity)
+                lastModifiedDao.upsertLastModifiedTime(lastModifiedEntity)
             }
             MediatorResult.Success(endOfPaginationReached)
         } catch (e: Exception) {

@@ -9,6 +9,7 @@ import com.anshtya.core.model.TrendingContentTimeWindow
 import com.anshtya.data.repository.ContentRepository
 import com.anshtya.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -37,14 +38,14 @@ class HomeViewModel @Inject constructor(
             replay = 1
         )
 
-    private val _trendingContentFilters = TrendingContentFilter.entries.toList()
-    val trendingContentFilters = _trendingContentFilters.map { it.uiText }
+    private val _trendingContentFilters = TrendingContentFilter.entries
+    val trendingContentFilters = _trendingContentFilters.map { it.uiText }.toImmutableList()
 
-    private val _popularContentFilters = PopularContentFilter.entries.toList()
-    val popularContentFilters = _popularContentFilters.map { it.uiText }
+    private val _popularContentFilters = PopularContentFilter.entries
+    val popularContentFilters = _popularContentFilters.map { it.uiText }.toImmutableList()
 
-    private val _freeContentFilters = FreeContentFilter.entries.toList()
-    val freeContentFilters = _freeContentFilters.map { it.uiText }
+    private val _freeContentFilters = FreeContentFilter.entries
+    val freeContentFilters = _freeContentFilters.map { it.uiText }.toImmutableList()
 
     val selectedTrendingContentFilterIndex = userDataRepository.userData
         .map {

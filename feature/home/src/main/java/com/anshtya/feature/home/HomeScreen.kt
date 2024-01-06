@@ -39,7 +39,6 @@ import com.anshtya.core.model.MediaItem
 import com.anshtya.core.ui.FilterDropdownMenu
 import com.anshtya.core.ui.MediaItemCard
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 private val horizontalPadding = 10.dp
 
@@ -61,9 +60,9 @@ internal fun HomeRoute(
         trendingMovies = LazyPagingContent(trendingMovies),
         popularContent = LazyPagingContent(popularContent),
         freeContent = LazyPagingContent(freeContent),
-        trendingContentFilters = trendingContentFilters.toImmutableList(),
-        popularContentFilters = popularContentFilters.toImmutableList(),
-        freeContentFilters = freeContentFilters.toImmutableList(),
+        trendingContentFilters = trendingContentFilters,
+        popularContentFilters = popularContentFilters,
+        freeContentFilters = freeContentFilters,
         selectedTrendingContentFilterIndex = selectedTrendingContentFilterIndex,
         selectedPopularContentFilterIndex = selectedPopularContentFilterIndex,
         selectedFreeContentFilterIndex = selectedFreeContentFilterIndex,

@@ -18,7 +18,7 @@ data class PopularContentEntity(
 )
 
 fun PopularContentEntity.asModel() = MediaItem(
-    id = remoteId,
+    mediaId = remoteId,
     imagePath = imagePath,
     name = name,
     overview = overview

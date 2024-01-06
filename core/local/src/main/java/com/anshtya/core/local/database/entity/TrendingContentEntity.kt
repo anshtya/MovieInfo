@@ -18,7 +18,7 @@ data class TrendingContentEntity(
 )
 
 fun TrendingContentEntity.asModel() = MediaItem(
-    id = remoteId,
+    mediaId = remoteId,
     imagePath = imagePath,
     name = name,
     overview = overview

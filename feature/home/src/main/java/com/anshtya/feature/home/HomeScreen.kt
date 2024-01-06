@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.anshtya.core.model.MediaItem
 import com.anshtya.core.ui.FilterDropdownMenu
 import com.anshtya.core.ui.MediaItemCard
@@ -220,7 +221,8 @@ private fun ContentSection(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(
-                        count = content.items.itemCount
+                        count = content.items.itemCount,
+                        key = content.items.itemKey { it.id }
                     ) { index ->
                         content.items[index]?.let { streamingItem ->
                             MediaItemCard(

@@ -21,7 +21,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,12 +34,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
-import com.anshtya.core.model.FreeItem
-import com.anshtya.core.model.PopularItem
-import com.anshtya.core.model.TrendingItem
+import com.anshtya.core.model.MediaItem
 import com.anshtya.core.ui.FilterDropdownMenu
-import com.anshtya.core.ui.StreamingItemCard
+import com.anshtya.core.ui.MediaItemCard
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 private val horizontalPadding = 10.dp
 
@@ -55,12 +57,12 @@ internal fun HomeRoute(
     val selectedFreeContentFilterIndex by homeViewModel.selectedFreeContentFilterIndex.collectAsStateWithLifecycle()
 
     HomeScreen(
-        trendingMovies = trendingMovies,
-        popularContent = popularContent,
-        freeContent = freeContent,
-        trendingContentFilters = trendingContentFilters,
-        popularContentFilters = popularContentFilters,
-        freeContentFilters = freeContentFilters,
+        trendingMovies = LazyPagingContent(trendingMovies),
+        popularContent = LazyPagingContent(popularContent),
+        freeContent = LazyPagingContent(freeContent),
+        trendingContentFilters = trendingContentFilters.toImmutableList(),
+        popularContentFilters = popularContentFilters.toImmutableList(),
+        freeContentFilters = freeContentFilters.toImmutableList(),
         selectedTrendingContentFilterIndex = selectedTrendingContentFilterIndex,
         selectedPopularContentFilterIndex = selectedPopularContentFilterIndex,
         selectedFreeContentFilterIndex = selectedFreeContentFilterIndex,
@@ -72,12 +74,12 @@ internal fun HomeRoute(
 
 @Composable
 internal fun HomeScreen(
-    trendingMovies: LazyPagingItems<TrendingItem>,
-    popularContent: LazyPagingItems<PopularItem>,
-    freeContent: LazyPagingItems<FreeItem>,
-    trendingContentFilters: List<Int>,
-    popularContentFilters: List<Int>,
-    freeContentFilters: List<Int>,
+    trendingMovies: LazyPagingContent,
+    popularContent: LazyPagingContent,
+    freeContent: LazyPagingContent,
+    trendingContentFilters: ImmutableList<Int>,
+    popularContentFilters: ImmutableList<Int>,
+    freeContentFilters: ImmutableList<Int>,
     selectedTrendingContentFilterIndex: Int,
     selectedPopularContentFilterIndex: Int,
     selectedFreeContentFilterIndex: Int,
@@ -92,7 +94,7 @@ internal fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             trendingSection(
-                trendingMovies = trendingMovies,
+                trendingContent = trendingMovies,
                 filters = trendingContentFilters,
                 selectedFilterIndex = selectedTrendingContentFilterIndex,
                 onFilterClick = onTrendingContentFilterClick
@@ -114,192 +116,126 @@ internal fun HomeScreen(
 }
 
 private fun LazyListScope.trendingSection(
-    trendingMovies: LazyPagingItems<TrendingItem>,
-    filters: List<Int>,
+    trendingContent: LazyPagingContent,
+    filters: ImmutableList<Int>,
     selectedFilterIndex: Int,
     onFilterClick: (Int) -> Unit
 ) {
     item {
-        val lazyRowState = rememberLazyListState()
-        LaunchedEffect(selectedFilterIndex) {
-            lazyRowState.scrollToItem(0)
-        }
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            ContentSection(
-                sectionName = R.string.trending,
-                filters = filters,
-                selectedFilterIndex = selectedFilterIndex,
-                onFilterClick = onFilterClick
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = horizontalPadding),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    state = lazyRowState,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(
-                        count = trendingMovies.itemCount,
-                        key = trendingMovies.itemKey { it.id }
-                    ) { index ->
-                        trendingMovies[index]?.let { streamingItem ->
-                            StreamingItemCard(
-                                posterPath = streamingItem.imagePath,
-                                modifier = Modifier.fillMaxHeight()
-                            )
-                        }
-                    }
-                    item {
-                        if (trendingMovies.loadState.mediator?.append is LoadState.Loading) {
-                            Box(Modifier.fillMaxHeight()) {
-                                CircularProgressIndicator(Modifier.align(Alignment.Center))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-private fun LazyListScope.popularContentSection(
-    popularContent: LazyPagingItems<PopularItem>,
-    filters: List<Int>,
-    selectedFilterIndex: Int,
-    onFilterClick: (Int) -> Unit
-) {
-    item {
-        val lazyRowState = rememberLazyListState()
-        LaunchedEffect(selectedFilterIndex) {
-            lazyRowState.scrollToItem(0)
-        }
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            ContentSection(
-                sectionName = R.string.popular,
-                filters = filters,
-                selectedFilterIndex = selectedFilterIndex,
-                onFilterClick = onFilterClick
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = horizontalPadding),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    state = lazyRowState,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(
-                        count = popularContent.itemCount,
-                        key = popularContent.itemKey { it.id }
-                    ) { index ->
-                        popularContent[index]?.let { streamingItem ->
-                            StreamingItemCard(
-                                posterPath = streamingItem.imagePath,
-                                modifier = Modifier.fillMaxHeight()
-                            )
-                        }
-                    }
-                    item {
-                        if (popularContent.loadState.mediator?.append is LoadState.Loading) {
-                            Box(Modifier.fillMaxHeight()) {
-                                CircularProgressIndicator(Modifier.align(Alignment.Center))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-private fun LazyListScope.freeToWatchSection(
-    freeContent: LazyPagingItems<FreeItem>,
-    filters: List<Int>,
-    selectedFilterIndex: Int,
-    onFilterClick: (Int) -> Unit
-) {
-    item {
-        val lazyRowState = rememberLazyListState()
-        LaunchedEffect(selectedFilterIndex) {
-            lazyRowState.scrollToItem(0)
-        }
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            ContentSection(
-                sectionName = R.string.free_to_watch,
-                filters = filters,
-                selectedFilterIndex = selectedFilterIndex,
-                onFilterClick = onFilterClick
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = horizontalPadding),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    state = lazyRowState,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(
-                        count = freeContent.itemCount,
-                        key = freeContent.itemKey { it.id }
-                    ) { index ->
-                        freeContent[index]?.let { streamingItem ->
-                            StreamingItemCard(
-                                posterPath = streamingItem.imagePath,
-                                modifier = Modifier.fillMaxHeight()
-                            )
-                        }
-                    }
-                    item {
-                        if (freeContent.loadState.mediator?.append is LoadState.Loading) {
-                            Box(Modifier.fillMaxHeight()) {
-                                CircularProgressIndicator(Modifier.align(Alignment.Center))
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ContentSection(
-    @StringRes sectionName: Int,
-    filters: List<Int>,
-    selectedFilterIndex: Int,
-    onFilterClick: (Int) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = horizontalPadding),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(id = sectionName),
-            style = MaterialTheme.typography.headlineMedium
-        )
-        FilterDropdownMenu(
+        ContentSection(
+            content = trendingContent,
+            sectionName = R.string.trending,
             filters = filters,
             selectedFilterIndex = selectedFilterIndex,
             onFilterClick = onFilterClick
         )
     }
 }
+
+private fun LazyListScope.popularContentSection(
+    popularContent: LazyPagingContent,
+    filters: ImmutableList<Int>,
+    selectedFilterIndex: Int,
+    onFilterClick: (Int) -> Unit
+) {
+    item {
+        ContentSection(
+            content = popularContent,
+            sectionName = R.string.popular,
+            filters = filters,
+            selectedFilterIndex = selectedFilterIndex,
+            onFilterClick = onFilterClick
+        )
+    }
+}
+
+private fun LazyListScope.freeToWatchSection(
+    freeContent: LazyPagingContent,
+    filters: ImmutableList<Int>,
+    selectedFilterIndex: Int,
+    onFilterClick: (Int) -> Unit
+) {
+    item {
+        ContentSection(
+            content = freeContent,
+            sectionName = R.string.free_to_watch,
+            filters = filters,
+            selectedFilterIndex = selectedFilterIndex,
+            onFilterClick = onFilterClick
+        )
+    }
+}
+
+@Composable
+private fun ContentSection(
+    content: LazyPagingContent,
+    @StringRes sectionName: Int,
+    filters: ImmutableList<Int>,
+    selectedFilterIndex: Int,
+    onFilterClick: (Int) -> Unit
+) {
+
+    val isLoading by remember(content.items.loadState.refresh) {
+        derivedStateOf { content.items.loadState.refresh is LoadState.Loading }
+    }
+
+    val lazyRowState = rememberLazyListState()
+    LaunchedEffect(isLoading) {
+        if (isLoading) lazyRowState.scrollToItem(0)
+    }
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = horizontalPadding),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = sectionName),
+                style = MaterialTheme.typography.headlineMedium
+            )
+            FilterDropdownMenu(
+                filters = filters,
+                selectedFilterIndex = selectedFilterIndex,
+                onFilterClick = onFilterClick
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
+            } else {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = horizontalPadding),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    state = lazyRowState,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(
+                        count = content.items.itemCount
+                    ) { index ->
+                        content.items[index]?.let { streamingItem ->
+                            MediaItemCard(
+                                posterPath = streamingItem.imagePath,
+                                modifier = Modifier.fillMaxHeight()
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Stable
+internal data class LazyPagingContent(
+    val items: LazyPagingItems<MediaItem>
+)

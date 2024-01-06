@@ -21,10 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun FilterDropdownMenu(
-    filters: List<Int>,
+    filters: ImmutableList<Int>,
     selectedFilterIndex: Int,
     onFilterClick: (Int) -> Unit
 ) {

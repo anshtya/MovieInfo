@@ -3,7 +3,7 @@ package com.anshtya.core.local.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.anshtya.core.model.TrendingItem
+import com.anshtya.core.model.MediaItem
 
 @Entity(tableName = "trending_content")
 data class TrendingContentEntity(
@@ -17,7 +17,7 @@ data class TrendingContentEntity(
     val overview: String
 )
 
-fun TrendingContentEntity.asModel() = TrendingItem(
+fun TrendingContentEntity.asModel() = MediaItem(
     id = remoteId,
     imagePath = imagePath,
     name = name,

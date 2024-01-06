@@ -17,4 +17,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation(libs.androidx.paging.compose)
+    implementation(libs.kotlinx.collections.immutable)
 }

@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun StreamingItemCard(
+fun MediaItemCard(
     posterPath: String,
     modifier: Modifier = Modifier
 ) {
@@ -20,7 +20,7 @@ fun StreamingItemCard(
         ),
         modifier = modifier.width(140.dp)
     ) {
-        StreamingItemImage(
+        MediaItemImage(
             imageUrl = posterPath
         )
     }

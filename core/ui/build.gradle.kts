@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.core.ktx)
     implementation(libs.coil.kt.compose)
+    implementation(libs.kotlinx.collections.immutable)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

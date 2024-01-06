@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anshtya.core.ui.StreamingItemImage
+import com.anshtya.core.ui.MediaItemImage
 
 @Composable
 internal fun SearchSuggestionItem(
@@ -23,7 +23,7 @@ internal fun SearchSuggestionItem(
             .fillMaxWidth()
             .padding(10.dp)
     ) {
-        StreamingItemImage(
+        MediaItemImage(
             imageUrl = imagePath,
             modifier = Modifier.size(50.dp)
         )

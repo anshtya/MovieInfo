@@ -46,7 +46,7 @@ fun SearchResultCard(
                    .fillMaxHeight()
                    .width(120.dp)
             ) {
-                StreamingItemImage(imageUrl = posterPath)
+                MediaItemImage(imageUrl = posterPath)
             }
             Column(
                 verticalArrangement = Arrangement.Center,

@@ -3,7 +3,7 @@ package com.anshtya.core.local.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.anshtya.core.model.FreeItem
+import com.anshtya.core.model.MediaItem
 
 @Entity(tableName = "free_content")
 data class FreeContentEntity(
@@ -17,7 +17,7 @@ data class FreeContentEntity(
     val overview: String
 )
 
-fun FreeContentEntity.asModel() = FreeItem(
+fun FreeContentEntity.asModel() = MediaItem(
     id = remoteId,
     imagePath = imagePath,
     name = name,

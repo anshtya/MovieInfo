@@ -10,7 +10,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 
 @Composable
-fun StreamingItemImage(
+fun MediaItemImage(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {

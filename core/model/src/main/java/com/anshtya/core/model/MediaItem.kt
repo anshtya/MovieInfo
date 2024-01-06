@@ -1,6 +1,6 @@
 package com.anshtya.core.model
 
-data class PopularItem(
+data class MediaItem(
     val id: Long,
     val imagePath: String,
     val name: String,

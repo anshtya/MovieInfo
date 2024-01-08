@@ -2,7 +2,7 @@ package com.anshtya.core.network.model
 
 import com.squareup.moshi.Json
 
-data class NetworkStreamingItem(
+data class NetworkMediaItem(
     val id: Long,
     val name: String?,
     val overview: String?,

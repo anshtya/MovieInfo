@@ -1,9 +1,9 @@
 package com.anshtya.data.model
 
 import com.anshtya.core.local.database.entity.FreeContentEntity
-import com.anshtya.core.network.model.NetworkStreamingItem
+import com.anshtya.core.network.model.NetworkMediaItem
 
-fun NetworkStreamingItem.asFreeContentEntity() = FreeContentEntity(
+fun NetworkMediaItem.asFreeContentEntity() = FreeContentEntity(
     remoteId = id,
     imagePath = posterPath,
     name = when {

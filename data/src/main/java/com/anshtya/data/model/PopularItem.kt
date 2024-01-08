@@ -1,9 +1,9 @@
 package com.anshtya.data.model
 
 import com.anshtya.core.local.database.entity.PopularContentEntity
-import com.anshtya.core.network.model.NetworkStreamingItem
+import com.anshtya.core.network.model.NetworkMediaItem
 
-fun NetworkStreamingItem.asPopularContentEntity() = PopularContentEntity(
+fun NetworkMediaItem.asPopularContentEntity() = PopularContentEntity(
     remoteId = id,
     imagePath = posterPath,
     name = when {

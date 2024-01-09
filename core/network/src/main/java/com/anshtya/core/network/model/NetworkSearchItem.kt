@@ -6,18 +6,13 @@ import com.squareup.moshi.Json
 data class NetworkSearchItem(
     val id: Int,
     val name: String?,
-    val overview: String?,
-    @field:Json(name = "poster_path") val posterPath: String?,
     val title: String?,
+    @field:Json(name = "poster_path") val posterPath: String?,
+    @field:Json(name = "profile_path") val profilePath: String?,
 )
 
 fun NetworkSearchItem.asModel() = SearchItem(
     id = id,
-    name = when {
-        !title.isNullOrEmpty() -> title
-        !name.isNullOrEmpty() -> name
-        else -> ""
-    },
-    overview = overview ?: "",
-    posterPath = posterPath ?: ""
+    name = title ?: name ?: "",
+    imagePath = posterPath ?: profilePath ?: ""
 )

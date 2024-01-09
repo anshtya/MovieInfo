@@ -1,15 +1,14 @@
 package com.anshtya.core.network.retrofit
 
-import com.anshtya.core.network.model.NetworkAccountDetails
 import com.anshtya.core.network.model.DeleteSessionRequest
 import com.anshtya.core.network.model.LoginRequest
 import com.anshtya.core.network.model.LoginResponse
-import com.anshtya.core.network.model.MultiSearchResponse
+import com.anshtya.core.network.model.MediaItemResponse
+import com.anshtya.core.network.model.NetworkAccountDetails
 import com.anshtya.core.network.model.RequestTokenResponse
 import com.anshtya.core.network.model.SearchResponse
 import com.anshtya.core.network.model.SessionRequest
 import com.anshtya.core.network.model.SessionResponse
-import com.anshtya.core.network.model.MediaItemResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.HTTP
@@ -60,20 +59,6 @@ interface TmdbApi {
 
     @GET("search/multi")
     suspend fun multiSearch(
-        @Query("page") page: Int = 1,
-        @Query("query") query: String,
-        @Query("include_adult") includeAdult: Boolean
-    ): MultiSearchResponse
-
-    @GET("search/movie")
-    suspend fun searchMovie(
-        @Query("page") page: Int = 1,
-        @Query("query") query: String,
-        @Query("include_adult") includeAdult: Boolean
-    ): SearchResponse
-
-    @GET("search/tv")
-    suspend fun searchTV(
         @Query("page") page: Int = 1,
         @Query("query") query: String,
         @Query("include_adult") includeAdult: Boolean

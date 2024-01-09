@@ -22,7 +22,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.anshtya.feature.auth.authScreenNavigationRoute
 import com.anshtya.feature.home.navigateToHome
 import com.anshtya.movieinfo.navigation.MovieInfoDestination
 import com.anshtya.movieinfo.navigation.MovieInfoNavigation
@@ -37,7 +36,11 @@ fun MovieInfoApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val showBottomBar by remember(currentDestination) {
-        derivedStateOf { currentDestination?.route != authScreenNavigationRoute }
+        derivedStateOf {
+            destinations.any { destination ->
+                currentDestination?.route?.contains(destination.name, true) ?: false
+            }
+        }
     }
     Scaffold(
         bottomBar = {

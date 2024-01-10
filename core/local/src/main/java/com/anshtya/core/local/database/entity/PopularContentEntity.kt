@@ -13,13 +13,11 @@ data class PopularContentEntity(
     val remoteId: Long,
     @ColumnInfo(name = "image_path")
     val imagePath: String,
-    val name: String,
-    val overview: String
+    val name: String
 )
 
 fun PopularContentEntity.asModel() = MediaItem(
     mediaId = remoteId,
     imagePath = imagePath,
-    name = name,
-    overview = overview
+    name = name
 )

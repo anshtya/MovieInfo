@@ -10,6 +10,5 @@ fun NetworkMediaItem.asPopularContentEntity() = PopularContentEntity(
         !title.isNullOrEmpty() -> title!!
         !name.isNullOrEmpty() -> name!!
         else -> ""
-    },
-    overview = overview ?: ""
+    }
 )

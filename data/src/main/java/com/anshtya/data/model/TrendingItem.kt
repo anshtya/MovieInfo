@@ -10,6 +10,5 @@ fun NetworkMediaItem.asTrendingContentEntity() = TrendingContentEntity(
         !title.isNullOrEmpty() -> title!!
         !name.isNullOrEmpty() -> name!!
         else -> ""
-    },
-    overview = overview ?: ""
+    }
 )

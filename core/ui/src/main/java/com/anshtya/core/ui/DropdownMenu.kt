@@ -1,6 +1,7 @@
 package com.anshtya.core.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -37,7 +38,10 @@ fun FilterDropdownMenu(
             color = MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier
                 .size(height = 28.dp, width = 100.dp)
-                .clickable { isExpanded = !isExpanded }
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { isExpanded = !isExpanded }
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

@@ -10,6 +10,5 @@ fun NetworkMediaItem.asFreeContentEntity() = FreeContentEntity(
         !title.isNullOrEmpty() -> title!!
         !name.isNullOrEmpty() -> name!!
         else -> ""
-    },
-    overview = overview ?: ""
+    }
 )

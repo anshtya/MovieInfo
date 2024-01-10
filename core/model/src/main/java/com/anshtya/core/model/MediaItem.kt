@@ -6,6 +6,5 @@ data class MediaItem(
     val id: String = UUID.randomUUID().toString(),
     val mediaId: Long,
     val imagePath: String,
-    val name: String,
-    val overview: String
+    val name: String
 )

@@ -4,7 +4,7 @@ import java.util.UUID
 
 data class MediaItem(
     val id: String = UUID.randomUUID().toString(),
-    val mediaId: Long,
+    val mediaId: Int,
     val imagePath: String,
     val name: String
 )

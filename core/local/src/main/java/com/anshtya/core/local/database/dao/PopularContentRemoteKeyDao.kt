@@ -12,7 +12,7 @@ interface PopularContentRemoteKeyDao {
     suspend fun insert(remoteKeys: List<PopularContentRemoteKey>)
 
     @Query("SELECT * FROM popular_content_remote_key WHERE id = :query")
-    suspend fun remoteKeyByQuery(query: Long): PopularContentRemoteKey
+    suspend fun remoteKeyByQuery(query: Int): PopularContentRemoteKey
 
     @Query("DELETE FROM popular_content_remote_key")
     suspend fun clearAll()

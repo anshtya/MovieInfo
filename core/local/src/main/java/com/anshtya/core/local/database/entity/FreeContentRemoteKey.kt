@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "free_content_remote_key")
 data class FreeContentRemoteKey(
     @PrimaryKey
-    val id: Long,
+    val id: Int,
     val nextKey: Int?,
 )

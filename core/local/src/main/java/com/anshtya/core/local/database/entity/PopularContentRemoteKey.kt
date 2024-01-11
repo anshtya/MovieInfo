@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "popular_content_remote_key")
 data class PopularContentRemoteKey(
     @PrimaryKey
-    val id: Long,
+    val id: Int,
     val nextKey: Int?,
 )

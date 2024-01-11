@@ -12,7 +12,7 @@ interface TrendingContentRemoteKeyDao {
     suspend fun insert(remoteKeys: List<TrendingContentRemoteKey>)
 
     @Query("SELECT * FROM trending_content_remote_key WHERE id = :query")
-    suspend fun remoteKeyByQuery(query: Long): TrendingContentRemoteKey
+    suspend fun remoteKeyByQuery(query: Int): TrendingContentRemoteKey
 
     @Query("DELETE FROM trending_content_remote_key")
     suspend fun clearAll()

@@ -12,7 +12,7 @@ interface FreeContentRemoteKeyDao {
     suspend fun insert(remoteKeys: List<FreeContentRemoteKey>)
 
     @Query("SELECT * FROM free_content_remote_key WHERE id = :query")
-    suspend fun remoteKeyByQuery(query: Long): FreeContentRemoteKey
+    suspend fun remoteKeyByQuery(query: Int): FreeContentRemoteKey
 
     @Query("DELETE FROM free_content_remote_key")
     suspend fun clearAll()

@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "trending_content_remote_key")
 data class TrendingContentRemoteKey(
     @PrimaryKey
-    val id: Long,
+    val id: Int,
     val nextKey: Int?,
 )

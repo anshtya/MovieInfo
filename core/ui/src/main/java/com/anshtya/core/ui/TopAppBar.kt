@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MovieInfoTopAppBar(
+fun MovieInfoTopSearchAppBar(
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
@@ -55,7 +55,7 @@ fun MovieInfoTopAppBar(
 @Composable
 @Preview
 fun TopAppBarWithSearchPreview() {
-    MovieInfoTopAppBar(
+    MovieInfoTopSearchAppBar(
         query = "Some random text",
         onQueryChange = {},
         onSearch = {},

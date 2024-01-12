@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anshtya.core.ui.MediaItemImage
+import com.anshtya.core.ui.TmdbImage
 
 @Composable
 internal fun SearchSuggestionItem(
@@ -42,10 +42,7 @@ internal fun SearchSuggestionItem(
                     )
                 }
             } else {
-                MediaItemImage(
-                    imageUrl = imagePath,
-                    modifier = Modifier.fillMaxSize()
-                )
+                TmdbImage(imageUrl = imagePath)
             }
         }
         Text(

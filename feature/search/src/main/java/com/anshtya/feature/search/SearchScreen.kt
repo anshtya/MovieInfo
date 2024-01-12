@@ -27,11 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.SearchItem
-import com.anshtya.core.ui.MovieInfoTopAppBar
+import com.anshtya.core.ui.MovieInfoTopSearchAppBar
 
 @Composable
 internal fun SearchRoute(
-    onSearchResultClick: (Int) -> Unit = {},
+    onSearchResultClick: (String) -> Unit,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -56,7 +56,7 @@ internal fun SearchScreen(
     searchSuggestions: List<SearchItem>,
     onSearchQueryChange: (String) -> Unit,
     onBack: () -> Unit,
-    onSearchResultClick: (Int) -> Unit,
+    onSearchResultClick: (String) -> Unit,
     onErrorShown: () -> Unit
 ) {
     var showSearchSuggestions by rememberSaveable { mutableStateOf(false) }
@@ -68,7 +68,7 @@ internal fun SearchScreen(
     }
 
     Column(Modifier.fillMaxSize()) {
-        MovieInfoTopAppBar(
+        MovieInfoTopSearchAppBar(
             query = searchQuery,
             onQueryChange = { onSearchQueryChange(it) },
             onSearch = {},
@@ -96,7 +96,7 @@ internal fun SearchScreen(
                     SearchSuggestionItem(
                         name = it.name,
                         imagePath = it.imagePath,
-                        onItemClick = { onSearchResultClick(it.id) }
+                        onItemClick = { onSearchResultClick("${it.id},${it.mediaType}") }
                     )
                 }
             }

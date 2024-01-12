@@ -7,9 +7,9 @@ import androidx.navigation.compose.composable
 
 const val homeNavigationRoute = "home"
 
-fun NavGraphBuilder.homeScreen() {
+fun NavGraphBuilder.homeScreen(onNavigateToDetail: (String) -> Unit) {
     composable(route = homeNavigationRoute) {
-        HomeRoute()
+        HomeRoute(onItemClick = onNavigateToDetail)
     }
 }
 

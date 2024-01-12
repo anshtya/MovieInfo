@@ -5,6 +5,9 @@ import com.anshtya.core.network.model.LoginRequest
 import com.anshtya.core.network.model.LoginResponse
 import com.anshtya.core.network.model.MediaItemResponse
 import com.anshtya.core.network.model.NetworkAccountDetails
+import com.anshtya.core.network.model.NetworkMovieDetails
+import com.anshtya.core.network.model.NetworkPersonDetails
+import com.anshtya.core.network.model.NetworkTvDetails
 import com.anshtya.core.network.model.RequestTokenResponse
 import com.anshtya.core.network.model.SearchResponse
 import com.anshtya.core.network.model.SessionRequest
@@ -24,7 +27,7 @@ interface TmdbApi {
         @Query("page") page: Int = 1,
         @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
-        @Query("language") language: String ="en-US"
+        @Query("language") language: String = "en-US"
     ): MediaItemResponse
 
     @GET("discover/movie?include_video=false&with_watch_monetization_types=flatrate&sort_by=popularity.desc")
@@ -32,7 +35,7 @@ interface TmdbApi {
         @Query("page") page: Int = 1,
         @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
-        @Query("language") language: String ="en-US"
+        @Query("language") language: String = "en-US"
     ): MediaItemResponse
 
     @GET("discover/movie?include_video=false&with_watch_monetization_types=rent&sort_by=popularity.desc")
@@ -40,7 +43,7 @@ interface TmdbApi {
         @Query("page") page: Int = 1,
         @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
-        @Query("language") language: String ="en-US"
+        @Query("language") language: String = "en-US"
     ): MediaItemResponse
 
     @GET("discover/movie?include_video=false&with_release_type=3|2&sort_by=popularity.desc")
@@ -48,7 +51,7 @@ interface TmdbApi {
         @Query("page") page: Int = 1,
         @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
-        @Query("language") language: String ="en-US"
+        @Query("language") language: String = "en-US"
     ): MediaItemResponse
 
     @GET("trending/movie/{time_window}?language=en-US")
@@ -63,6 +66,21 @@ interface TmdbApi {
         @Query("query") query: String,
         @Query("include_adult") includeAdult: Boolean
     ): SearchResponse
+
+    @GET("movie/{movie_id}")
+    suspend fun getMovieDetails(
+        @Path("movie_id") id: Int
+    ): NetworkMovieDetails
+
+    @GET("tv/{series_id}")
+    suspend fun getTvShowDetails(
+        @Path("series_id") id: Int
+    ): NetworkTvDetails
+
+    @GET("person/{person_id}")
+    suspend fun getPersonDetails(
+        @Path("person_id") id: Int
+    ): NetworkPersonDetails
 
     @GET("authentication/token/new")
     suspend fun createRequestToken(): RequestTokenResponse
@@ -85,7 +103,7 @@ interface TmdbApi {
     ): NetworkAccountDetails
 
     @Headers("content-type: application/json")
-    @HTTP(method = "DELETE", path = "authentication/session",hasBody = true)
+    @HTTP(method = "DELETE", path = "authentication/session", hasBody = true)
     suspend fun deleteSession(
         @Body deleteSessionRequest: DeleteSessionRequest
     )

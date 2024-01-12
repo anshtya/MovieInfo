@@ -36,6 +36,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.anshtya.core.model.DetailType
 import com.anshtya.core.model.MediaItem
 import com.anshtya.core.ui.FilterDropdownMenu
 import com.anshtya.core.ui.MediaItemCard
@@ -45,6 +46,7 @@ private val horizontalPadding = 10.dp
 
 @Composable
 internal fun HomeRoute(
+    onItemClick: (String) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val trendingContentFilters = homeViewModel.trendingContentFilters
@@ -69,7 +71,8 @@ internal fun HomeRoute(
         selectedFreeContentFilterIndex = selectedFreeContentFilterIndex,
         onTrendingContentFilterClick = homeViewModel::setTrendingContentFilter,
         onPopularContentFilterClick = homeViewModel::setPopularContentFilter,
-        onFreeContentFilterClick = homeViewModel::setFreeContentFilter
+        onFreeContentFilterClick = homeViewModel::setFreeContentFilter,
+        onItemClick = onItemClick
     )
 }
 
@@ -86,7 +89,8 @@ internal fun HomeScreen(
     selectedFreeContentFilterIndex: Int,
     onTrendingContentFilterClick: (Int) -> Unit,
     onPopularContentFilterClick: (Int) -> Unit,
-    onFreeContentFilterClick: (Int) -> Unit
+    onFreeContentFilterClick: (Int) -> Unit,
+    onItemClick: (String) -> Unit
 ) {
     Surface {
         LazyColumn(
@@ -98,19 +102,22 @@ internal fun HomeScreen(
                 trendingContent = trendingMovies,
                 filters = trendingContentFilters,
                 selectedFilterIndex = selectedTrendingContentFilterIndex,
-                onFilterClick = onTrendingContentFilterClick
+                onFilterClick = onTrendingContentFilterClick,
+                onItemClick = onItemClick
             )
             popularContentSection(
                 popularContent = popularContent,
                 filters = popularContentFilters,
                 selectedFilterIndex = selectedPopularContentFilterIndex,
-                onFilterClick = onPopularContentFilterClick
+                onFilterClick = onPopularContentFilterClick,
+                onItemClick = onItemClick
             )
             freeToWatchSection(
                 freeContent = freeContent,
                 filters = freeContentFilters,
                 selectedFilterIndex = selectedFreeContentFilterIndex,
-                onFilterClick = onFreeContentFilterClick
+                onFilterClick = onFreeContentFilterClick,
+                onItemClick = onItemClick
             )
         }
     }
@@ -120,7 +127,8 @@ private fun LazyListScope.trendingSection(
     trendingContent: LazyPagingContent,
     filters: ImmutableList<Int>,
     selectedFilterIndex: Int,
-    onFilterClick: (Int) -> Unit
+    onFilterClick: (Int) -> Unit,
+    onItemClick: (String) -> Unit
 ) {
     item {
         ContentSection(
@@ -128,7 +136,8 @@ private fun LazyListScope.trendingSection(
             sectionName = R.string.trending,
             filters = filters,
             selectedFilterIndex = selectedFilterIndex,
-            onFilterClick = onFilterClick
+            onFilterClick = onFilterClick,
+            onItemClick = onItemClick
         )
     }
 }
@@ -137,7 +146,8 @@ private fun LazyListScope.popularContentSection(
     popularContent: LazyPagingContent,
     filters: ImmutableList<Int>,
     selectedFilterIndex: Int,
-    onFilterClick: (Int) -> Unit
+    onFilterClick: (Int) -> Unit,
+    onItemClick: (String) -> Unit
 ) {
     item {
         ContentSection(
@@ -145,7 +155,8 @@ private fun LazyListScope.popularContentSection(
             sectionName = R.string.popular,
             filters = filters,
             selectedFilterIndex = selectedFilterIndex,
-            onFilterClick = onFilterClick
+            onFilterClick = onFilterClick,
+            onItemClick = onItemClick
         )
     }
 }
@@ -154,7 +165,8 @@ private fun LazyListScope.freeToWatchSection(
     freeContent: LazyPagingContent,
     filters: ImmutableList<Int>,
     selectedFilterIndex: Int,
-    onFilterClick: (Int) -> Unit
+    onFilterClick: (Int) -> Unit,
+    onItemClick: (String) -> Unit
 ) {
     item {
         ContentSection(
@@ -162,7 +174,17 @@ private fun LazyListScope.freeToWatchSection(
             sectionName = R.string.free_to_watch,
             filters = filters,
             selectedFilterIndex = selectedFilterIndex,
-            onFilterClick = onFilterClick
+            onFilterClick = onFilterClick,
+            onItemClick = {
+                // This section also contains tv shows so change the value of detail type if
+                // selected index value is 1 (i.e. TV shows)
+                if (selectedFilterIndex == 1) {
+                    val id = it.split(",").first()
+                    onItemClick("$id,${DetailType.TV.typeName}")
+                } else {
+                    onItemClick(it)
+                }
+            }
         )
     }
 }
@@ -173,7 +195,8 @@ private fun ContentSection(
     @StringRes sectionName: Int,
     filters: ImmutableList<Int>,
     selectedFilterIndex: Int,
-    onFilterClick: (Int) -> Unit
+    onFilterClick: (Int) -> Unit,
+    onItemClick: (String) -> Unit
 ) {
 
     val isLoading by remember(content.items.loadState.refresh) {
@@ -228,6 +251,9 @@ private fun ContentSection(
                         content.items[index]?.let { streamingItem ->
                             MediaItemCard(
                                 posterPath = streamingItem.imagePath,
+                                onItemClick = {
+                                    onItemClick("${streamingItem.mediaId},${DetailType.MOVIE.typeName}")
+                                },
                                 modifier = Modifier.fillMaxHeight()
                             )
                         }

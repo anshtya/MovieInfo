@@ -4,6 +4,8 @@ import com.anshtya.data.repository.AuthRepository
 import com.anshtya.data.repository.AuthRepositoryImpl
 import com.anshtya.data.repository.ContentRepository
 import com.anshtya.data.repository.ContentRepositoryImpl
+import com.anshtya.data.repository.DetailsRepository
+import com.anshtya.data.repository.DetailsRepositoryImpl
 import com.anshtya.data.repository.SearchRepository
 import com.anshtya.data.repository.SearchRepositoryImpl
 import com.anshtya.data.repository.UserDataRepository
@@ -34,5 +36,10 @@ internal abstract class RepositoryModule {
     @Binds
     internal abstract fun bindAuthRepository(
         authRepositoryImpl: AuthRepositoryImpl
-    ) : AuthRepository
+    ): AuthRepository
+
+    @Binds
+    internal abstract fun bindDetailsRepository(
+        detailsRepositoryImpl: DetailsRepositoryImpl
+    ): DetailsRepository
 }

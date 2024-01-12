@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.feature.auth"
+    namespace = "com.anshtya.feature.details"
 }
 
 dependencies {

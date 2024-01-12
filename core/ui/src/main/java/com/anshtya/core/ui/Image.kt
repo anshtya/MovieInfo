@@ -10,13 +10,25 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 
 @Composable
-fun MediaItemImage(
-    imageUrl: String,
-    modifier: Modifier = Modifier
+fun TmdbImage(
+    imageUrl: String
 ) {
-    Box(modifier) {
+    Box {
         AsyncImage(
             model = "https://image.tmdb.org/t/p/w500$imageUrl",
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds
+        )
+    }
+}
+
+@Composable
+fun BackdropImage(
+    imageUrl: String
+) {
+    Box {
+        AsyncImage(
+            model = "https://image.tmdb.org/t/p/w1280$imageUrl",
             contentDescription = null,
             contentScale = ContentScale.FillBounds
         )

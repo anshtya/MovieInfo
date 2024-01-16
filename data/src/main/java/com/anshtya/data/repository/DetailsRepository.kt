@@ -1,8 +1,8 @@
 package com.anshtya.data.repository
 
-import com.anshtya.core.model.MovieDetails
-import com.anshtya.core.model.PersonDetails
-import com.anshtya.core.model.TvDetails
+import com.anshtya.core.model.details.MovieDetails
+import com.anshtya.core.model.details.PersonDetails
+import com.anshtya.core.model.details.tv.TvDetails
 import com.anshtya.data.model.NetworkResponse
 
 interface DetailsRepository {

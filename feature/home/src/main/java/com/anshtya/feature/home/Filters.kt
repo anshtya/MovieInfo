@@ -1,9 +1,9 @@
 package com.anshtya.feature.home
 
 import androidx.annotation.StringRes
-import com.anshtya.core.model.FreeContentType
-import com.anshtya.core.model.PopularContentType
-import com.anshtya.core.model.TrendingContentTimeWindow
+import com.anshtya.core.model.content.FreeContentType
+import com.anshtya.core.model.content.PopularContentType
+import com.anshtya.core.model.content.TrendingContentTimeWindow
 
 enum class TrendingContentFilter(
     @StringRes val uiText: Int

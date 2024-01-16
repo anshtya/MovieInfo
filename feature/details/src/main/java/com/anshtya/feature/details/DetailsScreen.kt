@@ -31,9 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.core.model.MovieDetails
-import com.anshtya.core.model.PersonDetails
-import com.anshtya.core.model.TvDetails
+import com.anshtya.core.model.details.MovieDetails
+import com.anshtya.core.model.details.PersonDetails
+import com.anshtya.core.model.details.tv.TvDetails
 import com.anshtya.core.ui.BackdropImage
 import com.anshtya.core.ui.FavoriteButton
 import com.anshtya.core.ui.Rating

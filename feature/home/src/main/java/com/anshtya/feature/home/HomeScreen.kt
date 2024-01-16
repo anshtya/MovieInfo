@@ -37,7 +37,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.anshtya.core.model.MediaType
-import com.anshtya.core.model.ContentItem
+import com.anshtya.core.model.content.ContentItem
 import com.anshtya.core.ui.FilterDropdownMenu
 import com.anshtya.core.ui.MediaItemCard
 import kotlinx.collections.immutable.ImmutableList

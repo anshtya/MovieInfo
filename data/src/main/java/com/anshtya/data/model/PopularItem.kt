@@ -1,7 +1,7 @@
 package com.anshtya.data.model
 
 import com.anshtya.core.local.database.entity.PopularContentEntity
-import com.anshtya.core.network.model.NetworkContentItem
+import com.anshtya.core.network.model.content.NetworkContentItem
 
 fun NetworkContentItem.asPopularContentEntity() = PopularContentEntity(
     remoteId = id,

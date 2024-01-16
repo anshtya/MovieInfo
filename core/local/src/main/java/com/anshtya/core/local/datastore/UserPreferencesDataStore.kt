@@ -9,12 +9,12 @@ import com.anshtya.core.local.proto.PopularContent
 import com.anshtya.core.local.proto.TrendingContent
 import com.anshtya.core.local.proto.UserPreferences
 import com.anshtya.core.local.proto.copy
-import com.anshtya.core.model.AccountDetails
-import com.anshtya.core.model.FreeContentType
-import com.anshtya.core.model.PopularContentType
+import com.anshtya.core.model.user.AccountDetails
+import com.anshtya.core.model.content.FreeContentType
+import com.anshtya.core.model.content.PopularContentType
 import com.anshtya.core.model.SelectedDarkMode
-import com.anshtya.core.model.TrendingContentTimeWindow
-import com.anshtya.core.model.UserData
+import com.anshtya.core.model.content.TrendingContentTimeWindow
+import com.anshtya.core.model.user.UserData
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 

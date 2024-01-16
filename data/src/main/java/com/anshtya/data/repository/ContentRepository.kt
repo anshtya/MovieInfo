@@ -1,10 +1,10 @@
 package com.anshtya.data.repository
 
 import androidx.paging.PagingData
-import com.anshtya.core.model.FreeContentType
-import com.anshtya.core.model.PopularContentType
-import com.anshtya.core.model.TrendingContentTimeWindow
-import com.anshtya.core.model.ContentItem
+import com.anshtya.core.model.content.FreeContentType
+import com.anshtya.core.model.content.PopularContentType
+import com.anshtya.core.model.content.TrendingContentTimeWindow
+import com.anshtya.core.model.content.ContentItem
 import kotlinx.coroutines.flow.Flow
 
 interface ContentRepository {

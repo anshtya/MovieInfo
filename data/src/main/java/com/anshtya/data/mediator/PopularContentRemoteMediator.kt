@@ -9,7 +9,7 @@ import com.anshtya.core.local.database.MovieInfoDatabase
 import com.anshtya.core.local.database.entity.EntityLastModified
 import com.anshtya.core.local.database.entity.PopularContentEntity
 import com.anshtya.core.local.database.entity.PopularContentRemoteKey
-import com.anshtya.core.model.PopularContentType
+import com.anshtya.core.model.content.PopularContentType
 import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.model.asPopularContentEntity
 import java.util.concurrent.TimeUnit

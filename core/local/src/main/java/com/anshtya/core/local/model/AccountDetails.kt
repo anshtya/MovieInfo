@@ -1,7 +1,7 @@
 package com.anshtya.core.local.model
 
 import com.anshtya.core.local.proto.AccountDetailsProto
-import com.anshtya.core.model.AccountDetails
+import com.anshtya.core.model.user.AccountDetails
 
 fun AccountDetailsProto.asModel() = AccountDetails(
     id = id,

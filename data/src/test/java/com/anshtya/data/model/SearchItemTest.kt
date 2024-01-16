@@ -1,7 +1,7 @@
 package com.anshtya.data.model
 
-import com.anshtya.core.network.model.NetworkSearchItem
-import com.anshtya.core.network.model.asModel
+import com.anshtya.core.network.model.search.NetworkSearchItem
+import com.anshtya.core.network.model.search.asModel
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

@@ -2,7 +2,7 @@ package com.anshtya.feature.you
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.core.model.AccountDetails
+import com.anshtya.core.model.user.AccountDetails
 import com.anshtya.core.model.SelectedDarkMode
 import com.anshtya.core.ui.ErrorText
 import com.anshtya.data.model.NetworkResponse

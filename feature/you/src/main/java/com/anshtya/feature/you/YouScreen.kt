@@ -50,7 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.core.model.AccountDetails
+import com.anshtya.core.model.user.AccountDetails
 import com.anshtya.core.model.SelectedDarkMode
 import com.anshtya.core.model.SelectedDarkMode.DARK
 import com.anshtya.core.model.SelectedDarkMode.LIGHT

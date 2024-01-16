@@ -3,7 +3,7 @@ package com.anshtya.core.local.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.anshtya.core.model.ContentItem
+import com.anshtya.core.model.content.ContentItem
 
 @Entity(tableName = "trending_content")
 data class TrendingContentEntity(

@@ -3,9 +3,9 @@ package com.anshtya.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
-import com.anshtya.core.model.FreeContentType
-import com.anshtya.core.model.PopularContentType
-import com.anshtya.core.model.TrendingContentTimeWindow
+import com.anshtya.core.model.content.FreeContentType
+import com.anshtya.core.model.content.PopularContentType
+import com.anshtya.core.model.content.TrendingContentTimeWindow
 import com.anshtya.data.repository.ContentRepository
 import com.anshtya.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,14 +1,10 @@
 package com.anshtya.data.model
 
 import com.anshtya.core.local.database.entity.PopularContentEntity
-import com.anshtya.core.network.model.NetworkMediaItem
+import com.anshtya.core.network.model.NetworkContentItem
 
-fun NetworkMediaItem.asPopularContentEntity() = PopularContentEntity(
+fun NetworkContentItem.asPopularContentEntity() = PopularContentEntity(
     remoteId = id,
     imagePath = posterPath,
-    name = when {
-        !title.isNullOrEmpty() -> title!!
-        !name.isNullOrEmpty() -> name!!
-        else -> ""
-    }
+    name = title ?: name ?: ""
 )

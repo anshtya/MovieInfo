@@ -1,9 +1,9 @@
 package com.anshtya.core.network.retrofit
 
+import com.anshtya.core.network.model.ContentResponse
 import com.anshtya.core.network.model.DeleteSessionRequest
 import com.anshtya.core.network.model.LoginRequest
 import com.anshtya.core.network.model.LoginResponse
-import com.anshtya.core.network.model.MediaItemResponse
 import com.anshtya.core.network.model.NetworkAccountDetails
 import com.anshtya.core.network.model.NetworkMovieDetails
 import com.anshtya.core.network.model.NetworkPersonDetails
@@ -28,7 +28,7 @@ interface TmdbApi {
         @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
         @Query("language") language: String = "en-US"
-    ): MediaItemResponse
+    ): ContentResponse
 
     @GET("discover/movie?include_video=false&with_watch_monetization_types=flatrate&sort_by=popularity.desc")
     suspend fun getPopularStreamingTitles(
@@ -36,7 +36,7 @@ interface TmdbApi {
         @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
         @Query("language") language: String = "en-US"
-    ): MediaItemResponse
+    ): ContentResponse
 
     @GET("discover/movie?include_video=false&with_watch_monetization_types=rent&sort_by=popularity.desc")
     suspend fun getPopularTitlesOnRent(
@@ -44,7 +44,7 @@ interface TmdbApi {
         @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
         @Query("language") language: String = "en-US"
-    ): MediaItemResponse
+    ): ContentResponse
 
     @GET("discover/movie?include_video=false&with_release_type=3|2&sort_by=popularity.desc")
     suspend fun getPopularTitlesInTheatres(
@@ -52,13 +52,13 @@ interface TmdbApi {
         @Query("include_adult") includeAdult: Boolean,
         @Query("watch_region") watchRegion: String = "US",
         @Query("language") language: String = "en-US"
-    ): MediaItemResponse
+    ): ContentResponse
 
     @GET("trending/movie/{time_window}?language=en-US")
     suspend fun getTrendingMovies(
         @Path("time_window") timeWindow: String,
         @Query("page") page: Int
-    ): MediaItemResponse
+    ): ContentResponse
 
     @GET("search/multi")
     suspend fun multiSearch(

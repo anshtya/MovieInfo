@@ -3,7 +3,7 @@ package com.anshtya.feature.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.core.model.DetailType
+import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.MovieDetails
 import com.anshtya.core.model.PersonDetails
 import com.anshtya.core.model.TvDetails
@@ -41,21 +41,21 @@ class DetailsViewModel @Inject constructor(
         .onStart { _uiState.update { it.copy(isLoading = true) } }
         .mapLatest { detailsString ->
             detailsString.takeIf { it.isNotEmpty() }?.let {
-                val idDetails = getIdAndDetailType(detailsString)
+                val idDetails = getIdAndMediaType(detailsString)
 
                 val id = idDetails.first
                 when (idDetails.second) {
-                    DetailType.MOVIE -> {
+                    MediaType.MOVIE -> {
                         val response = detailsRepository.getMovieDetails(id)
                         handleMovieDetailsResponse(response)
                     }
 
-                    DetailType.TV -> {
+                    MediaType.TV -> {
                         val response = detailsRepository.getTvShowDetails(id)
                         handleTvDetailsResponse(response)
                     }
 
-                    DetailType.PERSON -> {
+                    MediaType.PERSON -> {
                         val response = detailsRepository.getPersonDetails(id)
                         handlePeopleDetailsResponse(response)
                     }
@@ -74,16 +74,16 @@ class DetailsViewModel @Inject constructor(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    private fun getIdAndDetailType(detailsString: String): Pair<Int, DetailType?> {
+    private fun getIdAndMediaType(detailsString: String): Pair<Int, MediaType?> {
         val details = detailsString.split(",")
         val id = details.first().toInt()
-        val detailType = when(details.last()) {
-            "movie" -> DetailType.MOVIE
-            "tv" -> DetailType.TV
-            "person" -> DetailType.PERSON
+        val mediaType = when(details.last()) {
+            "movie" -> MediaType.MOVIE
+            "tv" -> MediaType.TV
+            "person" -> MediaType.PERSON
             else -> null
         }
-        return Pair(id, detailType)
+        return Pair(id, mediaType)
     }
 
     private fun handleMovieDetailsResponse(

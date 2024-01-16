@@ -10,7 +10,7 @@ import com.anshtya.core.local.database.entity.asModel
 import com.anshtya.core.model.FreeContentType
 import com.anshtya.core.model.PopularContentType
 import com.anshtya.core.model.TrendingContentTimeWindow
-import com.anshtya.core.model.MediaItem
+import com.anshtya.core.model.ContentItem
 import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.mediator.FreeContentRemoteMediator
 import com.anshtya.data.mediator.PopularContentRemoteMediator
@@ -37,7 +37,7 @@ internal class ContentRepositoryImpl @Inject constructor(
         contentType: FreeContentType,
         includeAdult: Boolean,
         shouldReload: Boolean
-    ): Flow<PagingData<MediaItem>> {
+    ): Flow<PagingData<ContentItem>> {
         return Pager(
             config = pagingConfig,
             remoteMediator = FreeContentRemoteMediator(
@@ -57,7 +57,10 @@ internal class ContentRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun getTrendingMovies(timeWindow: TrendingContentTimeWindow, shouldReload: Boolean): Flow<PagingData<MediaItem>> {
+    override fun getTrendingMovies(
+        timeWindow: TrendingContentTimeWindow,
+        shouldReload: Boolean
+    ): Flow<PagingData<ContentItem>> {
         return Pager(
             config = pagingConfig,
             remoteMediator = TrendingMoviesRemoteMediator(
@@ -80,7 +83,7 @@ internal class ContentRepositoryImpl @Inject constructor(
         contentType: PopularContentType,
         includeAdult: Boolean,
         shouldReload: Boolean
-    ): Flow<PagingData<MediaItem>> {
+    ): Flow<PagingData<ContentItem>> {
         return Pager(
             config = pagingConfig,
             remoteMediator = PopularContentRemoteMediator(

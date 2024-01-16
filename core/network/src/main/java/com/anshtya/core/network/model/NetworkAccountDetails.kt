@@ -5,7 +5,7 @@ import com.squareup.moshi.Json
 
 data class NetworkAccountDetails(
     val avatar: Avatar,
-    val id: Long,
+    val id: Int,
     @field:Json(name = "include_adult") val includeAdult: Boolean,
     val name: String,
     val username: String

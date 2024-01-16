@@ -36,8 +36,8 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import com.anshtya.core.model.DetailType
-import com.anshtya.core.model.MediaItem
+import com.anshtya.core.model.MediaType
+import com.anshtya.core.model.ContentItem
 import com.anshtya.core.ui.FilterDropdownMenu
 import com.anshtya.core.ui.MediaItemCard
 import kotlinx.collections.immutable.ImmutableList
@@ -180,7 +180,7 @@ private fun LazyListScope.freeToWatchSection(
                 // selected index value is 1 (i.e. TV shows)
                 if (selectedFilterIndex == 1) {
                     val id = it.split(",").first()
-                    onItemClick("$id,${DetailType.TV.typeName}")
+                    onItemClick("$id,${MediaType.TV.typeName}")
                 } else {
                     onItemClick(it)
                 }
@@ -252,7 +252,7 @@ private fun ContentSection(
                             MediaItemCard(
                                 posterPath = streamingItem.imagePath,
                                 onItemClick = {
-                                    onItemClick("${streamingItem.mediaId},${DetailType.MOVIE.typeName}")
+                                    onItemClick("${streamingItem.mediaId},${MediaType.MOVIE.typeName}")
                                 },
                                 modifier = Modifier.fillMaxHeight()
                             )
@@ -266,5 +266,5 @@ private fun ContentSection(
 
 @Stable
 internal data class LazyPagingContent(
-    val items: LazyPagingItems<MediaItem>
+    val items: LazyPagingItems<ContentItem>
 )

@@ -26,8 +26,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -362,53 +365,35 @@ private fun MovieDetailsSection(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(bottom = 6.dp)
     ) {
-        Row {
-            Text(
-                text = stringResource(id = R.string.release_date),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(releaseDate)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.release_date),
+            value = releaseDate
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.original_language),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(originalLanguage)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.original_language),
+            value = originalLanguage
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.budget),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text("$${budget}")
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.budget),
+            value = "$${budget}"
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.revenue),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text("$${revenue}")
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.revenue),
+            value = "$${revenue}"
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.production_companies),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(productionCompanies)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.production_companies),
+            value = productionCompanies
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.production_countries),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(productionCountries)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.production_countries),
+            value = productionCountries
+        )
     }
 }
 
@@ -429,39 +414,27 @@ private fun PersonInfoSection(
             fontWeight = FontWeight.SemiBold
         )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.gender),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(gender)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.gender),
+            value = gender
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.born),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(birthday)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.born),
+            value = birthday
+        )
 
         deathday?.let {
-            Row {
-                Text(
-                    text = stringResource(id = R.string.died),
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(it)
-            }
+            DetailItem(
+                fieldName = stringResource(id = R.string.died),
+                value = it
+            )
         }
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.known_for),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(department)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.known_for),
+            value = department
+        )
     }
 }
 
@@ -473,20 +446,14 @@ private fun PersonDetailsSection(
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Row {
-            Text(
-                text = stringResource(id = R.string.birth_place),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(placeOfBirth)
-        }
-        Row {
-            Text(
-                text = stringResource(id = R.string.also_known_as),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(alsoKnownAs)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.birth_place),
+            value = placeOfBirth
+        )
+        DetailItem(
+            fieldName = stringResource(id = R.string.also_known_as),
+            value = alsoKnownAs
+        )
     }
 }
 
@@ -508,94 +475,75 @@ private fun TvDetailsSection(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier.padding(bottom = 6.dp)
     ) {
-        Row {
-            Text(
-                text = stringResource(id = R.string.original_language),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(originalLanguage)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.original_language),
+            value = originalLanguage
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.first_air_date),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(firstAirDate)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.first_air_date),
+            value = firstAirDate
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.last_air_date),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(lastAirDate)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.last_air_date),
+            value = lastAirDate
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.in_production),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(inProduction)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.in_production),
+            value = inProduction
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.status),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(status)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.status),
+            value = status
+        )
 
         nextAirDate?.let {
-            Row {
-                Text(
-                    text = stringResource(id = R.string.next_air_date),
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(it)
-            }
+            DetailItem(
+                fieldName = stringResource(id = R.string.next_air_date),
+                value = it
+            )
         }
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.number_episodes),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text("$numberOfEpisodes")
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.number_episodes),
+            value = "$numberOfEpisodes"
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.number_seasons),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text("$numberOfSeasons")
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.number_seasons),
+            value = "$numberOfSeasons"
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.networks),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(networks)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.networks),
+            value = networks
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.production_companies),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(productionCompanies)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.production_companies),
+            value = productionCompanies
+        )
 
-        Row {
-            Text(
-                text = stringResource(id = R.string.production_countries),
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(productionCountries)
-        }
+        DetailItem(
+            fieldName = stringResource(id = R.string.production_countries),
+            value = productionCountries
+        )
     }
+}
+
+@Composable
+private fun DetailItem(
+    fieldName: String,
+    value: String
+) {
+    val text = buildAnnotatedString {
+        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+            append(fieldName)
+        }
+        append(value)
+    }
+    Text(text)
 }

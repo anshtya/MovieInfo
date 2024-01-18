@@ -96,7 +96,10 @@ internal fun SearchScreen(
                     SearchSuggestionItem(
                         name = it.name,
                         imagePath = it.imagePath,
-                        onItemClick = { onSearchResultClick("${it.id},${it.mediaType}") }
+                        onItemClick = {
+                            // Converting type to uppercase for [MediaType]
+                            onSearchResultClick("${it.id},${it.mediaType.uppercase()}")
+                        }
                     )
                 }
             }

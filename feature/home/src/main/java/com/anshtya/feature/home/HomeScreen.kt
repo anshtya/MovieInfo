@@ -180,7 +180,7 @@ private fun LazyListScope.freeToWatchSection(
                 // selected index value is 1 (i.e. TV shows)
                 if (selectedFilterIndex == 1) {
                     val id = it.split(",").first()
-                    onItemClick("$id,${MediaType.TV.typeName}")
+                    onItemClick("$id,${MediaType.TV}")
                 } else {
                     onItemClick(it)
                 }
@@ -252,7 +252,7 @@ private fun ContentSection(
                             MediaItemCard(
                                 posterPath = streamingItem.imagePath,
                                 onItemClick = {
-                                    onItemClick("${streamingItem.mediaId},${MediaType.MOVIE.typeName}")
+                                    onItemClick("${streamingItem.mediaId},${MediaType.MOVIE}")
                                 },
                                 modifier = Modifier.fillMaxHeight()
                             )

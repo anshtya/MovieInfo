@@ -77,12 +77,7 @@ class DetailsViewModel @Inject constructor(
     private fun getIdAndMediaType(detailsString: String): Pair<Int, MediaType?> {
         val details = detailsString.split(",")
         val id = details.first().toInt()
-        val mediaType = when(details.last()) {
-            "movie" -> MediaType.MOVIE
-            "tv" -> MediaType.TV
-            "person" -> MediaType.PERSON
-            else -> null
-        }
+        val mediaType = enumValueOf<MediaType>(details.last())
         return Pair(id, mediaType)
     }
 

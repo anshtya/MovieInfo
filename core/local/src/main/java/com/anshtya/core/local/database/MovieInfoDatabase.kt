@@ -8,6 +8,7 @@ import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.anshtya.core.local.database.dao.EntityLastModifiedDao
+import com.anshtya.core.local.database.dao.FavoriteContentDao
 import com.anshtya.core.local.database.dao.FreeContentDao
 import com.anshtya.core.local.database.dao.FreeContentRemoteKeyDao
 import com.anshtya.core.local.database.dao.PopularContentDao
@@ -50,6 +51,8 @@ abstract class MovieInfoDatabase : RoomDatabase() {
     abstract fun trendingContentRemoteKeyDao(): TrendingContentRemoteKeyDao
     abstract fun freeContentRemoteKeyDao(): FreeContentRemoteKeyDao
     abstract fun popularContentRemoteKeyDao(): PopularContentRemoteKeyDao
+
+    abstract fun favoriteContentDao(): FavoriteContentDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {

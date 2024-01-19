@@ -11,6 +11,7 @@ import com.anshtya.core.network.model.content.ContentResponse
 import com.anshtya.core.network.model.details.NetworkMovieDetails
 import com.anshtya.core.network.model.details.NetworkPersonDetails
 import com.anshtya.core.network.model.details.tv.NetworkTvDetails
+import com.anshtya.core.network.model.library.FavoriteRequest
 import com.anshtya.core.network.model.search.SearchResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -81,6 +82,23 @@ interface TmdbApi {
     suspend fun getPersonDetails(
         @Path("person_id") id: Int
     ): NetworkPersonDetails
+
+    @GET("account/{account_id}/favorite/movies")
+    suspend fun getFavoriteMovies(
+        @Path("account_id") accountId: Int
+    ): ContentResponse
+
+    @GET("account/{account_id}/favorite/tv")
+    suspend fun getFavoriteTvShows(
+        @Path("account_id") accountId: Int
+    ): ContentResponse
+
+    @Headers("content-type: application/json")
+    @POST("account/{account_id}/favorite")
+    suspend fun addOrRemoveFavorite(
+        @Path("account_id") accountId: Int,
+        @Body favoriteRequest: FavoriteRequest
+    ): ContentResponse
 
     @GET("authentication/token/new")
     suspend fun createRequestToken(): RequestTokenResponse

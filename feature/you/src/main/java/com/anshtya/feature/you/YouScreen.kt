@@ -46,19 +46,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.core.model.user.AccountDetails
 import com.anshtya.core.model.SelectedDarkMode
 import com.anshtya.core.model.SelectedDarkMode.DARK
 import com.anshtya.core.model.SelectedDarkMode.LIGHT
 import com.anshtya.core.model.SelectedDarkMode.SYSTEM
-import com.anshtya.core.ui.ErrorText
+import com.anshtya.core.model.user.AccountDetails
 import com.anshtya.core.ui.UserImage
-import com.anshtya.feature.you.YouUiState.Loading
-import com.anshtya.feature.you.YouUiState.Success
 import kotlinx.coroutines.launch
 
 @Composable
@@ -67,11 +65,11 @@ internal fun YouRoute(
     viewModel: YouViewModel = hiltViewModel()
 ) {
     val youUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    val userSettings by viewModel.userSettings.collectAsStateWithLifecycle()
 
     YouScreen(
         youUiState = youUiState,
-        errorMessage = errorMessage,
+        userSettings = userSettings,
         onChangeTheme = viewModel::setDynamicColorPreference,
         onChangeDarkMode = viewModel::setDarkModePreference,
         onChangeIncludeAdult = viewModel::setAdultResultPreference,
@@ -84,7 +82,7 @@ internal fun YouRoute(
 @Composable
 internal fun YouScreen(
     youUiState: YouUiState,
-    errorMessage: ErrorText?,
+    userSettings: UserSettings?,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
     onChangeIncludeAdult: (Boolean) -> Unit,
@@ -96,7 +94,7 @@ internal fun YouScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    errorMessage?.let {
+    youUiState.errorMessage?.let {
         scope.launch {
             snackbarHostState.showSnackbar(it.toText(context))
         }
@@ -113,51 +111,51 @@ internal fun YouScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            when (youUiState) {
-                is Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                is Success -> {
-                    var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
+            var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
 
-                    Column(Modifier.fillMaxSize()) {
-                        Row(
-                            horizontalArrangement = Arrangement.End,
-                            modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 18.dp)
+            ) {
+                userSettings?.let {
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        IconButton(
+                            onClick = { showSettingsDialog = true }
                         ) {
-                            IconButton(
-                                onClick = { showSettingsDialog = true }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Settings,
-                                    contentDescription = stringResource(
-                                        id = R.string.settings_dialog_title
-                                    )
-                                )
-                            }
-                        }
-
-                        when (getScreenType(youUiState.isLoggedIn)) {
-                            ScreenType.LOGGED_IN -> {
-                                LoggedInView(
-                                    accountDetails = youUiState.accountDetails,
-                                    onLogOutClick = onLogOutClick
-                                )
-                            }
-
-                            ScreenType.LOGGED_OUT -> {
-                                LoggedOutView(
-                                    onNavigateToAuth = onNavigateToAuth
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = stringResource(id = R.string.settings_dialog_title)
+                            )
                         }
                     }
 
                     if (showSettingsDialog) {
                         SettingsDialog(
-                            userSettings = youUiState.userSettings,
+                            userSettings = userSettings,
                             onChangeTheme = onChangeTheme,
                             onChangeDarkMode = onChangeDarkMode,
                             onChangeIncludeAdult = onChangeIncludeAdult
                         ) { showSettingsDialog = !showSettingsDialog }
+                    }
+                }
+
+                when (youUiState) {
+                    is YouUiState.LoggedIn -> {
+                        LoggedInView(
+                            accountDetails = youUiState.accountDetails,
+                            isLoading = youUiState.isLoading,
+                            onLogOutClick = onLogOutClick
+                        )
+                    }
+
+                    is YouUiState.LoggedOff -> {
+                        LoggedOutView(
+                            onNavigateToAuth = onNavigateToAuth
+                        )
                     }
                 }
             }
@@ -168,6 +166,7 @@ internal fun YouScreen(
 @Composable
 private fun LoggedInView(
     accountDetails: AccountDetails,
+    isLoading: Boolean,
     onLogOutClick: () -> Unit
 ) {
     Box(Modifier.fillMaxSize()) {
@@ -197,7 +196,13 @@ private fun LoggedInView(
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
         ) {
-            Text(stringResource(id = R.string.log_out))
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                Text(stringResource(id = R.string.log_out))
+            }
         }
     }
 }
@@ -222,6 +227,7 @@ private fun LoggedOutView(
             )
             Text(
                 text = stringResource(id = R.string.log_in_description),
+                textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge
             )
             Button(
@@ -364,23 +370,8 @@ private fun SettingsDialogChooserRow(
     }
 }
 
-@Composable
-private fun getScreenType(
-    isLoggedIn: Boolean
-): ScreenType {
-    return if (isLoggedIn) {
-        ScreenType.LOGGED_IN
-    } else {
-        ScreenType.LOGGED_OUT
-    }
-}
-
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
 fun supportsDynamicColorTheme() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-
-private enum class ScreenType {
-    LOGGED_IN, LOGGED_OUT
-}
 
 @Preview(showBackground = true)
 @Composable

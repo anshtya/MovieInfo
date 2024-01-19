@@ -7,9 +7,11 @@ import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.details.MovieDetails
 import com.anshtya.core.model.details.PersonDetails
 import com.anshtya.core.model.details.tv.TvDetails
+import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.ui.ErrorText
 import com.anshtya.data.model.NetworkResponse
 import com.anshtya.data.repository.DetailsRepository
+import com.anshtya.data.repository.LibraryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,13 +23,15 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val detailsRepository: DetailsRepository
+    private val detailsRepository: DetailsRepository,
+    private val libraryRepository: LibraryRepository
 ) : ViewModel() {
     private val idDetailsString = savedStateHandle.getStateFlow(
         key = idNavigationArgument,
@@ -72,6 +76,18 @@ class DetailsViewModel @Inject constructor(
 
     fun onErrorShown() {
         _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun addOrRemoveFromFavorites(libraryItem: LibraryItem) {
+        viewModelScope.launch {
+            libraryRepository.addOrRemoveFavorites(libraryItem)
+        }
+    }
+
+    fun addOrRemoveFromWatchlist(libraryItem: LibraryItem) {
+        viewModelScope.launch {
+
+        }
     }
 
     private fun getIdAndMediaType(detailsString: String): Pair<Int, MediaType?> {

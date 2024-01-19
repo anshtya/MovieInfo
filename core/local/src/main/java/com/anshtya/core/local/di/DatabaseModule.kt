@@ -9,6 +9,7 @@ import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_2_3
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_3_4
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_4_5
 import com.anshtya.core.local.database.dao.EntityLastModifiedDao
+import com.anshtya.core.local.database.dao.FavoriteContentDao
 import com.anshtya.core.local.database.dao.FreeContentDao
 import com.anshtya.core.local.database.dao.FreeContentRemoteKeyDao
 import com.anshtya.core.local.database.dao.PopularContentDao
@@ -94,5 +95,13 @@ internal object DatabaseModule {
         db: MovieInfoDatabase
     ): PopularContentRemoteKeyDao {
         return db.popularContentRemoteKeyDao()
+    }
+
+    @Singleton
+    @Provides
+    internal fun provideFavoriteContentDao(
+        db: MovieInfoDatabase
+    ): FavoriteContentDao {
+        return db.favoriteContentDao()
     }
 }

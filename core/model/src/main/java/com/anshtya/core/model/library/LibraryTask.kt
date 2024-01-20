@@ -3,7 +3,7 @@ package com.anshtya.core.model.library
 import com.anshtya.core.model.MediaType
 
 class LibraryTask private constructor(
-    val id: Int,
+    val mediaId: Int,
     val mediaType: MediaType,
     val taskType: LibraryTaskType
 ) {

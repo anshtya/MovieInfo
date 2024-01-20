@@ -58,7 +58,8 @@ converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.r
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt"}
-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt"}
+hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt"}
+hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidx-hilt"}
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "collections-immutable" }

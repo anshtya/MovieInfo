@@ -5,14 +5,14 @@ import com.anshtya.core.model.MediaType
 import com.anshtya.core.network.model.content.NetworkContentItem
 
 fun NetworkContentItem.asFavoriteMovieEntity() = FavoriteContentEntity(
-    mediaId = id,
+    id = id,
     name = title!!,
     imagePath = posterPath,
     mediaType = MediaType.MOVIE.name
 )
 
 fun NetworkContentItem.asFavoriteTvShowEntity() = FavoriteContentEntity(
-    mediaId = id,
+    id = id,
     name = name!!,
     imagePath = posterPath,
     mediaType = MediaType.TV.name

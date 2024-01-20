@@ -26,8 +26,8 @@ data class MovieDetails(
 )
 
 fun MovieDetails.asLibraryItem() = LibraryItem(
+    id = id,
     imagePath = posterPath,
-    mediaId = id,
-    mediaType = MediaType.MOVIE.toString(),
     name = title,
+    mediaType = MediaType.MOVIE.toString()
 )

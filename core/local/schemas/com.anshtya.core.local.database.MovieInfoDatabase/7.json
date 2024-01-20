@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 6,
-    "identityHash": "e2d83d3ca3aa8ea35414520d1194df38",
+    "version": 7,
+    "identityHash": "fc73e0aed67dd9b61e2f6e4d2f163946",
     "entities": [
       {
         "tableName": "entity_last_modified",
@@ -224,17 +224,11 @@
       },
       {
         "tableName": "favorite_content",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `media_id` INTEGER NOT NULL, `media_type` TEXT NOT NULL, `imagePath` TEXT NOT NULL, `name` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `media_type` TEXT NOT NULL, `image_path` TEXT NOT NULL, `name` TEXT NOT NULL, `created_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "mediaId",
-            "columnName": "media_id",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -246,7 +240,7 @@
           },
           {
             "fieldPath": "imagePath",
-            "columnName": "imagePath",
+            "columnName": "image_path",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -255,10 +249,16 @@
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "id"
           ]
@@ -270,7 +270,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e2d83d3ca3aa8ea35414520d1194df38')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fc73e0aed67dd9b61e2f6e4d2f163946')"
     ]
   }
 }

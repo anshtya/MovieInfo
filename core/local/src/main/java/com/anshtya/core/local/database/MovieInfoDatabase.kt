@@ -16,6 +16,7 @@ import com.anshtya.core.local.database.dao.PopularContentRemoteKeyDao
 import com.anshtya.core.local.database.dao.TrendingContentDao
 import com.anshtya.core.local.database.dao.TrendingContentRemoteKeyDao
 import com.anshtya.core.local.database.entity.EntityLastModified
+import com.anshtya.core.local.database.entity.FavoriteContentEntity
 import com.anshtya.core.local.database.entity.FreeContentEntity
 import com.anshtya.core.local.database.entity.FreeContentRemoteKey
 import com.anshtya.core.local.database.entity.PopularContentEntity
@@ -31,9 +32,10 @@ import com.anshtya.core.local.database.entity.TrendingContentRemoteKey
         PopularContentEntity::class,
         PopularContentRemoteKey::class,
         FreeContentEntity::class,
-        FreeContentRemoteKey::class
+        FreeContentRemoteKey::class,
+        FavoriteContentEntity::class
     ],
-    version = 6,
+    version = 7,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = MovieInfoDatabase.Companion.Migration5to6::class)
     ],
@@ -164,5 +166,20 @@ abstract class MovieInfoDatabase : RoomDatabase() {
             DeleteColumn("popular_content", "overview")
         )
         class Migration5to6 : AutoMigrationSpec
+
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE favorite_content (
+                    id INTEGER PRIMARY KEY NOT NULL,
+                    media_type TEXT NOT NULL,
+                    image_path TEXT NOT NULL, 
+                    name TEXT NOT NULL,
+                    created_at INTEGER NOT NULL)
+                    """.trimIndent()
+                )
+            }
+        }
     }
 }

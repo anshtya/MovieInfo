@@ -8,12 +8,15 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.local)
+    implementation(projects.core.network)
     implementation(projects.data)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    implementation(libs.androidx.hilt.work)
-    implementation(libs.androidx.work.runtime.ktx)
+    api(libs.androidx.hilt.work)
+    api(libs.androidx.work.runtime.ktx)
+    ksp(libs.hilt.compiler)
 }

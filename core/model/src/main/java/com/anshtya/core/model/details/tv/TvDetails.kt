@@ -35,8 +35,8 @@ data class TvDetails(
 )
 
 fun TvDetails.asLibraryItem() = LibraryItem(
+    id = id,
     imagePath = posterPath,
-    mediaId = id,
-    mediaType = MediaType.TV.toString(),
     name = name,
+    mediaType = MediaType.TV.toString(),
 )

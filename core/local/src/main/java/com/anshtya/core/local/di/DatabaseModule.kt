@@ -8,6 +8,7 @@ import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_1_2
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_2_3
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_3_4
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_4_5
+import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_6_7
 import com.anshtya.core.local.database.dao.EntityLastModifiedDao
 import com.anshtya.core.local.database.dao.FavoriteContentDao
 import com.anshtya.core.local.database.dao.FreeContentDao
@@ -36,7 +37,8 @@ internal object DatabaseModule {
                 MIGRATION_1_2,
                 MIGRATION_2_3,
                 MIGRATION_3_4,
-                MIGRATION_4_5
+                MIGRATION_4_5,
+                MIGRATION_6_7
             )
             .build()
     }

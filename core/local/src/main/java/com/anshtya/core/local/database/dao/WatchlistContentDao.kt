@@ -12,10 +12,10 @@ import kotlinx.coroutines.flow.Flow
 interface WatchlistContentDao {
 
     @Query("SELECT * FROM watchlist_content WHERE media_type = 'MOVIE' ORDER BY created_at")
-    fun getFavoriteMovies(): Flow<List<WatchlistContentEntity>>
+    fun getMoviesWatchlist(): Flow<List<WatchlistContentEntity>>
 
     @Query("SELECT * FROM watchlist_content WHERE media_type = 'TV' ORDER BY created_at")
-    fun getFavoriteTvShows(): Flow<List<WatchlistContentEntity>>
+    fun getTvShowsWatchlist(): Flow<List<WatchlistContentEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWatchlistItem(watchlistContentEntity: WatchlistContentEntity)

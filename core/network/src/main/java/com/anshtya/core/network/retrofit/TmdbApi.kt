@@ -12,6 +12,7 @@ import com.anshtya.core.network.model.details.NetworkMovieDetails
 import com.anshtya.core.network.model.details.NetworkPersonDetails
 import com.anshtya.core.network.model.details.tv.NetworkTvDetails
 import com.anshtya.core.network.model.library.FavoriteRequest
+import com.anshtya.core.network.model.library.WatchlistRequest
 import com.anshtya.core.network.model.search.SearchResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -98,7 +99,14 @@ interface TmdbApi {
     suspend fun addOrRemoveFavorite(
         @Path("account_id") accountId: Int,
         @Body favoriteRequest: FavoriteRequest
-    ): ContentResponse
+    )
+
+    @Headers("content-type: application/json")
+    @POST("account/{account_id}/watchlist")
+    suspend fun addOrRemoveFromWatchlist(
+        @Path("account_id") accountId: Int,
+        @Body watchlistRequest: WatchlistRequest
+    )
 
     @GET("authentication/token/new")
     suspend fun createRequestToken(): RequestTokenResponse

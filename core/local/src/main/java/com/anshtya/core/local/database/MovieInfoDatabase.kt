@@ -15,6 +15,7 @@ import com.anshtya.core.local.database.dao.PopularContentDao
 import com.anshtya.core.local.database.dao.PopularContentRemoteKeyDao
 import com.anshtya.core.local.database.dao.TrendingContentDao
 import com.anshtya.core.local.database.dao.TrendingContentRemoteKeyDao
+import com.anshtya.core.local.database.dao.WatchlistContentDao
 import com.anshtya.core.local.database.entity.EntityLastModified
 import com.anshtya.core.local.database.entity.FavoriteContentEntity
 import com.anshtya.core.local.database.entity.FreeContentEntity
@@ -23,6 +24,7 @@ import com.anshtya.core.local.database.entity.PopularContentEntity
 import com.anshtya.core.local.database.entity.PopularContentRemoteKey
 import com.anshtya.core.local.database.entity.TrendingContentEntity
 import com.anshtya.core.local.database.entity.TrendingContentRemoteKey
+import com.anshtya.core.local.database.entity.WatchlistContentEntity
 
 @Database(
     entities = [
@@ -33,9 +35,10 @@ import com.anshtya.core.local.database.entity.TrendingContentRemoteKey
         PopularContentRemoteKey::class,
         FreeContentEntity::class,
         FreeContentRemoteKey::class,
-        FavoriteContentEntity::class
+        FavoriteContentEntity::class,
+        WatchlistContentEntity::class
     ],
-    version = 7,
+    version = 8,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = MovieInfoDatabase.Companion.Migration5to6::class)
     ],
@@ -55,6 +58,8 @@ abstract class MovieInfoDatabase : RoomDatabase() {
     abstract fun popularContentRemoteKeyDao(): PopularContentRemoteKeyDao
 
     abstract fun favoriteContentDao(): FavoriteContentDao
+
+    abstract fun watchlistContentDao(): WatchlistContentDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -172,6 +177,21 @@ abstract class MovieInfoDatabase : RoomDatabase() {
                 db.execSQL(
                     """
                     CREATE TABLE favorite_content (
+                    id INTEGER PRIMARY KEY NOT NULL,
+                    media_type TEXT NOT NULL,
+                    image_path TEXT NOT NULL, 
+                    name TEXT NOT NULL,
+                    created_at INTEGER NOT NULL)
+                    """.trimIndent()
+                )
+            }
+        }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE watchlist_content (
                     id INTEGER PRIMARY KEY NOT NULL,
                     media_type TEXT NOT NULL,
                     image_path TEXT NOT NULL, 

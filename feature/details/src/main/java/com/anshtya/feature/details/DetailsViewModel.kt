@@ -86,7 +86,7 @@ class DetailsViewModel @Inject constructor(
 
     fun addOrRemoveFromWatchlist(libraryItem: LibraryItem) {
         viewModelScope.launch {
-
+            libraryRepository.addOrRemoveFromWatchlist(libraryItem)
         }
     }
 

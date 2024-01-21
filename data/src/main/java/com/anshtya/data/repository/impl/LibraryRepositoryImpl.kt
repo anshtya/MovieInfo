@@ -1,9 +1,11 @@
 package com.anshtya.data.repository.impl
 
 import com.anshtya.core.local.database.dao.FavoriteContentDao
+import com.anshtya.core.local.database.dao.WatchlistContentDao
 import com.anshtya.core.local.database.entity.FavoriteContentEntity
 import com.anshtya.core.local.database.entity.asFavoriteContentEntity
 import com.anshtya.core.local.database.entity.asModel
+import com.anshtya.core.local.database.entity.asWatchlistContentEntity
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.model.library.LibraryTask
 import com.anshtya.data.repository.LibraryRepository
@@ -14,6 +16,7 @@ import javax.inject.Inject
 
 class LibraryRepositoryImpl @Inject constructor(
     private val favoriteContentDao: FavoriteContentDao,
+    private val watchlistContentDao: WatchlistContentDao,
     private val syncManager: SyncManager
 ) : LibraryRepository {
     override val favoriteMovies: Flow<List<LibraryItem>> =
@@ -47,12 +50,27 @@ class LibraryRepositoryImpl @Inject constructor(
         }
     }
 
-//    suspend fun addTvShowToFavorites(favoriteItem: FavoriteContentEntity) {
-//
-//    }
-//
-//    suspend fun removeTvShowFromFavorites(id: Int) {
-//
-//    }
+    override suspend fun addOrRemoveFromWatchlist(libraryItem: LibraryItem) {
+        val watchlistContentEntity = libraryItem.asWatchlistContentEntity()
+        val itemExists = watchlistContentDao.checkWatchlistItemExists(libraryItem.id)
+
+        if (itemExists) {
+            watchlistContentDao.deleteWatchlistItem(watchlistContentEntity)
+
+            val libraryTask = LibraryTask.removeFromWatchList(
+                mediaId = watchlistContentEntity.id,
+                mediaType = enumValueOf(watchlistContentEntity.mediaType)
+            )
+            syncManager.scheduleWork(libraryTask)
+        } else {
+            watchlistContentDao.insertWatchlistItem(watchlistContentEntity)
+
+            val libraryTask = LibraryTask.addToWatchList(
+                mediaId = watchlistContentEntity.id,
+                mediaType = enumValueOf(watchlistContentEntity.mediaType)
+            )
+            syncManager.scheduleWork(libraryTask)
+        }
+    }
 
 }

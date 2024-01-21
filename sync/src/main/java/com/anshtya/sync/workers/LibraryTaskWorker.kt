@@ -3,13 +3,17 @@ package com.anshtya.sync.workers
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.anshtya.core.local.datastore.UserPreferencesDataStore
 import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.library.LibraryTaskType
 import com.anshtya.core.network.model.library.FavoriteRequest
+import com.anshtya.core.network.model.library.WatchlistRequest
 import com.anshtya.core.network.retrofit.TmdbApi
+import com.anshtya.sync.util.SYNC_NOTIFICATION_ID
 import com.anshtya.sync.util.getEnum
+import com.anshtya.sync.util.workNotification
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -18,11 +22,15 @@ import java.io.IOException
 
 @HiltWorker
 class LibraryTaskWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
+    @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val tmdbApi: TmdbApi,
     private val userPreferencesDataStore: UserPreferencesDataStore
 ): CoroutineWorker(appContext, workerParams) {
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return ForegroundInfo(SYNC_NOTIFICATION_ID, appContext.workNotification())
+    }
+
     override suspend fun doWork(): Result {
         val itemId = inputData.getInt(TASK_KEY, 0)
         val mediaType = inputData.getEnum<MediaType>(MEDIA_TYPE_KEY).name.lowercase()
@@ -30,9 +38,10 @@ class LibraryTaskWorker @AssistedInject constructor(
 
         return when(getTaskType()) {
             LibraryTaskType.ADD_FAVORITE -> addFavorite(itemId, mediaType, accountId)
-            LibraryTaskType.REMOVE_FAVORITE -> TODO()
-            LibraryTaskType.ADD_TO_WATCHLIST -> TODO()
-            LibraryTaskType.REMOVE_FROM_WATCHLIST -> TODO()
+            LibraryTaskType.REMOVE_FAVORITE -> removeFavorite(itemId, mediaType, accountId)
+            LibraryTaskType.ADD_TO_WATCHLIST -> addToWatchlist(itemId, mediaType, accountId)
+            LibraryTaskType.REMOVE_FROM_WATCHLIST ->
+                removeFromWatchlist(itemId, mediaType, accountId)
         }
     }
 
@@ -45,6 +54,57 @@ class LibraryTaskWorker @AssistedInject constructor(
 
         return try {
             tmdbApi.addOrRemoveFavorite(accountId, favoriteRequest)
+            Result.success()
+        } catch (e: IOException) {
+            Result.retry()
+        } catch (e: HttpException) {
+            Result.retry()
+        }
+    }
+
+    private suspend fun removeFavorite(id: Int, mediaType: String, accountId: Int): Result {
+        val favoriteRequest = FavoriteRequest(
+            mediaType = mediaType,
+            mediaId = id,
+            favorite = false
+        )
+
+        return try {
+            tmdbApi.addOrRemoveFavorite(accountId, favoriteRequest)
+            Result.success()
+        } catch (e: IOException) {
+            Result.retry()
+        } catch (e: HttpException) {
+            Result.retry()
+        }
+    }
+
+    private suspend fun addToWatchlist(id: Int, mediaType: String, accountId: Int): Result {
+        val watchlistRequest = WatchlistRequest(
+            mediaType = mediaType,
+            mediaId = id,
+            watchlist = true
+        )
+
+        return try {
+            tmdbApi.addOrRemoveFromWatchlist(accountId, watchlistRequest)
+            Result.success()
+        } catch (e: IOException) {
+            Result.retry()
+        } catch (e: HttpException) {
+            Result.retry()
+        }
+    }
+
+    private suspend fun removeFromWatchlist(id: Int, mediaType: String, accountId: Int): Result {
+        val watchlistRequest = WatchlistRequest(
+            mediaType = mediaType,
+            mediaId = id,
+            watchlist = false
+        )
+
+        return try {
+            tmdbApi.addOrRemoveFromWatchlist(accountId, watchlistRequest)
             Result.success()
         } catch (e: IOException) {
             Result.retry()

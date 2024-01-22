@@ -10,7 +10,7 @@ import com.anshtya.feature.details.navigateToDetails
 import com.anshtya.feature.home.homeNavigationRoute
 import com.anshtya.feature.home.homeScreen
 import com.anshtya.feature.search.searchScreen
-import com.anshtya.feature.you.navigateToLibraryItems
+import com.anshtya.feature.you.navigateToLibraryItem
 import com.anshtya.feature.you.youGraph
 
 @Composable
@@ -24,8 +24,10 @@ fun MovieInfoNavigation(
         homeScreen(onNavigateToDetail = navController::navigateToDetails)
         searchScreen(onNavigateToDetail = navController::navigateToDetails)
         youGraph(
+            onBackClick = navController::popBackStack,
             onNavigateToAuth = navController::navigateToAuth,
-            onNavigateToLibraryItems = navController::navigateToLibraryItems
+            onNavigateToLibraryItem = navController::navigateToLibraryItem,
+            onNavigateToDetails = navController::navigateToDetails
         )
 
         authScreen(onLogIn = navController::popBackStack)

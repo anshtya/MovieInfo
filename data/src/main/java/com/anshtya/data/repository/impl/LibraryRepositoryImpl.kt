@@ -3,6 +3,7 @@ package com.anshtya.data.repository.impl
 import com.anshtya.core.local.database.dao.FavoriteContentDao
 import com.anshtya.core.local.database.dao.WatchlistContentDao
 import com.anshtya.core.local.database.entity.FavoriteContentEntity
+import com.anshtya.core.local.database.entity.WatchlistContentEntity
 import com.anshtya.core.local.database.entity.asFavoriteContentEntity
 import com.anshtya.core.local.database.entity.asModel
 import com.anshtya.core.local.database.entity.asWatchlistContentEntity
@@ -26,6 +27,14 @@ class LibraryRepositoryImpl @Inject constructor(
     override val favoriteTvShows: Flow<List<LibraryItem>> =
         favoriteContentDao.getFavoriteTvShows()
             .map { it.map(FavoriteContentEntity::asModel) }
+
+    override val moviesWatchlist: Flow<List<LibraryItem>> =
+        watchlistContentDao.getMoviesWatchlist()
+            .map { it.map(WatchlistContentEntity::asModel) }
+
+    override val tvShowsWatchlist: Flow<List<LibraryItem>> =
+        watchlistContentDao.getTvShowsWatchlist()
+            .map { it.map(WatchlistContentEntity::asModel) }
 
     override suspend fun addOrRemoveFavorites(libraryItem: LibraryItem) {
         val favoriteContentEntity = libraryItem.asFavoriteContentEntity()

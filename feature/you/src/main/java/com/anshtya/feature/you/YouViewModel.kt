@@ -7,7 +7,6 @@ import com.anshtya.core.model.user.AccountDetails
 import com.anshtya.core.ui.ErrorText
 import com.anshtya.data.model.NetworkResponse
 import com.anshtya.data.repository.AuthRepository
-import com.anshtya.data.repository.LibraryRepository
 import com.anshtya.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -25,8 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class YouViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val userDataRepository: UserDataRepository,
-    private val libraryRepository: LibraryRepository
+    private val userDataRepository: UserDataRepository
 ) : ViewModel() {
     private var logOutJob: Job? = null
 

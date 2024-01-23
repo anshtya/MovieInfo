@@ -8,7 +8,7 @@ interface SyncManager {
 }
 
 interface Synchronizer {
-    suspend fun addOrRemoveItem(
+    suspend fun addOrRemoveItemSync(
         id: Int,
         mediaType: String,
         libraryTaskType: LibraryTaskType,

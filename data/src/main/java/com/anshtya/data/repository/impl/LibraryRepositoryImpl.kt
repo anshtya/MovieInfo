@@ -75,8 +75,7 @@ class LibraryRepositoryImpl @Inject constructor(
         }
     }
 
-    // for syncing with API
-    override suspend fun addOrRemoveItem(
+    override suspend fun addOrRemoveItemSync(
         id: Int,
         mediaType: String,
         libraryTaskType: LibraryTaskType,

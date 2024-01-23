@@ -8,8 +8,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.local)
-    implementation(projects.core.network)
     implementation(projects.data)
 
     testImplementation(libs.junit)

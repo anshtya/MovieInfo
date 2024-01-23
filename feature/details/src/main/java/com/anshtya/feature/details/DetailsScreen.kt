@@ -59,7 +59,7 @@ internal fun DetailsRoute(
         uiState = uiState,
         contentDetailsUiState = contentDetailsUiState,
         onErrorShown = viewModel::onErrorShown,
-        onFavoriteClick = viewModel::addOrRemoveFromFavorites,
+        onFavoriteClick = viewModel::addOrRemoveFavorite,
         onWatchlistClick = viewModel::addOrRemoveFromWatchlist
     )
 }

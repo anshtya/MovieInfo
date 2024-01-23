@@ -1,5 +1,6 @@
 package com.anshtya.feature.you.library_items
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -39,11 +40,13 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.library.LibraryItem
+import com.anshtya.core.ui.ErrorText
 import com.anshtya.core.ui.TmdbImage
 import com.anshtya.feature.you.LibraryItemType
 import com.anshtya.feature.you.R
@@ -59,15 +62,18 @@ internal fun LibraryItemsRoute(
     val movieItems by viewModel.movieItems.collectAsStateWithLifecycle()
     val tvItems by viewModel.tvItems.collectAsStateWithLifecycle()
     val libraryItemType by viewModel.libraryItemType.collectAsStateWithLifecycle()
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
 
     LibraryItemsScreen(
         movieItems = movieItems,
         tvItems = tvItems,
         libraryItemType = libraryItemType,
+        errorMessage = errorMessage,
         onDeleteItem = viewModel::deleteItem,
         onMediaTypeChange = viewModel::onMediaTypeChange,
         onBackClick = onBackClick,
         onNavigateToDetails = onNavigateToDetails,
+        onErrorShown = viewModel::onErrorShown
     )
 }
 
@@ -77,11 +83,19 @@ internal fun LibraryItemsScreen(
     movieItems: List<LibraryItem>,
     tvItems: List<LibraryItem>,
     libraryItemType: LibraryItemType?,
+    errorMessage: ErrorText?,
     onDeleteItem: (LibraryItem, LibraryItemType) -> Unit,
     onMediaTypeChange: (LibraryMediaType) -> Unit,
     onNavigateToDetails: (String) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onErrorShown: () -> Unit
 ) {
+    val context = LocalContext.current
+    errorMessage?.let {
+        Toast.makeText(context, it.toText(context), Toast.LENGTH_SHORT).show()
+        onErrorShown()
+    }
+
     Column(Modifier.fillMaxSize()) {
         TopAppBar(
             title = {

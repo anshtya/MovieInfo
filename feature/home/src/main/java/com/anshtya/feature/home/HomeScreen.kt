@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
@@ -254,7 +255,9 @@ private fun ContentSection(
                                 onItemClick = {
                                     onItemClick("${streamingItem.mediaId},${MediaType.MOVIE}")
                                 },
-                                modifier = Modifier.fillMaxHeight()
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(140.dp)
                             )
                         }
                     }

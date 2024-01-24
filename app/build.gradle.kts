@@ -41,10 +41,10 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.search)
     implementation(projects.feature.you)
+    implementation(projects.sync)
 
     implementation(libs.activity.compose)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.compose.material.iconsExtended)
     implementation(libs.coil.kt)
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

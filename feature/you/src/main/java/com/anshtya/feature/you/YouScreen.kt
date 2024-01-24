@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,36 +45,37 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.core.model.user.AccountDetails
 import com.anshtya.core.model.SelectedDarkMode
 import com.anshtya.core.model.SelectedDarkMode.DARK
 import com.anshtya.core.model.SelectedDarkMode.LIGHT
 import com.anshtya.core.model.SelectedDarkMode.SYSTEM
-import com.anshtya.core.ui.ErrorText
+import com.anshtya.core.model.user.AccountDetails
 import com.anshtya.core.ui.UserImage
-import com.anshtya.feature.you.YouUiState.Loading
-import com.anshtya.feature.you.YouUiState.Success
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun YouRoute(
     onNavigateToAuth: () -> Unit,
+    onNavigateToLibraryItem: (String) -> Unit,
     viewModel: YouViewModel = hiltViewModel()
 ) {
     val youUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    val userSettings by viewModel.userSettings.collectAsStateWithLifecycle()
 
     YouScreen(
         youUiState = youUiState,
-        errorMessage = errorMessage,
+        userSettings = userSettings,
         onChangeTheme = viewModel::setDynamicColorPreference,
         onChangeDarkMode = viewModel::setDarkModePreference,
         onChangeIncludeAdult = viewModel::setAdultResultPreference,
         onNavigateToAuth = onNavigateToAuth,
+        onLibraryItemClick = onNavigateToLibraryItem,
         onLogOutClick = viewModel::logOut,
         onErrorShown = viewModel::onErrorShown
     )
@@ -84,11 +84,12 @@ internal fun YouRoute(
 @Composable
 internal fun YouScreen(
     youUiState: YouUiState,
-    errorMessage: ErrorText?,
+    userSettings: UserSettings?,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
     onChangeIncludeAdult: (Boolean) -> Unit,
     onNavigateToAuth: () -> Unit,
+    onLibraryItemClick: (String) -> Unit,
     onLogOutClick: () -> Unit,
     onErrorShown: () -> Unit
 ) {
@@ -96,7 +97,7 @@ internal fun YouScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    errorMessage?.let {
+    youUiState.errorMessage?.let {
         scope.launch {
             snackbarHostState.showSnackbar(it.toText(context))
         }
@@ -108,57 +109,52 @@ internal fun YouScreen(
             SnackbarHost(hostState = snackbarHostState)
         }
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
+
+            userSettings?.let {
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    IconButton(
+                        onClick = { showSettingsDialog = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(id = R.string.settings_dialog_title)
+                        )
+                    }
+                }
+
+                if (showSettingsDialog) {
+                    SettingsDialog(
+                        userSettings = userSettings,
+                        onChangeTheme = onChangeTheme,
+                        onChangeDarkMode = onChangeDarkMode,
+                        onChangeIncludeAdult = onChangeIncludeAdult
+                    ) { showSettingsDialog = !showSettingsDialog }
+                }
+            }
+
             when (youUiState) {
-                is Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-                is Success -> {
-                    var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
+                is YouUiState.LoggedIn -> {
+                    LoggedInView(
+                        accountDetails = youUiState.accountDetails,
+                        isLoading = youUiState.isLoading,
+                        onLibraryItemClick = onLibraryItemClick,
+                        onLogOutClick = onLogOutClick
+                    )
+                }
 
-                    Column(Modifier.fillMaxSize()) {
-                        Row(
-                            horizontalArrangement = Arrangement.End,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            IconButton(
-                                onClick = { showSettingsDialog = true }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Settings,
-                                    contentDescription = stringResource(
-                                        id = R.string.settings_dialog_title
-                                    )
-                                )
-                            }
-                        }
-
-                        when (getScreenType(youUiState.isLoggedIn)) {
-                            ScreenType.LOGGED_IN -> {
-                                LoggedInView(
-                                    accountDetails = youUiState.accountDetails,
-                                    onLogOutClick = onLogOutClick
-                                )
-                            }
-
-                            ScreenType.LOGGED_OUT -> {
-                                LoggedOutView(
-                                    onNavigateToAuth = onNavigateToAuth
-                                )
-                            }
-                        }
-                    }
-
-                    if (showSettingsDialog) {
-                        SettingsDialog(
-                            userSettings = youUiState.userSettings,
-                            onChangeTheme = onChangeTheme,
-                            onChangeDarkMode = onChangeDarkMode,
-                            onChangeIncludeAdult = onChangeIncludeAdult
-                        ) { showSettingsDialog = !showSettingsDialog }
-                    }
+                is YouUiState.LoggedOff -> {
+                    LoggedOutView(
+                        onNavigateToAuth = onNavigateToAuth
+                    )
                 }
             }
         }
@@ -168,36 +164,43 @@ internal fun YouScreen(
 @Composable
 private fun LoggedInView(
     accountDetails: AccountDetails,
+    isLoading: Boolean,
+    onLibraryItemClick: (String) -> Unit,
     onLogOutClick: () -> Unit
 ) {
-    Box(Modifier.fillMaxSize()) {
-        Spacer(Modifier.height(24.dp))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            UserImage(
-                imageUrl = accountDetails.avatar,
-                modifier = Modifier.size(64.dp)
-            )
-            Text(
-                text = accountDetails.username,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = accountDetails.name,
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 10.dp, vertical = 4.dp)
+    ) {
+        UserImage(
+            imageUrl = accountDetails.avatar,
+            modifier = Modifier.size(64.dp)
+        )
+        Text(
+            text = accountDetails.username,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = accountDetails.name,
+            style = MaterialTheme.typography.titleMedium,
+        )
+        LibrarySection(onLibraryItemClick = onLibraryItemClick)
         Button(
             onClick = onLogOutClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(stringResource(id = R.string.log_out))
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                Text(stringResource(id = R.string.log_out))
+            }
         }
     }
 }
@@ -222,6 +225,7 @@ private fun LoggedOutView(
             )
             Text(
                 text = stringResource(id = R.string.log_in_description),
+                textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge
             )
             Button(
@@ -231,6 +235,49 @@ private fun LoggedOutView(
                 Text(stringResource(id = R.string.log_in))
             }
         }
+    }
+}
+
+@Composable
+private fun LibrarySection(
+    onLibraryItemClick: (String) -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Text(
+            text = stringResource(id = R.string.your_library),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold
+        )
+        LibraryItemOption(
+            optionName = stringResource(id = R.string.favorites),
+            onClick = { onLibraryItemClick(LibraryItemType.FAVORITES.name) }
+        )
+        LibraryItemOption(
+            optionName = stringResource(id = R.string.watchlist),
+            onClick = { onLibraryItemClick(LibraryItemType.WATCHLIST.name) }
+        )
+    }
+}
+
+@Composable
+private fun LibraryItemOption(
+    optionName: String,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .height(42.dp)
+    ) {
+        Text(
+            text = optionName,
+            fontSize = 18.sp,
+        )
     }
 }
 
@@ -364,23 +411,8 @@ private fun SettingsDialogChooserRow(
     }
 }
 
-@Composable
-private fun getScreenType(
-    isLoggedIn: Boolean
-): ScreenType {
-    return if (isLoggedIn) {
-        ScreenType.LOGGED_IN
-    } else {
-        ScreenType.LOGGED_OUT
-    }
-}
-
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
 fun supportsDynamicColorTheme() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-
-private enum class ScreenType {
-    LOGGED_IN, LOGGED_OUT
-}
 
 @Preview(showBackground = true)
 @Composable

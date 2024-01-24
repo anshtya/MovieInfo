@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="work_notification_channel_name">Sync Notification</string>
+    <string name="work_notification_title">Sync</string>
+    <string name="work_notification_text">Syncing Items</string>
+</resources>

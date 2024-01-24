@@ -1,5 +1,8 @@
 package com.anshtya.core.model.details
 
+import com.anshtya.core.model.MediaType
+import com.anshtya.core.model.library.LibraryItem
+
 data class MovieDetails(
     val adult: Boolean,
     val backdropPath: String,
@@ -20,4 +23,11 @@ data class MovieDetails(
     val tagline: String,
     val title: String,
     val voteCount: Int
+)
+
+fun MovieDetails.asLibraryItem() = LibraryItem(
+    id = id,
+    imagePath = posterPath,
+    name = title,
+    mediaType = MediaType.MOVIE.toString()
 )

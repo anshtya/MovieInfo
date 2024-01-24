@@ -11,6 +11,8 @@ import com.anshtya.core.network.model.content.ContentResponse
 import com.anshtya.core.network.model.details.NetworkMovieDetails
 import com.anshtya.core.network.model.details.NetworkPersonDetails
 import com.anshtya.core.network.model.details.tv.NetworkTvDetails
+import com.anshtya.core.network.model.library.FavoriteRequest
+import com.anshtya.core.network.model.library.WatchlistRequest
 import com.anshtya.core.network.model.search.SearchResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -82,6 +84,40 @@ interface TmdbApi {
         @Path("person_id") id: Int
     ): NetworkPersonDetails
 
+    @GET("account/{account_id}/favorite/movies")
+    suspend fun getFavoriteMovies(
+        @Path("account_id") accountId: Int
+    ): ContentResponse
+
+    @GET("account/{account_id}/favorite/tv")
+    suspend fun getFavoriteTvShows(
+        @Path("account_id") accountId: Int
+    ): ContentResponse
+
+    @GET("account/{account_id}/watchlist/movies")
+    suspend fun getMoviesWatchlist(
+        @Path("account_id") accountId: Int
+    ): ContentResponse
+
+    @GET("account/{account_id}/watchlist/tv")
+    suspend fun getTvShowsWatchlist(
+        @Path("account_id") accountId: Int
+    ): ContentResponse
+
+    @Headers("content-type: application/json")
+    @POST("account/{account_id}/favorite")
+    suspend fun addOrRemoveFavorite(
+        @Path("account_id") accountId: Int,
+        @Body favoriteRequest: FavoriteRequest
+    )
+
+    @Headers("content-type: application/json")
+    @POST("account/{account_id}/watchlist")
+    suspend fun addOrRemoveFromWatchlist(
+        @Path("account_id") accountId: Int,
+        @Body watchlistRequest: WatchlistRequest
+    )
+
     @GET("authentication/token/new")
     suspend fun createRequestToken(): RequestTokenResponse
 
@@ -100,6 +136,11 @@ interface TmdbApi {
     @GET("account")
     suspend fun getAccountDetails(
         @Query("session_id") sessionId: String
+    ): NetworkAccountDetails
+
+    @GET("account/{account_id}")
+    suspend fun getAccountDetailsWithId(
+       @Path("account_id") accountId: Int
     ): NetworkAccountDetails
 
     @Headers("content-type: application/json")

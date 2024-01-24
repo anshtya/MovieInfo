@@ -13,7 +13,7 @@ class AndroidHiltConventionPlugin: Plugin<Project> {
 
             dependencies {
                 add("implementation", getLibrary("hilt-android"))
-                add("ksp", getLibrary("hilt-compiler"))
+                add("ksp", getLibrary("hilt-android-compiler"))
             }
         }
     }

@@ -23,10 +23,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.anshtya.feature.home.navigateToHome
-import com.anshtya.movieinfo.navigation.MovieInfoDestination
-import com.anshtya.movieinfo.navigation.MovieInfoNavigation
 import com.anshtya.feature.search.navigateToSearch
 import com.anshtya.feature.you.navigateToYou
+import com.anshtya.movieinfo.navigation.MovieInfoDestination
+import com.anshtya.movieinfo.navigation.MovieInfoNavigation
 
 @Composable
 fun MovieInfoApp(
@@ -107,7 +107,6 @@ private fun NavController.navigateToDestination(destination: MovieInfoDestinatio
     when (destination) {
         MovieInfoDestination.HOME -> navigateToHome(navOptions)
         MovieInfoDestination.SEARCH -> navigateToSearch(navOptions)
-        MovieInfoDestination.MY_LIBRARY -> {}
         MovieInfoDestination.YOU -> navigateToYou(navOptions)
     }
 }

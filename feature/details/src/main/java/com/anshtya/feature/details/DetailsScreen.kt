@@ -36,7 +36,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.details.MovieDetails
 import com.anshtya.core.model.details.PersonDetails
+import com.anshtya.core.model.details.asLibraryItem
 import com.anshtya.core.model.details.tv.TvDetails
+import com.anshtya.core.model.details.tv.asLibraryItem
+import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.ui.BackdropImage
 import com.anshtya.core.ui.FavoriteButton
 import com.anshtya.core.ui.Rating
@@ -55,7 +58,9 @@ internal fun DetailsRoute(
     DetailsScreen(
         uiState = uiState,
         contentDetailsUiState = contentDetailsUiState,
-        onErrorShown = viewModel::onErrorShown
+        onErrorShown = viewModel::onErrorShown,
+        onFavoriteClick = viewModel::addOrRemoveFavorite,
+        onWatchlistClick = viewModel::addOrRemoveFromWatchlist
     )
 }
 
@@ -63,7 +68,9 @@ internal fun DetailsRoute(
 internal fun DetailsScreen(
     uiState: DetailsUiState,
     contentDetailsUiState: ContentDetailUiState,
-    onErrorShown: () -> Unit
+    onErrorShown: () -> Unit,
+    onFavoriteClick: (LibraryItem) -> Unit,
+    onWatchlistClick: (LibraryItem) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -83,11 +90,19 @@ internal fun DetailsScreen(
                 }
 
                 is ContentDetailUiState.Movie -> {
-                    MovieDetailsContent(movieDetails = contentDetailsUiState.data)
+                    MovieDetailsContent(
+                        movieDetails = contentDetailsUiState.data,
+                        onFavoriteClick = onFavoriteClick,
+                        onWatchlistClick = onWatchlistClick
+                    )
                 }
 
                 is ContentDetailUiState.TV -> {
-                    TvDetailsContent(tvDetails = contentDetailsUiState.data)
+                    TvDetailsContent(
+                        tvDetails = contentDetailsUiState.data,
+                        onFavoriteClick = onFavoriteClick,
+                        onWatchlistClick = onWatchlistClick
+                    )
                 }
 
                 is ContentDetailUiState.Person -> {
@@ -100,7 +115,9 @@ internal fun DetailsScreen(
 
 @Composable
 private fun MovieDetailsContent(
-    movieDetails: MovieDetails
+    movieDetails: MovieDetails,
+    onFavoriteClick: (LibraryItem) -> Unit,
+    onWatchlistClick: (LibraryItem) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -143,11 +160,17 @@ private fun MovieDetailsContent(
             }
 
             Row {
-                FavoriteButton(active = false, onClick = {})
+                FavoriteButton(
+                    active = false,
+                    onClick = { onFavoriteClick(movieDetails.asLibraryItem()) }
+                )
 
                 Spacer(Modifier.width(6.dp))
 
-                WatchlistButton(active = false, onClick = {})
+                WatchlistButton(
+                    active = false,
+                    onClick = { onWatchlistClick(movieDetails.asLibraryItem()) }
+                )
             }
 
             OverviewSection(movieDetails.overview)
@@ -168,7 +191,9 @@ private fun MovieDetailsContent(
 
 @Composable
 private fun TvDetailsContent(
-    tvDetails: TvDetails
+    tvDetails: TvDetails,
+    onFavoriteClick: (LibraryItem) -> Unit,
+    onWatchlistClick: (LibraryItem) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -213,11 +238,19 @@ private fun TvDetailsContent(
             }
 
             Row {
-                FavoriteButton(active = false, onClick = {})
+                Row {
+                    FavoriteButton(
+                        active = false,
+                        onClick = { onFavoriteClick(tvDetails.asLibraryItem()) }
+                    )
 
-                Spacer(Modifier.width(6.dp))
+                    Spacer(Modifier.width(6.dp))
 
-                WatchlistButton(active = false, onClick = {})
+                    WatchlistButton(
+                        active = false,
+                        onClick = { onWatchlistClick(tvDetails.asLibraryItem()) }
+                    )
+                }
             }
 
             OverviewSection(tvDetails.overview)

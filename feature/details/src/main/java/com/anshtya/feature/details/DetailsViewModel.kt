@@ -7,9 +7,13 @@ import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.details.MovieDetails
 import com.anshtya.core.model.details.PersonDetails
 import com.anshtya.core.model.details.tv.TvDetails
+import com.anshtya.core.model.library.LibraryItem
+import com.anshtya.core.model.library.LibraryTask
 import com.anshtya.core.ui.ErrorText
 import com.anshtya.data.model.NetworkResponse
 import com.anshtya.data.repository.DetailsRepository
+import com.anshtya.data.repository.LibraryRepository
+import com.anshtya.data.repository.util.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,13 +25,17 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val detailsRepository: DetailsRepository
+    private val detailsRepository: DetailsRepository,
+    private val libraryRepository: LibraryRepository,
+    private val syncManager: SyncManager
 ) : ViewModel() {
     private val idDetailsString = savedStateHandle.getStateFlow(
         key = idNavigationArgument,
@@ -59,6 +67,7 @@ class DetailsViewModel @Inject constructor(
                         val response = detailsRepository.getPersonDetails(id)
                         handlePeopleDetailsResponse(response)
                     }
+
                     else -> ContentDetailUiState.Empty
                 }
             } ?: ContentDetailUiState.Empty
@@ -72,6 +81,42 @@ class DetailsViewModel @Inject constructor(
 
     fun onErrorShown() {
         _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun addOrRemoveFavorite(libraryItem: LibraryItem) {
+        viewModelScope.launch {
+            try {
+                val itemExists = libraryRepository.addOrRemoveFavorite(libraryItem)
+                val libraryTask = LibraryTask.favoriteItemTask(
+                    mediaId = libraryItem.id,
+                    mediaType = enumValueOf(libraryItem.mediaType),
+                    itemExists = !itemExists
+                )
+                syncManager.scheduleLibraryTaskWork(libraryTask)
+            } catch (e: IOException) {
+                _uiState.update {
+                    it.copy(errorMessage = ErrorText.StringResource(id = R.string.error_message))
+                }
+            }
+        }
+    }
+
+    fun addOrRemoveFromWatchlist(libraryItem: LibraryItem) {
+        viewModelScope.launch {
+            try {
+                val itemExists = libraryRepository.addOrRemoveFromWatchlist(libraryItem)
+                val libraryTask = LibraryTask.watchlistItemTask(
+                    mediaId = libraryItem.id,
+                    mediaType = enumValueOf(libraryItem.mediaType),
+                    itemExists = !itemExists
+                )
+                syncManager.scheduleLibraryTaskWork(libraryTask)
+            } catch (e: IOException) {
+                _uiState.update {
+                    it.copy(errorMessage = ErrorText.StringResource(id = R.string.error_message))
+                }
+            }
+        }
     }
 
     private fun getIdAndMediaType(detailsString: String): Pair<Int, MediaType?> {

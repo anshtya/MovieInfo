@@ -7,4 +7,5 @@
     <string name="retry">Retry</string>
     <string name="favorite">Mark as favorite</string>
     <string name="watchlist">Add to your watchlist</string>
+    <string name="no_image_available">No image available</string>
 </resources>

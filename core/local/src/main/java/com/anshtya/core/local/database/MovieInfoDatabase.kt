@@ -8,19 +8,23 @@ import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.anshtya.core.local.database.dao.EntityLastModifiedDao
+import com.anshtya.core.local.database.dao.FavoriteContentDao
 import com.anshtya.core.local.database.dao.FreeContentDao
 import com.anshtya.core.local.database.dao.FreeContentRemoteKeyDao
 import com.anshtya.core.local.database.dao.PopularContentDao
 import com.anshtya.core.local.database.dao.PopularContentRemoteKeyDao
 import com.anshtya.core.local.database.dao.TrendingContentDao
 import com.anshtya.core.local.database.dao.TrendingContentRemoteKeyDao
+import com.anshtya.core.local.database.dao.WatchlistContentDao
 import com.anshtya.core.local.database.entity.EntityLastModified
+import com.anshtya.core.local.database.entity.FavoriteContentEntity
 import com.anshtya.core.local.database.entity.FreeContentEntity
 import com.anshtya.core.local.database.entity.FreeContentRemoteKey
 import com.anshtya.core.local.database.entity.PopularContentEntity
 import com.anshtya.core.local.database.entity.PopularContentRemoteKey
 import com.anshtya.core.local.database.entity.TrendingContentEntity
 import com.anshtya.core.local.database.entity.TrendingContentRemoteKey
+import com.anshtya.core.local.database.entity.WatchlistContentEntity
 
 @Database(
     entities = [
@@ -30,9 +34,11 @@ import com.anshtya.core.local.database.entity.TrendingContentRemoteKey
         PopularContentEntity::class,
         PopularContentRemoteKey::class,
         FreeContentEntity::class,
-        FreeContentRemoteKey::class
+        FreeContentRemoteKey::class,
+        FavoriteContentEntity::class,
+        WatchlistContentEntity::class
     ],
-    version = 6,
+    version = 8,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = MovieInfoDatabase.Companion.Migration5to6::class)
     ],
@@ -50,6 +56,10 @@ abstract class MovieInfoDatabase : RoomDatabase() {
     abstract fun trendingContentRemoteKeyDao(): TrendingContentRemoteKeyDao
     abstract fun freeContentRemoteKeyDao(): FreeContentRemoteKeyDao
     abstract fun popularContentRemoteKeyDao(): PopularContentRemoteKeyDao
+
+    abstract fun favoriteContentDao(): FavoriteContentDao
+
+    abstract fun watchlistContentDao(): WatchlistContentDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -161,5 +171,35 @@ abstract class MovieInfoDatabase : RoomDatabase() {
             DeleteColumn("popular_content", "overview")
         )
         class Migration5to6 : AutoMigrationSpec
+
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE favorite_content (
+                    id INTEGER PRIMARY KEY NOT NULL,
+                    media_type TEXT NOT NULL,
+                    image_path TEXT NOT NULL, 
+                    name TEXT NOT NULL,
+                    created_at INTEGER NOT NULL)
+                    """.trimIndent()
+                )
+            }
+        }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE watchlist_content (
+                    id INTEGER PRIMARY KEY NOT NULL,
+                    media_type TEXT NOT NULL,
+                    image_path TEXT NOT NULL, 
+                    name TEXT NOT NULL,
+                    created_at INTEGER NOT NULL)
+                    """.trimIndent()
+                )
+            }
+        }
     }
 }

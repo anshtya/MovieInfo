@@ -11,7 +11,14 @@
     <string name="settings_dialog_dark_yes">Dark</string>
     <string name="settings_dialog_dark_no">Light</string>
     <string name="log_in">Log In</string>
-    <string name="log_in_description">Log in to view your profile</string>
+    <string name="log_in_description">Log in to view your profile and manage your collections</string>
     <string name="log_out">Log Out</string>
     <string name="error_message">An error occurred</string>
+    <string name="your_library">Your Library</string>
+    <string name="favorites">Favorites</string>
+    <string name="watchlist">Watchlist</string>
+    <string name="movies">Movies</string>
+    <string name="tv_shows">Tv Shows</string>
+    <string name="no_items">No Items</string>
+    <string name="delete">Delete</string>
 </resources>

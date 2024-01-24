@@ -36,6 +36,7 @@
             <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/feature/search" />
             <option value="$PROJECT_DIR$/feature/you" />
+            <option value="$PROJECT_DIR$/sync" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

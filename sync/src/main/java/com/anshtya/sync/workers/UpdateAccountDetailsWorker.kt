@@ -5,26 +5,25 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
-import com.anshtya.data.repository.LibraryRepository
+import com.anshtya.data.repository.AuthRepository
 import com.anshtya.sync.util.SYNC_NOTIFICATION_ID
 import com.anshtya.sync.util.workNotification
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
-class LibrarySyncWorker @AssistedInject constructor(
+class UpdateAccountDetailsWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
-    @Assisted workerParams: WorkerParameters,
-    private val libraryRepository: LibraryRepository
-) : CoroutineWorker(appContext, workerParams) {
+    @Assisted workParams: WorkerParameters,
+    private val authRepository: AuthRepository
+): CoroutineWorker(appContext, workParams) {
     override suspend fun getForegroundInfo(): ForegroundInfo {
         return ForegroundInfo(SYNC_NOTIFICATION_ID, appContext.workNotification())
     }
-
     override suspend fun doWork(): Result {
-        val syncSuccessful = libraryRepository.syncLibrary()
+        val updateSuccessful = authRepository.updateAccountDetails()
 
-        return if (syncSuccessful) {
+        return if (updateSuccessful) {
             Result.success()
         } else {
             Result.retry()
@@ -32,6 +31,6 @@ class LibrarySyncWorker @AssistedInject constructor(
     }
 
     companion object {
-        const val SYNC_LIBRARY_WORK_NAME = "sync_library"
+        const val UPDATE_ACCOUNT_WORK_NAME = "update_account"
     }
 }

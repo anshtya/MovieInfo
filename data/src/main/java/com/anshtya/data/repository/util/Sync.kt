@@ -5,6 +5,10 @@ import com.anshtya.core.model.library.LibraryTaskType
 
 interface SyncManager {
     fun scheduleLibraryTaskWork(libraryTask: LibraryTask)
+
+    fun scheduleLibrarySyncWork()
+
+    fun scheduleAccountDetailsUpdateWork()
 }
 
 interface Synchronizer {
@@ -13,5 +17,9 @@ interface Synchronizer {
         mediaType: String,
         libraryTaskType: LibraryTaskType,
         itemExistsLocally: Boolean
-    ): Boolean
+    ): Boolean = true
+
+    suspend fun syncLibrary(): Boolean = true
+
+    suspend fun updateAccountDetails(): Boolean = true
 }

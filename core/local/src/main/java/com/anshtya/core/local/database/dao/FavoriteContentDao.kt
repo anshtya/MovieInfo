@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.anshtya.core.local.database.entity.FavoriteContentEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -20,9 +21,21 @@ interface FavoriteContentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavoriteItem(favoriteContentEntity: FavoriteContentEntity)
 
+    @Query("SELECT EXISTS(SELECT 1 FROM favorite_content WHERE id = :mediaId)")
+    suspend fun checkFavoriteItemExists(mediaId: Int): Boolean
+
     @Delete
     suspend fun deleteFavoriteItem(favoriteContentEntity: FavoriteContentEntity)
 
-    @Query("SELECT EXISTS(SELECT 1 FROM favorite_content WHERE id = :mediaId)")
-    suspend fun checkFavoriteItemExists(mediaId: Int): Boolean
+    @Query("DELETE FROM favorite_content")
+    suspend fun deleteAllItems()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFavoriteItems(items: List<FavoriteContentEntity>)
+
+    @Transaction
+    suspend fun syncItems(items: List<FavoriteContentEntity>) {
+        deleteAllItems()
+        insertFavoriteItems(items)
+    }
 }

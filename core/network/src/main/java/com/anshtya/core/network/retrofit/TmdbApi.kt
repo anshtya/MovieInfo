@@ -94,6 +94,16 @@ interface TmdbApi {
         @Path("account_id") accountId: Int
     ): ContentResponse
 
+    @GET("account/{account_id}/watchlist/movies")
+    suspend fun getMoviesWatchlist(
+        @Path("account_id") accountId: Int
+    ): ContentResponse
+
+    @GET("account/{account_id}/watchlist/tv")
+    suspend fun getTvShowsWatchlist(
+        @Path("account_id") accountId: Int
+    ): ContentResponse
+
     @Headers("content-type: application/json")
     @POST("account/{account_id}/favorite")
     suspend fun addOrRemoveFavorite(
@@ -126,6 +136,11 @@ interface TmdbApi {
     @GET("account")
     suspend fun getAccountDetails(
         @Query("session_id") sessionId: String
+    ): NetworkAccountDetails
+
+    @GET("account/{account_id}")
+    suspend fun getAccountDetailsWithId(
+       @Path("account_id") accountId: Int
     ): NetworkAccountDetails
 
     @Headers("content-type: application/json")

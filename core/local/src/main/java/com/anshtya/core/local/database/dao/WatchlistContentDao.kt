@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.anshtya.core.local.database.entity.WatchlistContentEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -25,4 +26,16 @@ interface WatchlistContentDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM watchlist_content WHERE id = :mediaId)")
     suspend fun checkWatchlistItemExists(mediaId: Int): Boolean
+
+    @Query("DELETE FROM watchlist_content")
+    suspend fun deleteAllItems()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWatchlistItems(items: List<WatchlistContentEntity>)
+
+    @Transaction
+    suspend fun syncItems(items: List<WatchlistContentEntity>) {
+        deleteAllItems()
+        insertWatchlistItems(items)
+    }
 }

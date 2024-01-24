@@ -10,9 +10,14 @@ import com.anshtya.core.local.database.entity.asWatchlistContentEntity
 import com.anshtya.core.local.datastore.UserPreferencesDataStore
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.model.library.LibraryTaskType
+import com.anshtya.core.network.model.content.NetworkContentItem
 import com.anshtya.core.network.model.library.FavoriteRequest
 import com.anshtya.core.network.model.library.WatchlistRequest
 import com.anshtya.core.network.retrofit.TmdbApi
+import com.anshtya.data.model.asFavoriteMovieEntity
+import com.anshtya.data.model.asFavoriteTvShowEntity
+import com.anshtya.data.model.asWatchlistMovieEntity
+import com.anshtya.data.model.asWatchlistTvShowEntity
 import com.anshtya.data.repository.LibraryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -103,6 +108,34 @@ class LibraryRepositoryImpl @Inject constructor(
                     tmdbApi.addOrRemoveFromWatchlist(accountId, watchlistRequest)
                 }
             }
+            true
+        } catch (e: IOException) {
+            false
+        } catch (e: HttpException) {
+            false
+        }
+    }
+
+    override suspend fun syncLibrary(): Boolean {
+        return try {
+            val accountId = userPreferencesDataStore.userData.first().accountDetails.id
+
+            val favoriteMovies = tmdbApi.getFavoriteMovies(accountId).results
+                .map(NetworkContentItem::asFavoriteMovieEntity)
+            val favoriteTvShows = tmdbApi.getFavoriteTvShows(accountId).results
+                .map(NetworkContentItem::asFavoriteTvShowEntity)
+            val favoriteItems = favoriteMovies + favoriteTvShows
+
+            favoriteContentDao.syncItems(favoriteItems)
+
+            val moviesWatchlist = tmdbApi.getMoviesWatchlist(accountId).results
+                .map(NetworkContentItem::asWatchlistMovieEntity)
+            val tvShowsWatchlist = tmdbApi.getTvShowsWatchlist(accountId).results
+                .map(NetworkContentItem::asWatchlistTvShowEntity)
+            val watchlistItems = moviesWatchlist + tvShowsWatchlist
+
+            watchlistContentDao.syncItems(watchlistItems)
+
             true
         } catch (e: IOException) {
             false

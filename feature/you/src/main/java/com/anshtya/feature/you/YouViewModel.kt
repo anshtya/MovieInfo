@@ -8,6 +8,7 @@ import com.anshtya.core.ui.ErrorText
 import com.anshtya.data.model.NetworkResponse
 import com.anshtya.data.repository.AuthRepository
 import com.anshtya.data.repository.UserDataRepository
+import com.anshtya.data.repository.util.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class YouViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val userDataRepository: UserDataRepository
+    private val userDataRepository: UserDataRepository,
+    private val syncManager: SyncManager
 ) : ViewModel() {
     private var logOutJob: Job? = null
 
@@ -54,6 +56,8 @@ class YouViewModel @Inject constructor(
 
     init {
         getUserData()
+        updateAccountDetails()
+        syncLibrary()
     }
 
     fun setDynamicColorPreference(useDynamicColor: Boolean) {
@@ -108,6 +112,26 @@ class YouViewModel @Inject constructor(
                         accountDetails = userData.accountDetails
                     )
                 }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun updateAccountDetails() {
+        userDataRepository.userData
+            .map { it.isLoggedIn }
+            .distinctUntilChanged()
+            .onEach { loggedIn ->
+                if (loggedIn) syncManager.scheduleAccountDetailsUpdateWork()
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun syncLibrary() {
+        userDataRepository.userData
+            .map { it.isLoggedIn }
+            .distinctUntilChanged()
+            .onEach { loggedIn ->
+                if (loggedIn) syncManager.scheduleLibrarySyncWork()
             }
             .launchIn(viewModelScope)
     }

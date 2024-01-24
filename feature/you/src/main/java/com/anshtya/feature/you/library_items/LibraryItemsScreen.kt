@@ -3,8 +3,10 @@ package com.anshtya.feature.you.library_items
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +19,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -47,7 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.ui.ErrorText
-import com.anshtya.core.ui.TmdbImage
+import com.anshtya.core.ui.MediaItemCard
 import com.anshtya.feature.you.LibraryItemType
 import com.anshtya.feature.you.R
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -190,7 +191,9 @@ private fun LibraryContent(
             )
         } else {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(130.dp),
+                columns = GridCells.Adaptive(140.dp),
+                contentPadding = PaddingValues(horizontal = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxSize()
             ) {
@@ -198,10 +201,14 @@ private fun LibraryContent(
                     items = content,
                     key = { it.id }
                 ) {
-                    LibraryItemImage(
+                    LibraryItem(
                         imagePath = it.imagePath,
                         onClick = { onLibraryItemClick("${it.id},${it.mediaType}") },
-                        onDeleteClick = { onDeleteClick(it, libraryItemType!!) }
+                        onDeleteClick = { onDeleteClick(it, libraryItemType!!) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .padding(vertical = 8.dp)
                     )
                 }
             }
@@ -210,36 +217,34 @@ private fun LibraryContent(
 }
 
 @Composable
-private fun LibraryItemImage(
+private fun LibraryItem(
     imagePath: String,
     onClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Surface(
-        shape = RoundedCornerShape(6.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-            .clickable(onClick = onClick)
-    ) {
-        Box(Modifier.height(200.dp)) {
-            TmdbImage(imageUrl = imagePath)
+    Box(modifier) {
+        MediaItemCard(
+            posterPath = imagePath,
+            onItemClick = onClick
+        )
 
-            Surface(
-                shape = CircleShape,
-                color = Color.LightGray.copy(alpha = 0.4f),
+        Surface(
+            shape = CircleShape,
+            color = Color.LightGray.copy(alpha = 0.4f),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .size(42.dp)
+                .padding(4.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(id = R.string.delete),
+                tint = Color.Black,
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(36.dp)
+                    .clickable(onClick = onDeleteClick)
                     .padding(4.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(id = R.string.delete),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.clickable(onClick = onDeleteClick)
-                )
-            }
+            )
         }
     }
 }

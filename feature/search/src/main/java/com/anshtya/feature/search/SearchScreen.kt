@@ -2,10 +2,12 @@ package com.anshtya.feature.search
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -86,7 +88,9 @@ internal fun SearchScreen(
             }
 
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(130.dp),
+                columns = GridCells.Adaptive(140.dp),
+                contentPadding = PaddingValues(horizontal = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(
@@ -99,7 +103,8 @@ internal fun SearchScreen(
                         onItemClick = {
                             // Converting type to uppercase for [MediaType]
                             onSearchResultClick("${it.id},${it.mediaType.uppercase()}")
-                        }
+                        },
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }

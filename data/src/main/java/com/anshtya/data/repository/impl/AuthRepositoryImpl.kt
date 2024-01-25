@@ -76,17 +76,21 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateAccountDetails(): Boolean {
+    override suspend fun updateAccountDetails(): NetworkResponse<Unit> {
         return try {
-            val accountId = userPreferencesDataStore.userData.first().accountDetails.id
-            val accountDetails = tmdbApi.getAccountDetailsWithId(accountId).asModel()
-            userPreferencesDataStore.saveAccountDetails(accountDetails)
+            val userData = userPreferencesDataStore.userData.first()
+            val localAccountDetails = userData.accountDetails
+            val networkAccountDetails = tmdbApi.getAccountDetailsWithId(localAccountDetails.id).asModel()
 
-            true
+            if (networkAccountDetails != localAccountDetails) {
+                userPreferencesDataStore.saveAccountDetails(networkAccountDetails)
+            }
+
+            NetworkResponse.Success(Unit)
         } catch (e: IOException) {
-            false
+            NetworkResponse.Error()
         } catch (e: HttpException) {
-            false
+            NetworkResponse.Error()
         }
     }
 }

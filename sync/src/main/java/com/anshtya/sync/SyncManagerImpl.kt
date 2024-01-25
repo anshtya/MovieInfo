@@ -17,7 +17,6 @@ import com.anshtya.sync.workers.LibraryTaskWorker.Companion.ITEM_EXISTS_KEY
 import com.anshtya.sync.workers.LibraryTaskWorker.Companion.MEDIA_TYPE_KEY
 import com.anshtya.sync.workers.LibraryTaskWorker.Companion.TASK_KEY
 import com.anshtya.sync.workers.LibraryTaskWorker.Companion.TASK_TYPE_KEY
-import com.anshtya.sync.workers.UpdateAccountDetailsWorker
 import javax.inject.Inject
 
 internal class SyncManagerImpl @Inject constructor(
@@ -47,19 +46,6 @@ internal class SyncManagerImpl @Inject constructor(
             LibrarySyncWorker.SYNC_LIBRARY_WORK_NAME,
             ExistingWorkPolicy.REPLACE,
             librarySyncWorkRequest
-        )
-    }
-
-    override fun scheduleAccountDetailsUpdateWork() {
-        val accountUpdateWorkRequest = OneTimeWorkRequestBuilder<UpdateAccountDetailsWorker>()
-            .setConstraints(getWorkConstraints())
-            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-            .build()
-
-        workManager.enqueueUniqueWork(
-            UpdateAccountDetailsWorker.UPDATE_ACCOUNT_WORK_NAME,
-            ExistingWorkPolicy.REPLACE,
-            accountUpdateWorkRequest
         )
     }
 

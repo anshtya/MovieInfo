@@ -2,6 +2,7 @@ package com.anshtya.feature.you
 
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -146,6 +147,7 @@ internal fun YouScreen(
                     LoggedInView(
                         accountDetails = youUiState.accountDetails,
                         isLoading = youUiState.isLoading,
+                        isLoggingOut = youUiState.isLoggingOut,
                         onLibraryItemClick = onLibraryItemClick,
                         onLogOutClick = onLogOutClick
                     )
@@ -165,6 +167,7 @@ internal fun YouScreen(
 private fun LoggedInView(
     accountDetails: AccountDetails,
     isLoading: Boolean,
+    isLoggingOut: Boolean,
     onLibraryItemClick: (String) -> Unit,
     onLogOutClick: () -> Unit
 ) {
@@ -176,6 +179,9 @@ private fun LoggedInView(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 10.dp, vertical = 4.dp)
     ) {
+        AnimatedVisibility(visible = isLoading) {
+            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
+        }
         UserImage(
             imageUrl = accountDetails.avatar,
             modifier = Modifier.size(64.dp)
@@ -194,7 +200,7 @@ private fun LoggedInView(
             onClick = onLogOutClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (isLoading) {
+            if (isLoggingOut) {
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.onPrimary
                 )

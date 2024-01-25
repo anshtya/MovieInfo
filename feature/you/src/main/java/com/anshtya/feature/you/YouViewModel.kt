@@ -14,6 +14,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -82,7 +83,7 @@ class YouViewModel @Inject constructor(
         if (logOutJob != null) return
 
         logOutJob = viewModelScope.launch {
-            viewModelState.update { it.copy(isLoading = true) }
+            viewModelState.update { it.copy(isLoggingOut = true) }
             when (val response = authRepository.logout()) {
                 is NetworkResponse.Success -> {}
                 is NetworkResponse.Error -> {
@@ -93,7 +94,7 @@ class YouViewModel @Inject constructor(
                     viewModelState.update { it.copy(errorMessage = errorMessage) }
                 }
             }
-            viewModelState.update { it.copy(isLoading = false) }
+            viewModelState.update { it.copy(isLoggingOut = false) }
             logOutJob = null
         }
     }
@@ -117,13 +118,24 @@ class YouViewModel @Inject constructor(
     }
 
     private fun updateAccountDetails() {
-        userDataRepository.userData
-            .map { it.isLoggedIn }
-            .distinctUntilChanged()
-            .onEach { loggedIn ->
-                if (loggedIn) syncManager.scheduleAccountDetailsUpdateWork()
+        viewModelScope.launch {
+            val isLoggedIn = userDataRepository.userData.first().isLoggedIn
+            if (isLoggedIn) {
+                viewModelState.update { it.copy(isLoading = true) }
+
+                when (authRepository.updateAccountDetails()) {
+                    is NetworkResponse.Success -> {}
+                    is NetworkResponse.Error -> {
+                        val errorMessage = ErrorText.StringResource(
+                            id = R.string.error_message_account_details
+                        )
+                        viewModelState.update { it.copy(errorMessage = errorMessage) }
+                    }
+                }
+
+                viewModelState.update { it.copy(isLoading = false) }
             }
-            .launchIn(viewModelScope)
+        }
     }
 
     private fun syncLibrary() {
@@ -144,6 +156,7 @@ sealed interface YouUiState {
     data class LoggedIn(
         val accountDetails: AccountDetails,
         val isLoading: Boolean,
+        val isLoggingOut: Boolean,
         override val errorMessage: ErrorText?
     ) : YouUiState
 
@@ -160,6 +173,7 @@ data class UserSettings(
 
 private data class YouViewModelState(
     val isLoading: Boolean = false,
+    val isLoggingOut: Boolean = false,
     val isLoggedIn: Boolean? = null,
     val accountDetails: AccountDetails? = null,
     val errorMessage: ErrorText? = null
@@ -169,6 +183,7 @@ private data class YouViewModelState(
             YouUiState.LoggedIn(
                 accountDetails = accountDetails!!,
                 isLoading = isLoading,
+                isLoggingOut = isLoggingOut,
                 errorMessage = errorMessage
             )
         } else {

@@ -9,9 +9,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -32,21 +30,18 @@ import com.anshtya.movieinfo.navigation.MovieInfoNavigation
 fun MovieInfoApp(
     navController: NavHostController = rememberNavController()
 ) {
-    val destinations = MovieInfoDestination.entries.toList()
+    val bottomDestinations = MovieInfoDestination.entries
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val showBottomBar by remember(currentDestination) {
-        derivedStateOf {
-            destinations.any { destination ->
-                currentDestination?.route?.contains(destination.name, true) ?: false
-            }
-        }
+    val showBottomBar = bottomDestinations.any { destination ->
+        currentDestination?.route?.contains(destination.name, true) ?: false
     }
+
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
                 MovieInfoNavigationBar(
-                    destinations = destinations,
+                    destinations = bottomDestinations,
                     currentDestination = currentDestination,
                     onNavigateToDestination = { destination ->
                         navController.navigateToDestination(destination)

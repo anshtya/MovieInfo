@@ -6,10 +6,13 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.anshtya.core.model.library.LibraryTask
 import com.anshtya.core.model.library.LibraryTaskType
 import com.anshtya.data.repository.util.SyncManager
+import com.anshtya.sync.util.FAVORITES_TAG
+import com.anshtya.sync.util.WATCHLIST_TAG
 import com.anshtya.sync.util.putEnum
 import com.anshtya.sync.workers.LibrarySyncWorker
 import com.anshtya.sync.workers.LibraryTaskWorker
@@ -49,13 +52,38 @@ internal class SyncManagerImpl @Inject constructor(
         )
     }
 
+    override fun isWorkNotScheduled(id: Int, taskType: LibraryTaskType): Boolean {
+        var workInfoFound = false
+        val workTag = getWorkTag(taskType)
+        val shouldUpsert = workManager.getWorkInfosForUniqueWork("${workTag}_${id}")
+            .get()
+            .any {
+                when (it.state) {
+                    WorkInfo.State.ENQUEUED,
+                    WorkInfo.State.RUNNING,
+                    WorkInfo.State.BLOCKED -> {
+                        workInfoFound = true
+                        false
+                    }
+
+                    else -> {
+                        workInfoFound = true
+                        true
+                    }
+                }
+            }
+
+        return if (workInfoFound) {
+            shouldUpsert
+        } else {
+            true
+        }
+    }
+
     private fun generateWorkerName(libraryTask: LibraryTask): String {
         return when (libraryTask.taskType) {
-            LibraryTaskType.FAVORITES ->
-                "fav_${libraryTask.itemExistLocally}_${libraryTask.mediaId}"
-
-            LibraryTaskType.WATCHLIST ->
-                "wl_${libraryTask.itemExistLocally}_${libraryTask.mediaId}"
+            LibraryTaskType.FAVORITES -> "${FAVORITES_TAG}_${libraryTask.mediaId}"
+            LibraryTaskType.WATCHLIST -> "${WATCHLIST_TAG}_${libraryTask.mediaId}"
         }
     }
 
@@ -65,6 +93,13 @@ internal class SyncManagerImpl @Inject constructor(
         .putEnum(TASK_TYPE_KEY, libraryTask.taskType)
         .putBoolean(ITEM_EXISTS_KEY, libraryTask.itemExistLocally)
         .build()
+
+    private fun getWorkTag(libraryTaskType: LibraryTaskType): String {
+        return when (libraryTaskType) {
+            LibraryTaskType.FAVORITES -> FAVORITES_TAG
+            LibraryTaskType.WATCHLIST -> WATCHLIST_TAG
+        }
+    }
 
     private fun getWorkConstraints() = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)

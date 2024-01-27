@@ -14,11 +14,10 @@ import com.anshtya.core.network.model.content.NetworkContentItem
 import com.anshtya.core.network.model.library.FavoriteRequest
 import com.anshtya.core.network.model.library.WatchlistRequest
 import com.anshtya.core.network.retrofit.TmdbApi
-import com.anshtya.data.model.asFavoriteMovieEntity
-import com.anshtya.data.model.asFavoriteTvShowEntity
-import com.anshtya.data.model.asWatchlistMovieEntity
-import com.anshtya.data.model.asWatchlistTvShowEntity
+import com.anshtya.data.model.asFavoriteContentEntity
+import com.anshtya.data.model.asWatchlistContentEntity
 import com.anshtya.data.repository.LibraryRepository
+import com.anshtya.data.repository.util.SyncManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -30,7 +29,8 @@ class LibraryRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val favoriteContentDao: FavoriteContentDao,
     private val watchlistContentDao: WatchlistContentDao,
-    private val userPreferencesDataStore: UserPreferencesDataStore
+    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val syncManager: SyncManager
 ) : LibraryRepository {
     override val favoriteMovies: Flow<List<LibraryItem>> =
         favoriteContentDao.getFavoriteMovies()
@@ -116,25 +116,58 @@ class LibraryRepositoryImpl @Inject constructor(
         }
     }
 
+    /**
+     * This function inserts items from server to database for which no work is scheduled
+     * and removes items which are stale (i.e not present on server) and for which no work is
+     * scheduled.
+     */
     override suspend fun syncLibrary(): Boolean {
         return try {
             val accountId = userPreferencesDataStore.userData.first().accountDetails.id
 
             val favoriteMovies = tmdbApi.getFavoriteMovies(accountId).results
-                .map(NetworkContentItem::asFavoriteMovieEntity)
-            val favoriteTvShows = tmdbApi.getFavoriteTvShows(accountId).results
-                .map(NetworkContentItem::asFavoriteTvShowEntity)
-            val favoriteItems = favoriteMovies + favoriteTvShows
+                .filter { syncManager.isWorkNotScheduled(it.id, LibraryTaskType.FAVORITES) }
 
-            favoriteContentDao.syncItems(favoriteItems)
+            val favoriteTvShows = tmdbApi.getFavoriteTvShows(accountId).results
+                .filter { syncManager.isWorkNotScheduled(it.id, LibraryTaskType.FAVORITES) }
+
+            val favoriteItems = favoriteMovies + favoriteTvShows
+            val favoriteItemsIds = favoriteItems.map { it.id }
+
+            val staleFavoriteItems = favoriteContentDao.getFavoriteItems()
+                .filter {
+                    (it.id !in favoriteItemsIds) && syncManager.isWorkNotScheduled(
+                        it.id,
+                        LibraryTaskType.FAVORITES
+                    )
+                }
+                .map { it.id }
+            favoriteContentDao.syncItems(
+                upsertItems = favoriteItems.map(NetworkContentItem::asFavoriteContentEntity),
+                deleteItems = staleFavoriteItems
+            )
 
             val moviesWatchlist = tmdbApi.getMoviesWatchlist(accountId).results
-                .map(NetworkContentItem::asWatchlistMovieEntity)
-            val tvShowsWatchlist = tmdbApi.getTvShowsWatchlist(accountId).results
-                .map(NetworkContentItem::asWatchlistTvShowEntity)
-            val watchlistItems = moviesWatchlist + tvShowsWatchlist
+                .filter { syncManager.isWorkNotScheduled(it.id, LibraryTaskType.WATCHLIST) }
 
-            watchlistContentDao.syncItems(watchlistItems)
+            val tvShowsWatchlist = tmdbApi.getTvShowsWatchlist(accountId).results
+                .filter { syncManager.isWorkNotScheduled(it.id, LibraryTaskType.WATCHLIST) }
+
+            val watchlistItems = moviesWatchlist + tvShowsWatchlist
+            val watchlistItemsIds = watchlistItems.map { it.id }
+
+            val staleWatchlistItems = watchlistContentDao.getWatchlistItems()
+                .filter {
+                    (it.id !in watchlistItemsIds) && syncManager.isWorkNotScheduled(
+                        it.id,
+                        LibraryTaskType.WATCHLIST
+                    )
+                }
+                .map { it.id }
+            watchlistContentDao.syncItems(
+                upsertItems = watchlistItems.map(NetworkContentItem::asWatchlistContentEntity),
+                deleteItems = staleWatchlistItems
+            )
 
             true
         } catch (e: IOException) {

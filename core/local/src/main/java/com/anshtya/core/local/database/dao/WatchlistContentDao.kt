@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Upsert
 import com.anshtya.core.local.database.entity.WatchlistContentEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -18,6 +19,9 @@ interface WatchlistContentDao {
     @Query("SELECT * FROM watchlist_content WHERE media_type = 'TV' ORDER BY created_at")
     fun getTvShowsWatchlist(): Flow<List<WatchlistContentEntity>>
 
+    @Query("SELECT * FROM watchlist_content")
+    suspend fun getWatchlistItems(): List<WatchlistContentEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWatchlistItem(watchlistContentEntity: WatchlistContentEntity)
 
@@ -27,15 +31,21 @@ interface WatchlistContentDao {
     @Query("SELECT EXISTS(SELECT 1 FROM watchlist_content WHERE id = :mediaId)")
     suspend fun checkWatchlistItemExists(mediaId: Int): Boolean
 
+    @Query("DELETE FROM watchlist_content WHERE id in (:ids)")
+    suspend fun deleteItems(ids: List<Int>)
+
     @Query("DELETE FROM watchlist_content")
     suspend fun deleteAllItems()
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertWatchlistItems(items: List<WatchlistContentEntity>)
+    @Upsert
+    suspend fun upsertWatchlistItems(items: List<WatchlistContentEntity>)
 
     @Transaction
-    suspend fun syncItems(items: List<WatchlistContentEntity>) {
-        deleteAllItems()
-        insertWatchlistItems(items)
+    suspend fun syncItems(
+        upsertItems: List<WatchlistContentEntity>,
+        deleteItems: List<Int>
+    ) {
+        upsertWatchlistItems(upsertItems)
+        deleteItems(deleteItems)
     }
 }

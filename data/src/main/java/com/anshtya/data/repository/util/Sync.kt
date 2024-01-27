@@ -8,6 +8,8 @@ interface SyncManager {
     fun scheduleLibraryTaskWork(libraryTask: LibraryTask)
 
     fun scheduleLibrarySyncWork()
+
+    fun isWorkNotScheduled(id: Int, taskType: LibraryTaskType): Boolean
 }
 
 // Interface for class which manages sync between local and remote data source

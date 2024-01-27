@@ -5,30 +5,16 @@ import com.anshtya.core.local.database.entity.WatchlistContentEntity
 import com.anshtya.core.model.MediaType
 import com.anshtya.core.network.model.content.NetworkContentItem
 
-fun NetworkContentItem.asFavoriteMovieEntity() = FavoriteContentEntity(
+fun NetworkContentItem.asFavoriteContentEntity() = FavoriteContentEntity(
     id = id,
-    name = title!!,
+    name = title ?: name ?: "",
     imagePath = posterPath,
-    mediaType = MediaType.MOVIE.name
+    mediaType = if (title != null) MediaType.MOVIE.name else MediaType.TV.name
 )
 
-fun NetworkContentItem.asFavoriteTvShowEntity() = FavoriteContentEntity(
+fun NetworkContentItem.asWatchlistContentEntity() = WatchlistContentEntity(
     id = id,
-    name = name!!,
+    name = title ?: name ?: "",
     imagePath = posterPath,
-    mediaType = MediaType.TV.name
-)
-
-fun NetworkContentItem.asWatchlistMovieEntity() = WatchlistContentEntity(
-    id = id,
-    name = title!!,
-    imagePath = posterPath,
-    mediaType = MediaType.MOVIE.name
-)
-
-fun NetworkContentItem.asWatchlistTvShowEntity() = WatchlistContentEntity(
-    id = id,
-    name = name!!,
-    imagePath = posterPath,
-    mediaType = MediaType.TV.name
+    mediaType = if (title != null) MediaType.MOVIE.name else MediaType.TV.name
 )

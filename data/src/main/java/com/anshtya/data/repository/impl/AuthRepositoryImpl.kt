@@ -12,6 +12,7 @@ import com.anshtya.core.network.model.getErrorMessage
 import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.model.NetworkResponse
 import com.anshtya.data.repository.AuthRepository
+import com.anshtya.data.repository.util.SyncManager
 import kotlinx.coroutines.flow.first
 import retrofit2.HttpException
 import java.io.IOException
@@ -22,7 +23,8 @@ class AuthRepositoryImpl @Inject constructor(
     private val favoriteContentDao: FavoriteContentDao,
     private val watchlistContentDao: WatchlistContentDao,
     private val userPreferencesDataStore: UserPreferencesDataStore,
-    private val encryptedSharedPreferences: UserEncryptedSharedPreferences
+    private val encryptedSharedPreferences: UserEncryptedSharedPreferences,
+    private val syncManager: SyncManager
 ) : AuthRepository {
     override suspend fun login(
         username: String,
@@ -45,6 +47,8 @@ class AuthRepositoryImpl @Inject constructor(
 
             encryptedSharedPreferences.storeSessionId(sessionResponse.sessionId)
             userPreferencesDataStore.saveAccountDetails(accountDetails)
+
+            syncManager.scheduleLibrarySyncWork()
 
             NetworkResponse.Success(Unit)
         } catch (e: IOException) {

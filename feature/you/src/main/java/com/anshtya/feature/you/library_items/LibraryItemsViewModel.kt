@@ -8,7 +8,6 @@ import com.anshtya.core.model.library.LibraryTask
 import com.anshtya.core.ui.ErrorText
 import com.anshtya.data.repository.LibraryRepository
 import com.anshtya.data.repository.util.SyncManager
-import com.anshtya.feature.you.LibraryItemType
 import com.anshtya.feature.you.R
 import com.anshtya.feature.you.libraryItemTypeNavigationArgument
 import dagger.hilt.android.lifecycle.HiltViewModel

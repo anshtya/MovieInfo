@@ -1,6 +1,7 @@
-package com.anshtya.feature.you
+package com.anshtya.feature.you.library_items
 
 import androidx.annotation.StringRes
+import com.anshtya.feature.you.R
 
 enum class LibraryItemType(
     @StringRes val displayName: Int

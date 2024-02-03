@@ -1,6 +1,11 @@
 # MovieInfo
 Provides movies information from [TMDB API](https://api.tmdb.org/).
 
+## 📸 Screenshots
+| Home Screen | Search Screen | You Screen |
+|---|---|---|
+|<img src = "./images/screenshot_home.png" width = 240/>| <img src = "./images/screenshot_search.png" width = 240/> | <img src = "./images/screenshot_you.png" width = 240/> |
+
 ## ✨ Features
 - Discover popular and trending movies and TV shows.
 - Connect your TMDB account to access your TMDB watchlists and favorites.

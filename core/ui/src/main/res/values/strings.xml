@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="back">Go Back</string>
-    <string name="search">Search</string>
+    <string name="search_placeholder">Search content or people</string>
     <string name="clear">Clear</string>
     <string name="error">An error occurred</string>
     <string name="retry">Retry</string>

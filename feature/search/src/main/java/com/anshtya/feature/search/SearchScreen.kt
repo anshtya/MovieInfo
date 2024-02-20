@@ -13,23 +13,16 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.SearchItem
-import com.anshtya.core.ui.MovieInfoTopSearchAppBar
+import com.anshtya.core.ui.MovieInfoSearchBar
 
 @Composable
 internal fun SearchRoute(
@@ -61,8 +54,6 @@ internal fun SearchScreen(
     onSearchResultClick: (String) -> Unit,
     onErrorShown: () -> Unit
 ) {
-    var showSearchSuggestions by rememberSaveable { mutableStateOf(false) }
-
     val context = LocalContext.current
     showError?.let {
         Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_SHORT).show()
@@ -70,20 +61,14 @@ internal fun SearchScreen(
     }
 
     Column(Modifier.fillMaxSize()) {
-        MovieInfoTopSearchAppBar(
-            query = searchQuery,
-            onQueryChange = { onSearchQueryChange(it) },
-            onSearch = {},
-            onBackClick = {
-                showSearchSuggestions = false
-                onBack()
-            },
-            active = showSearchSuggestions,
-            onActiveChange = { showSearchSuggestions = it }
+        MovieInfoSearchBar(
+            value = searchQuery,
+            onQueryChange = { onSearchQueryChange(it) }
         )
-        if (showSearchSuggestions) {
+
+        if (searchQuery.isNotEmpty()) {
             BackHandler {
-                showSearchSuggestions = false
+                onSearchQueryChange("")
                 onBack()
             }
 
@@ -118,23 +103,14 @@ private fun SearchHistoryContent(
     history: List<String>
 ) {
     Box(Modifier.fillMaxSize()) {
-        if (history.isEmpty()) {
-            Text(
-                text = stringResource(id = R.string.search_text),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(10.dp),
-                modifier = Modifier.fillMaxSize()
+        LazyColumn(
+            contentPadding = PaddingValues(10.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(
+                items = history
             ) {
-                items(
-                    items = history
-                ) {
-                    Text(it)
-                }
+                Text(it)
             }
         }
     }

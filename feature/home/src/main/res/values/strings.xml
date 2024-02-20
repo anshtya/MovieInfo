@@ -12,5 +12,4 @@
     <string name="tv">TV</string>
     <string name="search">Search</string>
     <string name="clear_search">Clear Search</string>
-    <string name="search_placeholder">Search for movies, TV shows or keywords</string>
 </resources>

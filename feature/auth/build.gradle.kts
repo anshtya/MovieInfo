@@ -1,7 +1,5 @@
 plugins {
-    id("movieinfo.android.library")
-    id("movieinfo.android.library.compose")
-    id("movieinfo.android.hilt")
+    id("movieinfo.android.feature")
 }
 
 android {
@@ -9,8 +7,9 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.ui)
     implementation(projects.data)
+
+    implementation(libs.compose.material.iconsExtended)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

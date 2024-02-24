@@ -8,10 +8,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.activity.compose)
-    implementation(libs.appcompat)
-    api(libs.compose.material.iconsExtended)
-    implementation(libs.core.ktx)
+    implementation(libs.compose.material.iconsExtended)
     implementation(libs.coil.kt.compose)
     implementation(libs.kotlinx.collections.immutable)
 

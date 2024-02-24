@@ -9,7 +9,7 @@ import util.getVersion
 class AndroidApplicationComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            extensions.configure<ApplicationExtension>() {
+            extensions.configure<ApplicationExtension> {
                 buildFeatures {
                     compose = true
                 }
@@ -23,6 +23,8 @@ class AndroidApplicationComposeConventionPlugin : Plugin<Project> {
                     add("implementation", getLibrary("ui-tooling-preview"))
                     add("implementation", getLibrary("androidx-lifecycle-runtime-compose"))
                     add("implementation", getLibrary("androidx-navigation-compose"))
+
+                    add("androidTestImplementation", platform(bom))
                 }
             }
         }

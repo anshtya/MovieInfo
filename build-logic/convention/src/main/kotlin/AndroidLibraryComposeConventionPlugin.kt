@@ -9,7 +9,7 @@ import util.getVersion
 class AndroidLibraryComposeConventionPlugin: Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            extensions.configure<LibraryExtension>() {
+            extensions.configure<LibraryExtension> {
                 buildFeatures {
                     compose = true
                 }
@@ -20,10 +20,9 @@ class AndroidLibraryComposeConventionPlugin: Plugin<Project> {
                     val bom = getLibrary("compose-bom")
                     add("implementation", platform(bom))
                     add("implementation", getLibrary("material3"))
-                    add("implementation", getLibrary("ui-tooling-preview"))
-                    add("implementation", getLibrary("androidx-lifecycle-runtime-compose"))
-                    add("implementation", getLibrary("androidx-hilt-navigation-compose"))
                     add("debugImplementation", getLibrary("ui-tooling"))
+                    add("implementation", getLibrary("ui-tooling-preview"))
+                    add("androidTestImplementation", platform(bom))
                 }
             }
         }

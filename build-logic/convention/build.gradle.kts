@@ -29,5 +29,9 @@ gradlePlugin {
             id = "movieinfo.android.hilt"
             implementationClass = "AndroidHiltConventionPlugin"
         }
+        register("androidFeature") {
+            id = "movieinfo.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
     }
 }

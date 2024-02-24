@@ -6,9 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.core.local"
+    namespace = "com.anshtya.core.local"
 
     defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }

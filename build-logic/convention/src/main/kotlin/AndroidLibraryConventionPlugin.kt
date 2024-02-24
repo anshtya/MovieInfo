@@ -4,7 +4,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class AndroidLibraryConventionPlugin: Plugin<Project> {
@@ -20,8 +19,6 @@ class AndroidLibraryConventionPlugin: Plugin<Project> {
 
                 defaultConfig {
                     minSdk = 24
-
-                    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 }
 
                 compileOptions {

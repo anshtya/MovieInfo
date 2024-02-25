@@ -8,11 +8,12 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.local)
     api(projects.core.model)
+
+    implementation(projects.core.local)
     implementation(projects.core.network)
 
-    testImplementation(libs.junit)
-
     implementation(libs.androidx.paging.runtime)
+
+    testImplementation(projects.core.testing)
 }

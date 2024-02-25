@@ -23,11 +23,11 @@ android {
 dependencies {
     api(projects.core.model)
 
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
-
     api(libs.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.okhttp.mockwebserver)
+
+    testImplementation(projects.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

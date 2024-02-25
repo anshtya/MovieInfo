@@ -39,16 +39,14 @@ protobuf {
 dependencies {
     api(projects.core.model)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-
-    implementation(libs.androidx.datastore)
     api(libs.androidx.room.ktx)
+    implementation(libs.androidx.datastore)
     implementation(libs.androidx.room.paging)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.security.crypto)
     implementation(libs.protobuf.kotlin.lite)
-
     ksp(libs.androidx.room.compiler)
+
+    testImplementation(projects.core.testing)
+    androidTestImplementation(projects.core.testing)
 }

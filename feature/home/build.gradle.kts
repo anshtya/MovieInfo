@@ -9,10 +9,10 @@ android {
 dependencies {
     implementation(projects.data)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-
     implementation(libs.androidx.paging.compose)
     implementation(libs.kotlinx.collections.immutable)
+
+    testImplementation(projects.core.testing)
+
+    androidTestImplementation(projects.core.testing)
 }

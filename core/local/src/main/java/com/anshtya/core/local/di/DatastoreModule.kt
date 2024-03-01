@@ -21,7 +21,7 @@ import javax.inject.Singleton
 internal object DatastoreModule {
     @Singleton
     @Provides
-    internal fun provideProtoDataStore(
+    fun provideProtoDataStore(
         @ApplicationContext appContext: Context
     ): DataStore<UserPreferences> {
         return DataStoreFactory.create(
@@ -32,7 +32,7 @@ internal object DatastoreModule {
 
     @Singleton
     @Provides
-    internal fun provideEncryptedSharedPreferences(
+    fun provideEncryptedSharedPreferences(
         @ApplicationContext appContext: Context
     ): SharedPreferences {
         val masterKey = MasterKey.Builder(appContext)

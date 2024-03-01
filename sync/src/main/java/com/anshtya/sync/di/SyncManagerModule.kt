@@ -11,7 +11,7 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 internal abstract class SyncManagerModule{
     @Binds
-    internal abstract fun provideSyncManager(
+    abstract fun provideSyncManager(
         syncManagerImpl: SyncManagerImpl
     ): SyncManager
 }

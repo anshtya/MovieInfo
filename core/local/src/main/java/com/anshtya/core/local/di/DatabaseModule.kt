@@ -48,7 +48,7 @@ internal object DatabaseModule {
 
     @Singleton
     @Provides
-    internal fun provideEntityLastModifiedDao(
+    fun provideEntityLastModifiedDao(
         db: MovieInfoDatabase
     ): EntityLastModifiedDao {
         return db.entityLastModifiedDao()
@@ -56,7 +56,7 @@ internal object DatabaseModule {
 
     @Singleton
     @Provides
-    internal fun provideTrendingContentDao(
+    fun provideTrendingContentDao(
         db: MovieInfoDatabase
     ): TrendingContentDao {
         return db.trendingContentDao()
@@ -64,7 +64,7 @@ internal object DatabaseModule {
 
     @Singleton
     @Provides
-    internal fun providePopularContentDao(
+    fun providePopularContentDao(
         db: MovieInfoDatabase
     ): PopularContentDao {
         return db.popularContentDao()
@@ -72,7 +72,7 @@ internal object DatabaseModule {
 
     @Singleton
     @Provides
-    internal fun provideFreeContentDao(
+    fun provideFreeContentDao(
         db: MovieInfoDatabase
     ): FreeContentDao {
         return db.freeContentDao()
@@ -80,7 +80,7 @@ internal object DatabaseModule {
 
     @Singleton
     @Provides
-    internal fun provideTrendingContentRemoteKeyDao(
+    fun provideTrendingContentRemoteKeyDao(
         db: MovieInfoDatabase
     ): TrendingContentRemoteKeyDao {
         return db.trendingContentRemoteKeyDao()
@@ -88,7 +88,7 @@ internal object DatabaseModule {
 
     @Singleton
     @Provides
-    internal fun provideFreeContentRemoteKeyDao(
+    fun provideFreeContentRemoteKeyDao(
         db: MovieInfoDatabase
     ): FreeContentRemoteKeyDao {
         return db.freeContentRemoteKeyDao()
@@ -96,7 +96,7 @@ internal object DatabaseModule {
 
     @Singleton
     @Provides
-    internal fun providePopularContentRemoteKeyDao(
+    fun providePopularContentRemoteKeyDao(
         db: MovieInfoDatabase
     ): PopularContentRemoteKeyDao {
         return db.popularContentRemoteKeyDao()
@@ -104,7 +104,7 @@ internal object DatabaseModule {
 
     @Singleton
     @Provides
-    internal fun provideFavoriteContentDao(
+    fun provideFavoriteContentDao(
         db: MovieInfoDatabase
     ): FavoriteContentDao {
         return db.favoriteContentDao()
@@ -112,7 +112,7 @@ internal object DatabaseModule {
 
     @Singleton
     @Provides
-    internal fun provideWatchlistContentDao(
+    fun provideWatchlistContentDao(
         db: MovieInfoDatabase
     ): WatchlistContentDao {
         return db.watchlistContentDao()

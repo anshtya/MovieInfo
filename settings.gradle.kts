@@ -19,6 +19,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "MovieInfo"
 include(":app")
+include(":benchmark")
 include(":core:local")
 include(":core:model")
 include(":core:network")

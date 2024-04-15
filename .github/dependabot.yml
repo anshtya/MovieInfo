@@ -1,0 +1,25 @@
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    registries:
+      - google
+      - maven-central
+    groups:
+      kotlin-ksp-compose:
+        patterns:
+          - "org.jetbrains.kotlin.*"
+          - "com.google.devtools.ksp"
+          - "androidx.compose.compiler:compiler"
+          
+registries:
+  google:
+    type: maven-repository
+    url: "https://maven.google.com/"
+  maven-central:
+    type: maven-repository
+    url: "https://repo.maven.apache.org/maven2"

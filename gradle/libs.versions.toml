@@ -1,6 +1,6 @@
 [versions]
 activity-compose = "1.8.2"
-agp = "8.1.4"
+agp = "8.3.2"
 androidx-compose-compiler = "1.5.3"
 androidx-core-splashscreen = "1.0.1"
 androidx-datastore = "1.1.0-alpha07"

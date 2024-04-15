@@ -2,6 +2,10 @@
 
 version: 2
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
@@ -15,6 +19,7 @@ updates:
           - "org.jetbrains.kotlin.*"
           - "com.google.devtools.ksp"
           - "androidx.compose.compiler:compiler"
+    open-pull-requests-limit: 10
           
 registries:
   google:

@@ -29,7 +29,7 @@ jobs:
         run: ./gradlew test
 
       - name: Assemble build types
-        run: ./gradlew :app:assembleDebug :benchmarks:assemble
+        run: ./gradlew :app:assembleDebug :benchmark:assemble
 
       - name: Upload build outputs (APKs)
         uses: actions/upload-artifact@v4.3.1

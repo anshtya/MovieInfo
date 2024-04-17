@@ -6,7 +6,6 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
-      day: "sunday"
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:

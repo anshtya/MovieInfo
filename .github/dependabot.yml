@@ -5,7 +5,8 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+      day: "sunday"
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:

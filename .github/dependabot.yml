@@ -10,6 +10,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "version update"
     registries:
       - google
       - maven-central

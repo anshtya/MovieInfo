@@ -1,4 +1,4 @@
-package com.anshtya.data.repository.util
+package com.anshtya.data.util
 
 import com.anshtya.core.model.library.LibraryTask
 import com.anshtya.core.model.library.LibraryTaskType

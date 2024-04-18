@@ -1,6 +1,6 @@
 package com.anshtya.sync.di
 
-import com.anshtya.data.repository.util.SyncManager
+import com.anshtya.data.util.SyncManager
 import com.anshtya.sync.SyncManagerImpl
 import dagger.Binds
 import dagger.Module

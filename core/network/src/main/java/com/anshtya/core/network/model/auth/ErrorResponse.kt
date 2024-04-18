@@ -1,4 +1,4 @@
-package com.anshtya.core.network.model
+package com.anshtya.core.network.model.auth
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi

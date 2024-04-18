@@ -10,7 +10,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.anshtya.core.model.library.LibraryTask
 import com.anshtya.core.model.library.LibraryTaskType
-import com.anshtya.data.repository.util.SyncManager
+import com.anshtya.data.util.SyncManager
 import com.anshtya.sync.util.FAVORITES_TAG
 import com.anshtya.sync.util.WATCHLIST_TAG
 import com.anshtya.sync.util.putEnum

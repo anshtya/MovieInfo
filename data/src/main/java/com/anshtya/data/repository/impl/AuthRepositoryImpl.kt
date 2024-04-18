@@ -8,11 +8,11 @@ import com.anshtya.core.network.model.auth.DeleteSessionRequest
 import com.anshtya.core.network.model.auth.LoginRequest
 import com.anshtya.core.network.model.auth.SessionRequest
 import com.anshtya.core.network.model.auth.asModel
-import com.anshtya.core.network.model.getErrorMessage
+import com.anshtya.core.network.model.auth.getErrorMessage
 import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.model.NetworkResponse
 import com.anshtya.data.repository.AuthRepository
-import com.anshtya.data.repository.util.SyncManager
+import com.anshtya.data.util.SyncManager
 import kotlinx.coroutines.flow.first
 import retrofit2.HttpException
 import java.io.IOException

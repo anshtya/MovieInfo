@@ -1,7 +1,7 @@
 package com.anshtya.data.repository
 
 import com.anshtya.core.model.library.LibraryItem
-import com.anshtya.data.repository.util.Synchronizer
+import com.anshtya.data.util.Synchronizer
 import kotlinx.coroutines.flow.Flow
 
 interface LibraryRepository: Synchronizer {

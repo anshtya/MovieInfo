@@ -13,7 +13,7 @@ import com.anshtya.core.ui.ErrorText
 import com.anshtya.data.model.NetworkResponse
 import com.anshtya.data.repository.DetailsRepository
 import com.anshtya.data.repository.LibraryRepository
-import com.anshtya.data.repository.util.SyncManager
+import com.anshtya.data.util.SyncManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

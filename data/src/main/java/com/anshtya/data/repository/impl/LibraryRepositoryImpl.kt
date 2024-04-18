@@ -17,7 +17,7 @@ import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.model.asFavoriteContentEntity
 import com.anshtya.data.model.asWatchlistContentEntity
 import com.anshtya.data.repository.LibraryRepository
-import com.anshtya.data.repository.util.SyncManager
+import com.anshtya.data.util.SyncManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

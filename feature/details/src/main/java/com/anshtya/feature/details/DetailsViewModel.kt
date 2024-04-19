@@ -10,7 +10,7 @@ import com.anshtya.core.model.details.tv.TvDetails
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.model.library.LibraryTask
 import com.anshtya.core.ui.ErrorText
-import com.anshtya.data.model.NetworkResponse
+import com.anshtya.core.model.NetworkResponse
 import com.anshtya.data.repository.DetailsRepository
 import com.anshtya.data.repository.LibraryRepository
 import com.anshtya.data.util.SyncManager

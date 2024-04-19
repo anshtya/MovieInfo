@@ -3,7 +3,7 @@ package com.anshtya.feature.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshtya.core.ui.ErrorText
-import com.anshtya.data.model.NetworkResponse
+import com.anshtya.core.model.NetworkResponse
 import com.anshtya.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job

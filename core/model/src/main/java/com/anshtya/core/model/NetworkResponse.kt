@@ -1,4 +1,4 @@
-package com.anshtya.data.model
+package com.anshtya.core.model
 
 sealed class NetworkResponse<out T> {
     data class Success<T>(val data: T): NetworkResponse<T>()

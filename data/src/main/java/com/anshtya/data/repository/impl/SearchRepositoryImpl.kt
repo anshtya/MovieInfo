@@ -3,7 +3,7 @@ package com.anshtya.data.repository.impl
 import com.anshtya.core.model.SearchItem
 import com.anshtya.core.network.model.search.asModel
 import com.anshtya.core.network.retrofit.TmdbApi
-import com.anshtya.data.model.NetworkResponse
+import com.anshtya.core.model.NetworkResponse
 import com.anshtya.data.repository.SearchRepository
 import retrofit2.HttpException
 import java.io.IOException

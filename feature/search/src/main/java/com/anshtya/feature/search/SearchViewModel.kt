@@ -3,7 +3,7 @@ package com.anshtya.feature.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshtya.core.model.SearchItem
-import com.anshtya.data.model.NetworkResponse
+import com.anshtya.core.model.NetworkResponse
 import com.anshtya.data.repository.SearchRepository
 import com.anshtya.data.repository.UserDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

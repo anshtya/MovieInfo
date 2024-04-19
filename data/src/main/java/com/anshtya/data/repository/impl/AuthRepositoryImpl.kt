@@ -10,7 +10,7 @@ import com.anshtya.core.network.model.auth.SessionRequest
 import com.anshtya.core.network.model.auth.asModel
 import com.anshtya.core.network.model.auth.getErrorMessage
 import com.anshtya.core.network.retrofit.TmdbApi
-import com.anshtya.data.model.NetworkResponse
+import com.anshtya.core.model.NetworkResponse
 import com.anshtya.data.repository.AuthRepository
 import com.anshtya.data.util.SyncManager
 import kotlinx.coroutines.flow.first

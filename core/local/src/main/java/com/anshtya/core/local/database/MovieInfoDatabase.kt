@@ -7,56 +7,23 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.anshtya.core.local.database.dao.EntityLastModifiedDao
 import com.anshtya.core.local.database.dao.FavoriteContentDao
-import com.anshtya.core.local.database.dao.FreeContentDao
-import com.anshtya.core.local.database.dao.FreeContentRemoteKeyDao
-import com.anshtya.core.local.database.dao.PopularContentDao
-import com.anshtya.core.local.database.dao.PopularContentRemoteKeyDao
-import com.anshtya.core.local.database.dao.TrendingContentDao
-import com.anshtya.core.local.database.dao.TrendingContentRemoteKeyDao
 import com.anshtya.core.local.database.dao.WatchlistContentDao
-import com.anshtya.core.local.database.entity.EntityLastModified
 import com.anshtya.core.local.database.entity.FavoriteContentEntity
-import com.anshtya.core.local.database.entity.FreeContentEntity
-import com.anshtya.core.local.database.entity.FreeContentRemoteKey
-import com.anshtya.core.local.database.entity.PopularContentEntity
-import com.anshtya.core.local.database.entity.PopularContentRemoteKey
-import com.anshtya.core.local.database.entity.TrendingContentEntity
-import com.anshtya.core.local.database.entity.TrendingContentRemoteKey
 import com.anshtya.core.local.database.entity.WatchlistContentEntity
 
 @Database(
     entities = [
-        EntityLastModified::class,
-        TrendingContentEntity::class,
-        TrendingContentRemoteKey::class,
-        PopularContentEntity::class,
-        PopularContentRemoteKey::class,
-        FreeContentEntity::class,
-        FreeContentRemoteKey::class,
         FavoriteContentEntity::class,
         WatchlistContentEntity::class
     ],
-    version = 8,
+    version = 9,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = MovieInfoDatabase.Companion.Migration5to6::class)
     ],
     exportSchema = true
 )
 abstract class MovieInfoDatabase : RoomDatabase() {
-    val trendingContentEntityName = "trending_content"
-    val freeContentEntityName = "free_content"
-    val popularContentEntityName = "popular_content"
-
-    abstract fun entityLastModifiedDao(): EntityLastModifiedDao
-    abstract fun trendingContentDao(): TrendingContentDao
-    abstract fun popularContentDao(): PopularContentDao
-    abstract fun freeContentDao(): FreeContentDao
-    abstract fun trendingContentRemoteKeyDao(): TrendingContentRemoteKeyDao
-    abstract fun freeContentRemoteKeyDao(): FreeContentRemoteKeyDao
-    abstract fun popularContentRemoteKeyDao(): PopularContentRemoteKeyDao
-
     abstract fun favoriteContentDao(): FavoriteContentDao
 
     abstract fun watchlistContentDao(): WatchlistContentDao
@@ -199,6 +166,18 @@ abstract class MovieInfoDatabase : RoomDatabase() {
                     created_at INTEGER NOT NULL)
                     """.trimIndent()
                 )
+            }
+        }
+
+        val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE entity_last_modified")
+                db.execSQL("DROP TABLE free_content")
+                db.execSQL("DROP TABLE free_content_remote_key")
+                db.execSQL("DROP TABLE popular_content")
+                db.execSQL("DROP TABLE popular_content_remote_key")
+                db.execSQL("DROP TABLE trending_content")
+                db.execSQL("DROP TABLE trending_content_remote_key")
             }
         }
     }

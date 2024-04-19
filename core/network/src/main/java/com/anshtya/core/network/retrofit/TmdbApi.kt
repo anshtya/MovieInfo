@@ -7,7 +7,7 @@ import com.anshtya.core.network.model.auth.NetworkAccountDetails
 import com.anshtya.core.network.model.auth.RequestTokenResponse
 import com.anshtya.core.network.model.auth.SessionRequest
 import com.anshtya.core.network.model.auth.SessionResponse
-import com.anshtya.core.network.model.content.ContentResponse
+import com.anshtya.core.network.model.content.NetworkContentResponse
 import com.anshtya.core.network.model.details.NetworkMovieDetails
 import com.anshtya.core.network.model.details.NetworkPersonDetails
 import com.anshtya.core.network.model.details.tv.NetworkTvDetails
@@ -23,44 +23,12 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TmdbApi {
-    @GET("discover/{content_type}?include_video=false&with_watch_monetization_types=free&sort_by=popularity.desc")
-    suspend fun getFreeContent(
-        @Path("content_type") contentType: String,
-        @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean,
-        @Query("watch_region") watchRegion: String = "US",
-        @Query("language") language: String = "en-US"
-    ): ContentResponse
-
-    @GET("discover/movie?include_video=false&with_watch_monetization_types=flatrate&sort_by=popularity.desc")
-    suspend fun getPopularStreamingTitles(
-        @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean,
-        @Query("watch_region") watchRegion: String = "US",
-        @Query("language") language: String = "en-US"
-    ): ContentResponse
-
-    @GET("discover/movie?include_video=false&with_watch_monetization_types=rent&sort_by=popularity.desc")
-    suspend fun getPopularTitlesOnRent(
-        @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean,
-        @Query("watch_region") watchRegion: String = "US",
-        @Query("language") language: String = "en-US"
-    ): ContentResponse
-
-    @GET("discover/movie?include_video=false&with_release_type=3|2&sort_by=popularity.desc")
-    suspend fun getPopularTitlesInTheatres(
-        @Query("page") page: Int = 1,
-        @Query("include_adult") includeAdult: Boolean,
-        @Query("watch_region") watchRegion: String = "US",
-        @Query("language") language: String = "en-US"
-    ): ContentResponse
-
-    @GET("trending/movie/{time_window}?language=en-US")
-    suspend fun getTrendingMovies(
-        @Path("time_window") timeWindow: String,
+    @GET("movie/{category}")
+    suspend fun getMovieLists(
+        @Path("category") category: String,
+        @Query("language") language: String = "en-US",
         @Query("page") page: Int
-    ): ContentResponse
+    ): NetworkContentResponse
 
     @GET("search/multi")
     suspend fun multiSearch(
@@ -87,22 +55,22 @@ interface TmdbApi {
     @GET("account/{account_id}/favorite/movies")
     suspend fun getFavoriteMovies(
         @Path("account_id") accountId: Int
-    ): ContentResponse
+    ): NetworkContentResponse
 
     @GET("account/{account_id}/favorite/tv")
     suspend fun getFavoriteTvShows(
         @Path("account_id") accountId: Int
-    ): ContentResponse
+    ): NetworkContentResponse
 
     @GET("account/{account_id}/watchlist/movies")
     suspend fun getMoviesWatchlist(
         @Path("account_id") accountId: Int
-    ): ContentResponse
+    ): NetworkContentResponse
 
     @GET("account/{account_id}/watchlist/tv")
     suspend fun getTvShowsWatchlist(
         @Path("account_id") accountId: Int
-    ): ContentResponse
+    ): NetworkContentResponse
 
     @Headers("content-type: application/json")
     @POST("account/{account_id}/favorite")

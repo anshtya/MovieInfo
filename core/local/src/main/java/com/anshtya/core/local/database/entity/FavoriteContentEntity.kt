@@ -12,14 +12,14 @@ data class FavoriteContentEntity(
     @ColumnInfo(name = "image_path") val imagePath: String,
     val name: String,
     @ColumnInfo(name = "created_at") val createdAt: Long = System.nanoTime()
-)
-
-fun FavoriteContentEntity.asModel() = LibraryItem(
-    id = id,
-    mediaType = mediaType,
-    imagePath = imagePath,
-    name = name
-)
+) {
+    fun asModel() = LibraryItem(
+        id = id,
+        mediaType = mediaType,
+        imagePath = imagePath,
+        name = name
+    )
+}
 
 fun LibraryItem.asFavoriteContentEntity() = FavoriteContentEntity(
     id = id,

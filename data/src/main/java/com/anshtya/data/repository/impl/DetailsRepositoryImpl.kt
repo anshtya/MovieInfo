@@ -3,8 +3,6 @@ package com.anshtya.data.repository.impl
 import com.anshtya.core.model.details.MovieDetails
 import com.anshtya.core.model.details.PersonDetails
 import com.anshtya.core.model.details.tv.TvDetails
-import com.anshtya.core.network.model.details.asModel
-import com.anshtya.core.network.model.details.tv.asModel
 import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.model.NetworkResponse
 import com.anshtya.data.repository.DetailsRepository

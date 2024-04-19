@@ -5,7 +5,6 @@ import com.anshtya.core.local.database.dao.WatchlistContentDao
 import com.anshtya.core.local.database.entity.FavoriteContentEntity
 import com.anshtya.core.local.database.entity.WatchlistContentEntity
 import com.anshtya.core.local.database.entity.asFavoriteContentEntity
-import com.anshtya.core.local.database.entity.asModel
 import com.anshtya.core.local.database.entity.asWatchlistContentEntity
 import com.anshtya.core.local.datastore.UserPreferencesDataStore
 import com.anshtya.core.model.library.LibraryItem

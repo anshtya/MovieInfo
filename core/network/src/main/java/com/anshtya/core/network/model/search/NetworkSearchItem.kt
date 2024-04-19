@@ -7,9 +7,9 @@ data class NetworkSearchItem(
     val id: Int,
     val name: String?,
     val title: String?,
-    @field:Json(name = "media_type") val mediaType: String,
-    @field:Json(name = "poster_path") val posterPath: String?,
-    @field:Json(name = "profile_path") val profilePath: String?,
+    @Json(name = "media_type") val mediaType: String,
+    @Json(name = "poster_path") val posterPath: String?,
+    @Json(name = "profile_path") val profilePath: String?,
 )
 
 fun NetworkSearchItem.asModel() = SearchItem(

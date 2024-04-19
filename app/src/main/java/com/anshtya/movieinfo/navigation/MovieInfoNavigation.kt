@@ -7,8 +7,8 @@ import com.anshtya.feature.auth.authScreen
 import com.anshtya.feature.auth.navigateToAuth
 import com.anshtya.feature.details.detailsScreen
 import com.anshtya.feature.details.navigateToDetails
-import com.anshtya.feature.home.homeNavigationRoute
-import com.anshtya.feature.home.homeScreen
+import com.anshtya.movieinfo.feature.movies.moviesNavigationRoute
+import com.anshtya.movieinfo.feature.movies.moviesScreen
 import com.anshtya.feature.search.searchScreen
 import com.anshtya.feature.you.navigateToLibraryItem
 import com.anshtya.feature.you.youGraph
@@ -19,9 +19,12 @@ fun MovieInfoNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = homeNavigationRoute
+        startDestination = moviesNavigationRoute
     ) {
-        homeScreen(onNavigateToDetail = navController::navigateToDetails)
+        moviesScreen(
+            navController = navController,
+            onNavigateToDetail = navController::navigateToDetails
+        )
         searchScreen(onNavigateToDetail = navController::navigateToDetails)
         youGraph(
             onBackClick = navController::popBackStack,

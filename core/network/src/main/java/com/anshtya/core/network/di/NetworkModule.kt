@@ -2,6 +2,8 @@ package com.anshtya.core.network.di
 
 import com.anshtya.core.network.BuildConfig
 import com.anshtya.core.network.retrofit.TmdbApi
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,9 +33,12 @@ internal object NetworkModule {
                 chain.proceed(newRequest)
             })
             .build()
+        val moshi = Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
+            .build()
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .client(client)
             .build()
             .create(TmdbApi::class.java)

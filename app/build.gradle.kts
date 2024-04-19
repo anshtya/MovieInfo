@@ -43,17 +43,17 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.ui)
     implementation(projects.data)
     implementation(projects.feature.auth)
     implementation(projects.feature.details)
-    implementation(projects.feature.home)
+    implementation(projects.feature.movies)
     implementation(projects.feature.search)
     implementation(projects.feature.you)
     implementation(projects.sync)
 
     implementation(libs.activity.compose)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.coil.kt)
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.ui)

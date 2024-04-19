@@ -6,7 +6,7 @@ import androidx.work.Configuration
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import com.anshtya.data.repository.UserDataRepository
-import com.anshtya.data.repository.util.SyncManager
+import com.anshtya.data.util.SyncManager
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 

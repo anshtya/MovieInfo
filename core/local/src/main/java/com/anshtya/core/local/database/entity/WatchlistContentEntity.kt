@@ -12,14 +12,14 @@ data class WatchlistContentEntity(
     @ColumnInfo(name = "image_path") val imagePath: String,
     val name: String,
     @ColumnInfo(name = "created_at") val createdAt: Long = System.nanoTime()
-)
-
-fun WatchlistContentEntity.asModel() = LibraryItem(
-    id = id,
-    mediaType = mediaType,
-    imagePath = imagePath,
-    name = name
-)
+) {
+    fun asModel() = LibraryItem(
+        id = id,
+        mediaType = mediaType,
+        imagePath = imagePath,
+        name = name
+    )
+}
 
 fun LibraryItem.asWatchlistContentEntity() = WatchlistContentEntity(
     id = id,

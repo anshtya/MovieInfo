@@ -8,8 +8,9 @@ android {
 }
 
 dependencies {
-    implementation(libs.compose.material.iconsExtended)
-    implementation(libs.coil.kt.compose)
+    api(libs.coil.kt.compose)
+    api(libs.compose.material.iconsExtended)
+
     implementation(libs.kotlinx.collections.immutable)
 
     androidTestImplementation(projects.core.testing)

@@ -12,6 +12,7 @@ import com.anshtya.movieinfo.feature.movies.moviesScreen
 import com.anshtya.feature.search.searchScreen
 import com.anshtya.feature.you.navigateToLibraryItem
 import com.anshtya.feature.you.youGraph
+import com.anshtya.movieinfo.feature.tv.tvShowsScreen
 
 @Composable
 fun MovieInfoNavigation(
@@ -22,6 +23,10 @@ fun MovieInfoNavigation(
         startDestination = moviesNavigationRoute
     ) {
         moviesScreen(
+            navController = navController,
+            onNavigateToDetail = navController::navigateToDetails
+        )
+        tvShowsScreen(
             navController = navController,
             onNavigateToDetail = navController::navigateToDetails
         )

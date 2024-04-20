@@ -9,8 +9,10 @@ import com.anshtya.data.repository.impl.DetailsRepositoryImpl
 import com.anshtya.data.repository.LibraryRepository
 import com.anshtya.data.repository.impl.LibraryRepositoryImpl
 import com.anshtya.data.repository.SearchRepository
+import com.anshtya.data.repository.TvShowRepository
 import com.anshtya.data.repository.impl.SearchRepositoryImpl
 import com.anshtya.data.repository.UserDataRepository
+import com.anshtya.data.repository.impl.TvShowRepositoryImpl
 import com.anshtya.data.repository.impl.UserDataRepositoryImpl
 import dagger.Binds
 import dagger.Module
@@ -24,6 +26,11 @@ internal abstract class RepositoryModule {
     abstract fun bindMovieRepository(
         movieRepositoryImpl: MovieRepositoryImpl
     ): MovieRepository
+
+    @Binds
+    abstract fun bindTvShowRepository(
+        tvShowRepositoryImpl: TvShowRepositoryImpl
+    ): TvShowRepository
 
     @Binds
     abstract fun bindSearchRepository(

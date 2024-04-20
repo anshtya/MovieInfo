@@ -37,6 +37,7 @@
             <option value="$PROJECT_DIR$/feature/details" />
             <option value="$PROJECT_DIR$/feature/movies" />
             <option value="$PROJECT_DIR$/feature/search" />
+            <option value="$PROJECT_DIR$/feature/tv" />
             <option value="$PROJECT_DIR$/feature/you" />
             <option value="$PROJECT_DIR$/sync" />
           </set>

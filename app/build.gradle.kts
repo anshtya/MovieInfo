@@ -49,6 +49,7 @@ dependencies {
     implementation(projects.feature.details)
     implementation(projects.feature.movies)
     implementation(projects.feature.search)
+    implementation(projects.feature.tv)
     implementation(projects.feature.you)
     implementation(projects.sync)
 

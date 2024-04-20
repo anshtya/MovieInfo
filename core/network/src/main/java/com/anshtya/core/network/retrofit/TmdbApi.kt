@@ -30,6 +30,13 @@ interface TmdbApi {
         @Query("page") page: Int
     ): NetworkContentResponse
 
+    @GET("tv/{category}")
+    suspend fun getTvShowLists(
+        @Path("category") category: String,
+        @Query("language") language: String = "en-US",
+        @Query("page") page: Int
+    ): NetworkContentResponse
+
     @GET("search/multi")
     suspend fun multiSearch(
         @Query("page") page: Int = 1,

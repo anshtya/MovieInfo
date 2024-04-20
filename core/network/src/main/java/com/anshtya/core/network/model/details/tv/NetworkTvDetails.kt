@@ -27,7 +27,7 @@ data class NetworkTvDetails(
     @Json(name = "origin_country") val originCountry: List<String>,
     @Json(name = "original_language") val originalLanguage: String,
     val overview: String,
-    @Json(name = "poster_path") val posterPath: String,
+    @Json(name = "poster_path") val posterPath: String?,
     @Json(name = "production_companies") val productionCompanies: List<NetworkProductionCompany>,
     @Json(name = "production_countries") val productionCountries: List<NetworkProductionCountry>,
 //    val seasons: List<Season>,
@@ -56,7 +56,7 @@ data class NetworkTvDetails(
         originCountry = originCountry,
         originalLanguage = Locale(originalLanguage).displayLanguage,
         overview = overview,
-        posterPath = posterPath,
+        posterPath = posterPath ?: "",
         productionCompanies = productionCompanies.joinToString(separator = ", ") { it.name },
         productionCountries = productionCountries.joinToString(separator = ", ") { it.name },
         releaseYear = firstAirDate.split("-").first().toInt(),
@@ -68,6 +68,8 @@ data class NetworkTvDetails(
     )
     
     private fun getFormattedRuntime(): String {
+        if (episodeRunTime.isEmpty()) return ""
+
         val hours = episodeRunTime.first().div(60)
         val minutes = episodeRunTime.first().mod(60)
         return if (hours < 1) {

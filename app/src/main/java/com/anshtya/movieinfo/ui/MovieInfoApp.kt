@@ -23,6 +23,7 @@ import androidx.navigation.navOptions
 import com.anshtya.movieinfo.feature.movies.navigateToMovies
 import com.anshtya.feature.search.navigateToSearch
 import com.anshtya.feature.you.navigateToYou
+import com.anshtya.movieinfo.feature.tv.navigateToTvShows
 import com.anshtya.movieinfo.navigation.MovieInfoDestination
 import com.anshtya.movieinfo.navigation.MovieInfoNavigation
 
@@ -101,7 +102,7 @@ private fun NavController.navigateToDestination(destination: MovieInfoDestinatio
 
     when (destination) {
         MovieInfoDestination.MOVIES -> navigateToMovies(navOptions)
-        MovieInfoDestination.TV_SHOWS -> {}
+        MovieInfoDestination.TV_SHOWS -> navigateToTvShows(navOptions)
         MovieInfoDestination.SEARCH -> navigateToSearch(navOptions)
         MovieInfoDestination.YOU -> navigateToYou(navOptions)
     }

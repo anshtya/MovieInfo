@@ -10,7 +10,7 @@ import java.util.Locale
 
 data class NetworkTvDetails(
     val adult: Boolean,
-    @Json(name = "backdrop_path") val backdropPath: String,
+    @Json(name = "backdrop_path") val backdropPath: String?,
     @Json(name = "created_by") val createdBy: List<CreatedBy>,
     @Json(name = "episode_run_time") val episodeRunTime: List<Int>,
     @Json(name = "first_air_date") val firstAirDate: String,
@@ -39,7 +39,7 @@ data class NetworkTvDetails(
 ) {
     fun asModel() = TvDetails(
         adult = adult,
-        backdropPath = backdropPath,
+        backdropPath = backdropPath ?: "",
         createdBy = createdBy,
         episodeRunTime = getFormattedRuntime(),
         firstAirDate = firstAirDate,

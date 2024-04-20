@@ -8,13 +8,13 @@ import com.anshtya.core.network.model.content.NetworkContentItem
 fun NetworkContentItem.asFavoriteContentEntity() = FavoriteContentEntity(
     id = id,
     name = title ?: name ?: "",
-    imagePath = posterPath,
+    imagePath = posterPath ?: "",
     mediaType = if (title != null) MediaType.MOVIE.name else MediaType.TV.name
 )
 
 fun NetworkContentItem.asWatchlistContentEntity() = WatchlistContentEntity(
     id = id,
     name = title ?: name ?: "",
-    imagePath = posterPath,
+    imagePath = posterPath ?: "",
     mediaType = if (title != null) MediaType.MOVIE.name else MediaType.TV.name
 )

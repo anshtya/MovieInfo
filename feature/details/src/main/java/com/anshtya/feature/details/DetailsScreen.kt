@@ -314,7 +314,7 @@ private fun BackdropImageSection(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
     ) {
         BackdropImage(imageUrl = path)
@@ -329,7 +329,8 @@ private fun Poster(
     Column(modifier) {
         Surface(
             shape = RoundedCornerShape(6.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            shadowElevation = 8.dp
         ) {
             TmdbImage(imageUrl = path)
         }

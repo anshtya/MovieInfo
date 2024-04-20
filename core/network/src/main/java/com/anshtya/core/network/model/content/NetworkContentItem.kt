@@ -6,12 +6,12 @@ import com.squareup.moshi.Json
 data class NetworkContentItem(
     val id: Int,
     val name: String?,
-    @Json(name = "poster_path") val posterPath: String,
+    @Json(name = "poster_path") val posterPath: String?,
     val title: String?,
 ) {
     fun asModel() = ContentItem(
         id = id,
-        imagePath = posterPath,
+        imagePath = posterPath ?: "",
         name = name ?: title ?: ""
     )
 }

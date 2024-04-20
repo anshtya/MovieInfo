@@ -10,7 +10,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class PopularMoviesPagingSource @Inject constructor(
+internal class PopularMoviesPagingSource @Inject constructor(
     private val tmdbApi: TmdbApi
 ): PagingSource<Int, ContentItem>() {
     override fun getRefreshKey(state: PagingState<Int, ContentItem>): Int? {

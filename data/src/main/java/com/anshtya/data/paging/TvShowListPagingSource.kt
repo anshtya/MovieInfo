@@ -1,18 +1,18 @@
-package com.anshtya.data.paging.tv
+package com.anshtya.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.anshtya.core.model.content.ContentItem
-import com.anshtya.core.model.content.TvShowListCategory
 import com.anshtya.core.network.model.content.NetworkContentItem
 import com.anshtya.core.network.retrofit.TmdbApi
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-internal class AiringTodayTvShowsPagingSource @Inject constructor(
-    private val tmdbApi: TmdbApi
-): PagingSource<Int, ContentItem>() {
+class TvShowListPagingSource @Inject constructor(
+    private val tmdbApi: TmdbApi,
+    private val categoryName: String
+) : PagingSource<Int, ContentItem>() {
     override fun getRefreshKey(state: PagingState<Int, ContentItem>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)
@@ -24,7 +24,7 @@ internal class AiringTodayTvShowsPagingSource @Inject constructor(
         val pageNumber = params.key ?: 1
         return try {
             val response = tmdbApi.getTvShowLists(
-                category = TvShowListCategory.AIRING_TODAY.categoryName,
+                category = categoryName,
                 page = pageNumber
             )
             LoadResult.Page(

@@ -27,8 +27,8 @@ dependencies {
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.okhttp.logging.interceptor)
-    implementation(libs.okhttp.mockwebserver)
 
     testImplementation(projects.core.testing)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.okhttp.mockwebserver)
 }

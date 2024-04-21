@@ -9,7 +9,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class MovieListPagingSource @Inject constructor(
+internal class MovieListPagingSource @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val categoryName: String
 ) : PagingSource<Int, ContentItem>() {

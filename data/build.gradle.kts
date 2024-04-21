@@ -15,5 +15,6 @@ dependencies {
 
     implementation(libs.androidx.paging.runtime)
 
+    testImplementation(libs.androidx.paging.testing)
     testImplementation(projects.core.testing)
 }

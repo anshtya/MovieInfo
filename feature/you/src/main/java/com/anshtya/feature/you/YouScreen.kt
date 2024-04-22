@@ -1,6 +1,7 @@
 package com.anshtya.feature.you
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -23,25 +24,25 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -57,9 +58,9 @@ import com.anshtya.core.model.SelectedDarkMode.DARK
 import com.anshtya.core.model.SelectedDarkMode.LIGHT
 import com.anshtya.core.model.SelectedDarkMode.SYSTEM
 import com.anshtya.core.model.user.AccountDetails
+import com.anshtya.core.model.user.UserData
 import com.anshtya.core.ui.UserImage
 import com.anshtya.feature.you.library_items.LibraryItemType
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun YouRoute(
@@ -68,54 +69,55 @@ internal fun YouRoute(
     viewModel: YouViewModel = hiltViewModel()
 ) {
     val youUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val accountDetails by viewModel.accountDetails.collectAsStateWithLifecycle()
     val userSettings by viewModel.userSettings.collectAsStateWithLifecycle()
 
     YouScreen(
         youUiState = youUiState,
+        isSignedIn = viewModel.isSignedIn,
+        accountDetails = accountDetails,
         userSettings = userSettings,
         onChangeTheme = viewModel::setDynamicColorPreference,
         onChangeDarkMode = viewModel::setDarkModePreference,
         onChangeIncludeAdult = viewModel::setAdultResultPreference,
         onNavigateToAuth = onNavigateToAuth,
         onLibraryItemClick = onNavigateToLibraryItem,
+        onRefresh = viewModel::onRefresh,
         onLogOutClick = viewModel::logOut,
         onErrorShown = viewModel::onErrorShown
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun YouScreen(
     youUiState: YouUiState,
-    userSettings: UserSettings?,
+    isSignedIn: Boolean,
+    accountDetails: AccountDetails?,
+    userSettings: UserData?,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
     onChangeIncludeAdult: (Boolean) -> Unit,
     onNavigateToAuth: () -> Unit,
     onLibraryItemClick: (String) -> Unit,
     onLogOutClick: () -> Unit,
+    onRefresh: () -> Unit,
     onErrorShown: () -> Unit
 ) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val pullToRefreshState = rememberPullToRefreshState(enabled = { isSignedIn })
 
-    youUiState.errorMessage?.let {
-        scope.launch {
-            snackbarHostState.showSnackbar(it.toText(context))
-        }
-        onErrorShown()
-    }
+    Box(
+        modifier = Modifier
+            .nestedScroll(pullToRefreshState.nestedScrollConnection)
+    ) {
+        Column(Modifier.fillMaxSize()) {
+            val context = LocalContext.current
 
-    Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
+            youUiState.errorMessage?.let {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                onErrorShown()
+            }
+
             var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
 
             userSettings?.let {
@@ -138,27 +140,43 @@ internal fun YouScreen(
                         userSettings = userSettings,
                         onChangeTheme = onChangeTheme,
                         onChangeDarkMode = onChangeDarkMode,
-                        onChangeIncludeAdult = onChangeIncludeAdult
-                    ) { showSettingsDialog = !showSettingsDialog }
+                        onChangeIncludeAdult = onChangeIncludeAdult,
+                        onDismissRequest = { showSettingsDialog = !showSettingsDialog }
+                    )
                 }
             }
 
-            when (youUiState) {
-                is YouUiState.LoggedIn -> {
+            if (isSignedIn) {
+                accountDetails?.let {
                     LoggedInView(
-                        accountDetails = youUiState.accountDetails,
+                        accountDetails = accountDetails,
                         isLoading = youUiState.isLoading,
                         isLoggingOut = youUiState.isLoggingOut,
                         onLibraryItemClick = onLibraryItemClick,
                         onLogOutClick = onLogOutClick
                     )
                 }
+            } else {
+                LoggedOutView(
+                    onNavigateToAuth = onNavigateToAuth
+                )
+            }
+        }
 
-                is YouUiState.LoggedOff -> {
-                    LoggedOutView(
-                        onNavigateToAuth = onNavigateToAuth
-                    )
-                }
+        PullToRefreshContainer(
+            state = pullToRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+        )
+
+        if (pullToRefreshState.isRefreshing) {
+            LaunchedEffect(true) { onRefresh() }
+        }
+
+        LaunchedEffect(youUiState.isRefreshing) {
+            if (youUiState.isRefreshing) {
+                pullToRefreshState.startRefresh()
+            } else {
+                pullToRefreshState.endRefresh()
             }
         }
     }
@@ -184,7 +202,7 @@ private fun LoggedInView(
             CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
         }
         UserImage(
-            imageUrl = accountDetails.avatar,
+            imageUrl = accountDetails.avatar ?: "",
             modifier = Modifier.size(64.dp)
         )
         Text(
@@ -197,15 +215,17 @@ private fun LoggedInView(
             style = MaterialTheme.typography.titleMedium,
         )
         LibrarySection(onLibraryItemClick = onLibraryItemClick)
-        Button(
-            onClick = onLogOutClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (isLoggingOut) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            } else {
+
+        if (isLoggingOut) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        } else {
+            Button(
+                onClick = onLogOutClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
                 Text(stringResource(id = R.string.log_out))
             }
         }
@@ -290,7 +310,7 @@ private fun LibraryItemOption(
 
 @Composable
 private fun SettingsDialog(
-    userSettings: UserSettings,
+    userSettings: UserData,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
     onChangeIncludeAdult: (Boolean) -> Unit,
@@ -305,7 +325,7 @@ private fun SettingsDialog(
             )
         },
         text = {
-            Divider()
+            HorizontalDivider()
             Column(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.verticalScroll(rememberScrollState())
@@ -333,7 +353,7 @@ private fun SettingsDialog(
 
 @Composable
 private fun SettingsPanel(
-    settings: UserSettings,
+    settings: UserData,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
     onChangeIncludeAdult: (Boolean) -> Unit,
@@ -425,7 +445,7 @@ fun supportsDynamicColorTheme() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 @Composable
 private fun SettingsDialogPreview() {
     SettingsDialog(
-        userSettings = UserSettings(
+        userSettings = UserData(
             useDynamicColor = true,
             includeAdultResults = true,
             darkMode = SYSTEM

@@ -7,17 +7,20 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.anshtya.core.local.database.dao.AccountDetailsDao
 import com.anshtya.core.local.database.dao.FavoriteContentDao
 import com.anshtya.core.local.database.dao.WatchlistContentDao
+import com.anshtya.core.local.database.entity.AccountDetailsEntity
 import com.anshtya.core.local.database.entity.FavoriteContentEntity
 import com.anshtya.core.local.database.entity.WatchlistContentEntity
 
 @Database(
     entities = [
         FavoriteContentEntity::class,
-        WatchlistContentEntity::class
+        WatchlistContentEntity::class,
+        AccountDetailsEntity::class
     ],
-    version = 9,
+    version = 10,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = MovieInfoDatabase.Companion.Migration5to6::class)
     ],
@@ -27,6 +30,8 @@ abstract class MovieInfoDatabase : RoomDatabase() {
     abstract fun favoriteContentDao(): FavoriteContentDao
 
     abstract fun watchlistContentDao(): WatchlistContentDao
+
+    abstract fun accountDetailsDao(): AccountDetailsDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -178,6 +183,24 @@ abstract class MovieInfoDatabase : RoomDatabase() {
                 db.execSQL("DROP TABLE popular_content_remote_key")
                 db.execSQL("DROP TABLE trending_content")
                 db.execSQL("DROP TABLE trending_content_remote_key")
+            }
+        }
+
+        val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE account_details (
+                    id INTEGER PRIMARY KEY NOT NULL,
+                    gravatar_hash TEXT NOT NULL,
+                    include_adult INTEGER NOT NULL,
+                    iso_639_1 TEXT NOT NULL, 
+                    iso_3166_1 TEXT NOT NULL, 
+                    name TEXT NOT NULL,
+                    tmdb_avatar_path TEXT NULL,
+                    username TEXT NOT NULL)
+                    """.trimIndent()
+                )
             }
         }
     }

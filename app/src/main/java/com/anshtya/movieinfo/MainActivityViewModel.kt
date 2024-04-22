@@ -3,7 +3,7 @@ package com.anshtya.movieinfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshtya.core.model.SelectedDarkMode
-import com.anshtya.data.repository.UserDataRepository
+import com.anshtya.data.repository.UserRepository
 import com.anshtya.movieinfo.MainActivityUiState.Loading
 import com.anshtya.movieinfo.MainActivityUiState.Success
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,9 +15,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    userDataRepository: UserDataRepository
+    userRepository: UserRepository
 ) : ViewModel() {
-    val uiState: StateFlow<MainActivityUiState> = userDataRepository.userData.map {
+    val uiState: StateFlow<MainActivityUiState> = userRepository.userData.map {
         Success(
             useDynamicColor = it.useDynamicColor,
             darkMode = it.darkMode

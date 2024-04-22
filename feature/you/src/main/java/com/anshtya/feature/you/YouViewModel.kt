@@ -1,21 +1,18 @@
 package com.anshtya.feature.you
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.core.model.SelectedDarkMode
-import com.anshtya.core.model.user.AccountDetails
-import com.anshtya.core.ui.ErrorText
 import com.anshtya.core.model.NetworkResponse
+import com.anshtya.core.model.SelectedDarkMode
 import com.anshtya.data.repository.AuthRepository
-import com.anshtya.data.repository.UserDataRepository
+import com.anshtya.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -25,155 +22,91 @@ import javax.inject.Inject
 @HiltViewModel
 class YouViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val userDataRepository: UserDataRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
-    private var logOutJob: Job? = null
+    private val _uiState = MutableStateFlow(YouUiState())
+    val uiState = _uiState.asStateFlow()
 
-    private val viewModelState = MutableStateFlow(YouViewModelState())
+    var isSignedIn by mutableStateOf(userRepository.isSignedIn())
 
-    val uiState = viewModelState
-        .map(YouViewModelState::toUiState)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = viewModelState.value.toUiState()
-        )
-
-    val userSettings = userDataRepository.userData
-        .map {
-            UserSettings(
-                useDynamicColor = it.useDynamicColor,
-                includeAdultResults = it.includeAdultResults,
-                darkMode = it.darkMode
-            )
-        }
+    val accountDetails = userRepository.accountDetails
+        .onEach { isSignedIn = userRepository.isSignedIn() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = null
         )
 
-    init {
-        getUserData()
-        updateAccountDetails()
-    }
+    val userSettings = userRepository.userData
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = null
+        )
 
     fun setDynamicColorPreference(useDynamicColor: Boolean) {
         viewModelScope.launch {
-            userDataRepository.setDynamicColorPreference(useDynamicColor)
+            userRepository.setDynamicColorPreference(useDynamicColor)
         }
     }
 
     fun setAdultResultPreference(includeAdultResults: Boolean) {
         viewModelScope.launch {
-            userDataRepository.setAdultResultPreference(includeAdultResults)
+            userRepository.setAdultResultPreference(includeAdultResults)
         }
     }
 
     fun setDarkModePreference(selectedDarkMode: SelectedDarkMode) {
         viewModelScope.launch {
-            userDataRepository.setDarkModePreference(selectedDarkMode)
+            userRepository.setDarkModePreference(selectedDarkMode)
         }
     }
 
     fun logOut() {
-        if (logOutJob != null) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoggingOut = true) }
 
-        logOutJob = viewModelScope.launch {
-            viewModelState.update { it.copy(isLoggingOut = true) }
-            when (val response = authRepository.logout()) {
+            val response = authRepository.logout(accountId = accountDetails.value!!.id)
+            when (response) {
                 is NetworkResponse.Success -> {}
-                is NetworkResponse.Error -> {
-                    val errorMessage = response.errorMessage?.let {
-                        ErrorText.SimpleText(it)
-                    } ?: ErrorText.StringResource(id = R.string.error_message)
 
-                    viewModelState.update { it.copy(errorMessage = errorMessage) }
+                is NetworkResponse.Error -> {
+                    val errorMessage = response.errorMessage
+                    _uiState.update { it.copy(errorMessage = errorMessage) }
                 }
             }
-            viewModelState.update { it.copy(isLoggingOut = false) }
-            logOutJob = null
+
+            _uiState.update { it.copy(isLoggingOut = false) }
+        }
+    }
+
+    fun onRefresh() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true) }
+
+            val response =
+                userRepository.updateAccountDetails(accountId = accountDetails.value!!.id)
+            when (response) {
+                is NetworkResponse.Success -> {}
+
+                is NetworkResponse.Error -> {
+                    val errorMessage = response.errorMessage
+                    _uiState.update { it.copy(errorMessage = errorMessage) }
+                }
+            }
+
+            _uiState.update { it.copy(isRefreshing = false) }
         }
     }
 
     fun onErrorShown() {
-        viewModelState.update { it.copy(errorMessage = null) }
-    }
-
-    private fun getUserData() {
-        userDataRepository.userData
-            .distinctUntilChanged()
-            .onEach { userData ->
-                viewModelState.update {
-                    it.copy(
-                        isLoggedIn = userData.isLoggedIn,
-                        accountDetails = userData.accountDetails
-                    )
-                }
-            }
-            .launchIn(viewModelScope)
-    }
-
-    private fun updateAccountDetails() {
-        viewModelScope.launch {
-            val isLoggedIn = userDataRepository.userData.first().isLoggedIn
-            if (isLoggedIn) {
-                viewModelState.update { it.copy(isLoading = true) }
-
-                when (authRepository.updateAccountDetails()) {
-                    is NetworkResponse.Success -> {}
-                    is NetworkResponse.Error -> {
-                        val errorMessage = ErrorText.StringResource(
-                            id = R.string.error_message_account_details
-                        )
-                        viewModelState.update { it.copy(errorMessage = errorMessage) }
-                    }
-                }
-
-                viewModelState.update { it.copy(isLoading = false) }
-            }
-        }
+        _uiState.update { it.copy(errorMessage = null) }
     }
 }
 
-sealed interface YouUiState {
-
-    val errorMessage: ErrorText?
-
-    data class LoggedIn(
-        val accountDetails: AccountDetails,
-        val isLoading: Boolean,
-        val isLoggingOut: Boolean,
-        override val errorMessage: ErrorText?
-    ) : YouUiState
-
-    data class LoggedOff(
-        override val errorMessage: ErrorText?
-    ) : YouUiState
-}
-
-data class UserSettings(
-    val useDynamicColor: Boolean,
-    val includeAdultResults: Boolean,
-    val darkMode: SelectedDarkMode
-)
-
-private data class YouViewModelState(
+data class YouUiState(
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val isLoggingOut: Boolean = false,
-    val isLoggedIn: Boolean? = null,
-    val accountDetails: AccountDetails? = null,
-    val errorMessage: ErrorText? = null
-) {
-    fun toUiState(): YouUiState =
-        if (isLoggedIn == true) {
-            YouUiState.LoggedIn(
-                accountDetails = accountDetails!!,
-                isLoading = isLoading,
-                isLoggingOut = isLoggingOut,
-                errorMessage = errorMessage
-            )
-        } else {
-            YouUiState.LoggedOff(errorMessage = errorMessage)
-        }
-}
+    val errorMessage: String? = null
+)

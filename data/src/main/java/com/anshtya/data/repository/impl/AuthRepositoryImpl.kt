@@ -1,28 +1,27 @@
 package com.anshtya.data.repository.impl
 
+import com.anshtya.core.local.database.dao.AccountDetailsDao
 import com.anshtya.core.local.database.dao.FavoriteContentDao
 import com.anshtya.core.local.database.dao.WatchlistContentDao
-import com.anshtya.core.local.datastore.UserPreferencesDataStore
 import com.anshtya.core.local.shared_preferences.UserEncryptedSharedPreferences
+import com.anshtya.core.model.NetworkResponse
 import com.anshtya.core.network.model.auth.DeleteSessionRequest
 import com.anshtya.core.network.model.auth.LoginRequest
 import com.anshtya.core.network.model.auth.SessionRequest
-import com.anshtya.core.network.model.auth.asModel
 import com.anshtya.core.network.model.auth.getErrorMessage
 import com.anshtya.core.network.retrofit.TmdbApi
-import com.anshtya.core.model.NetworkResponse
+import com.anshtya.data.model.asEntity
 import com.anshtya.data.repository.AuthRepository
 import com.anshtya.data.util.SyncManager
-import kotlinx.coroutines.flow.first
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor(
+internal class AuthRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val favoriteContentDao: FavoriteContentDao,
     private val watchlistContentDao: WatchlistContentDao,
-    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val accountDetailsDao: AccountDetailsDao,
     private val encryptedSharedPreferences: UserEncryptedSharedPreferences,
     private val syncManager: SyncManager
 ) : AuthRepository {
@@ -43,10 +42,10 @@ class AuthRepositoryImpl @Inject constructor(
             val sessionResponse = tmdbApi.createSession(sessionRequest)
 
             val accountDetails =
-                tmdbApi.getAccountDetails(sessionResponse.sessionId).asModel()
+                tmdbApi.getAccountDetails(sessionResponse.sessionId).asEntity()
 
             encryptedSharedPreferences.storeSessionId(sessionResponse.sessionId)
-            userPreferencesDataStore.saveAccountDetails(accountDetails)
+            accountDetailsDao.addAccountDetails(accountDetails)
 
             syncManager.scheduleLibrarySyncWork()
 
@@ -59,14 +58,14 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun logout(): NetworkResponse<Unit> {
+    override suspend fun logout(accountId: Int): NetworkResponse<Unit> {
         return try {
             val sessionId = encryptedSharedPreferences.getSessionId()!!
             val deleteSessionRequest = DeleteSessionRequest(sessionId)
 
             tmdbApi.deleteSession(deleteSessionRequest)
             encryptedSharedPreferences.deleteSessionId()
-            userPreferencesDataStore.removeAccountDetails()
+            accountDetailsDao.deleteAccountDetails(accountId)
 
             favoriteContentDao.deleteAllItems()
             watchlistContentDao.deleteAllItems()
@@ -77,24 +76,6 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: HttpException) {
             val errorMessage = e.response()?.errorBody().getErrorMessage()
             NetworkResponse.Error(errorMessage)
-        }
-    }
-
-    override suspend fun updateAccountDetails(): NetworkResponse<Unit> {
-        return try {
-            val userData = userPreferencesDataStore.userData.first()
-            val localAccountDetails = userData.accountDetails
-            val networkAccountDetails = tmdbApi.getAccountDetailsWithId(localAccountDetails.id).asModel()
-
-            if (networkAccountDetails != localAccountDetails) {
-                userPreferencesDataStore.saveAccountDetails(networkAccountDetails)
-            }
-
-            NetworkResponse.Success(Unit)
-        } catch (e: IOException) {
-            NetworkResponse.Error()
-        } catch (e: HttpException) {
-            NetworkResponse.Error()
         }
     }
 }

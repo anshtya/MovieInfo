@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.anshtya.core.model.SearchItem
 import com.anshtya.core.model.NetworkResponse
 import com.anshtya.data.repository.SearchRepository
-import com.anshtya.data.repository.UserDataRepository
+import com.anshtya.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val userDataRepository: UserDataRepository,
+    private val userRepository: UserRepository,
     private val searchRepository: SearchRepository
 ) : ViewModel() {
     private var includeAdult: Boolean = false
@@ -79,7 +79,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun getIncludeAdult() {
-        userDataRepository.userData
+        userRepository.userData
             .map { it.includeAdultResults }
             .distinctUntilChanged()
             .onEach { includeAdult = it }

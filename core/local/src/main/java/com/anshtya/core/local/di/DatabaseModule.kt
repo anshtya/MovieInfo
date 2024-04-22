@@ -10,6 +10,8 @@ import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_4_5
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_6_7
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_7_8
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_8_9
+import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_9_10
+import com.anshtya.core.local.database.dao.AccountDetailsDao
 import com.anshtya.core.local.database.dao.FavoriteContentDao
 import com.anshtya.core.local.database.dao.WatchlistContentDao
 import dagger.Module
@@ -36,7 +38,8 @@ internal object DatabaseModule {
                 MIGRATION_4_5,
                 MIGRATION_6_7,
                 MIGRATION_7_8,
-                MIGRATION_8_9
+                MIGRATION_8_9,
+                MIGRATION_9_10
             )
             .build()
     }
@@ -55,5 +58,13 @@ internal object DatabaseModule {
         db: MovieInfoDatabase
     ): WatchlistContentDao {
         return db.watchlistContentDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAccountDetailsDao(
+        db: MovieInfoDatabase
+    ): AccountDetailsDao {
+        return db.accountDetailsDao()
     }
 }

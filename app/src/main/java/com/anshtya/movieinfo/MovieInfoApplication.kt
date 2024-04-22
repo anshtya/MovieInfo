@@ -5,7 +5,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import coil.ImageLoader
 import coil.ImageLoaderFactory
-import com.anshtya.data.repository.UserDataRepository
+import com.anshtya.data.repository.UserRepository
 import com.anshtya.data.util.SyncManager
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -17,7 +17,7 @@ class MovieInfoApplication : Application(), ImageLoaderFactory, Configuration.Pr
     lateinit var workerFactory: HiltWorkerFactory
 
     @Inject
-    lateinit var userDataRepository: UserDataRepository
+    lateinit var userRepository: UserRepository
 
     @Inject
     lateinit var syncManager: SyncManager

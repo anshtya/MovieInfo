@@ -3,6 +3,9 @@ package com.anshtya.core.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,10 +69,18 @@ fun UserImage(
         shape = CircleShape,
         modifier = modifier
     ) {
-        AsyncImage(
-            model = "https://image.tmdb.org/t/p/w300$imageUrl",
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds
-        )
+        if (imageUrl.isEmpty()) {
+            Icon(
+                imageVector = Icons.Rounded.AccountCircle,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            AsyncImage(
+                model = "https://image.tmdb.org/t/p/w300$imageUrl",
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds
+            )
+        }
     }
 }

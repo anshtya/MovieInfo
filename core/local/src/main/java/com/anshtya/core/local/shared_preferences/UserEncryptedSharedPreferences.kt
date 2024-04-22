@@ -9,6 +9,7 @@ class UserEncryptedSharedPreferences @Inject constructor(
     companion object {
         const val USER_SESSION_ID = "user_sesion_id"
     }
+
     fun storeSessionId(sessionId: String) {
         sharedPreferences.edit()
             .putString(USER_SESSION_ID, sessionId)
@@ -16,7 +17,7 @@ class UserEncryptedSharedPreferences @Inject constructor(
     }
 
     fun getSessionId(): String? {
-        return sharedPreferences.getString(USER_SESSION_ID, "")
+        return sharedPreferences.getString(USER_SESSION_ID, null)
     }
 
     fun deleteSessionId() {

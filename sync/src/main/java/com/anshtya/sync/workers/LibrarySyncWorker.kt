@@ -6,19 +6,18 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.anshtya.data.repository.LibraryRepository
-import com.anshtya.data.repository.UserDataRepository
+import com.anshtya.data.repository.UserRepository
 import com.anshtya.sync.util.SYNC_NOTIFICATION_ID
 import com.anshtya.sync.util.workNotification
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.first
 
 @HiltWorker
 class LibrarySyncWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val libraryRepository: LibraryRepository,
-    private val userDataRepository: UserDataRepository
+    private val userRepository: UserRepository
 ) : CoroutineWorker(appContext, workerParams) {
     override suspend fun getForegroundInfo(): ForegroundInfo {
         return ForegroundInfo(SYNC_NOTIFICATION_ID, appContext.workNotification())
@@ -26,7 +25,7 @@ class LibrarySyncWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
 
-        val userLoggedIn = userDataRepository.userData.first().isLoggedIn
+        val userLoggedIn = userRepository.isSignedIn()
 
         return if (userLoggedIn) {
             val syncSuccessful = libraryRepository.syncLibrary()

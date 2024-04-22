@@ -1,12 +1,12 @@
 package com.anshtya.data.repository.impl
 
+import com.anshtya.core.local.database.dao.AccountDetailsDao
 import com.anshtya.core.local.database.dao.FavoriteContentDao
 import com.anshtya.core.local.database.dao.WatchlistContentDao
 import com.anshtya.core.local.database.entity.FavoriteContentEntity
 import com.anshtya.core.local.database.entity.WatchlistContentEntity
 import com.anshtya.core.local.database.entity.asFavoriteContentEntity
 import com.anshtya.core.local.database.entity.asWatchlistContentEntity
-import com.anshtya.core.local.datastore.UserPreferencesDataStore
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.model.library.LibraryTaskType
 import com.anshtya.core.network.model.content.NetworkContentItem
@@ -28,7 +28,7 @@ class LibraryRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val favoriteContentDao: FavoriteContentDao,
     private val watchlistContentDao: WatchlistContentDao,
-    private val userPreferencesDataStore: UserPreferencesDataStore,
+    private val accountDetailsDao: AccountDetailsDao,
     private val syncManager: SyncManager
 ) : LibraryRepository {
     override val favoriteMovies: Flow<List<LibraryItem>> =
@@ -85,7 +85,7 @@ class LibraryRepositoryImpl @Inject constructor(
         libraryTaskType: LibraryTaskType,
         itemExistsLocally: Boolean
     ): Boolean {
-        val accountId = userPreferencesDataStore.userData.first().accountDetails.id
+        val accountId = accountDetailsDao.getAccountDetails().first()?.id ?: return false
 
         return try {
             when (libraryTaskType) {
@@ -122,7 +122,7 @@ class LibraryRepositoryImpl @Inject constructor(
      */
     override suspend fun syncLibrary(): Boolean {
         return try {
-            val accountId = userPreferencesDataStore.userData.first().accountDetails.id
+            val accountId = accountDetailsDao.getAccountDetails().first()?.id ?: return false
 
             val favoriteMovies = tmdbApi.getFavoriteMovies(accountId).results
                 .filter { syncManager.isWorkNotScheduled(it.id, LibraryTaskType.FAVORITES) }

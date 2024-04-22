@@ -1,12 +1,13 @@
 package com.anshtya.core.network.model.auth
 
-import com.anshtya.core.model.user.AccountDetails
 import com.squareup.moshi.Json
 
 data class NetworkAccountDetails(
     val avatar: Avatar,
     val id: Int,
-    @field:Json(name = "include_adult") val includeAdult: Boolean,
+    @Json(name = "include_adult") val includeAdult: Boolean,
+    @Json(name = "iso_639_1") val iso6391: String,
+    @Json(name = "iso_3166_1") val iso31661: String,
     val name: String,
     val username: String
 )
@@ -21,14 +22,5 @@ data class Gravatar(
 )
 
 data class Tmdb(
-    @field:Json(name = "avatar_path") val avatarPath: String?
-)
-
-fun NetworkAccountDetails.asModel() = AccountDetails(
-    id = id,
-    name = name,
-    username = username,
-    includeAdult = includeAdult,
-    gravatar = avatar.gravatar.hash,
-    avatar = avatar.tmdb.avatarPath ?: ""
+    @Json(name = "avatar_path") val avatarPath: String?
 )

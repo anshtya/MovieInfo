@@ -11,9 +11,9 @@ import com.anshtya.data.repository.impl.LibraryRepositoryImpl
 import com.anshtya.data.repository.SearchRepository
 import com.anshtya.data.repository.TvShowRepository
 import com.anshtya.data.repository.impl.SearchRepositoryImpl
-import com.anshtya.data.repository.UserDataRepository
+import com.anshtya.data.repository.UserRepository
 import com.anshtya.data.repository.impl.TvShowRepositoryImpl
-import com.anshtya.data.repository.impl.UserDataRepositoryImpl
+import com.anshtya.data.repository.impl.UserRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -38,9 +38,9 @@ internal abstract class RepositoryModule {
     ): SearchRepository
 
     @Binds
-    abstract fun bindUserDataRepository(
-        userDataRepositoryImpl: UserDataRepositoryImpl
-    ): UserDataRepository
+    abstract fun bindUserRepository(
+        userRepositoryImpl: UserRepositoryImpl
+    ): UserRepository
 
     @Binds
     abstract fun bindAuthRepository(

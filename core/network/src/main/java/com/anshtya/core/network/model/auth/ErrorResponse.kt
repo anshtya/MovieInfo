@@ -5,7 +5,7 @@ import com.squareup.moshi.Moshi
 import okhttp3.ResponseBody
 
 data class ErrorResponse(
-    @field:Json(name = "status_message") val statusMessage: String
+    @Json(name = "status_message") val statusMessage: String
 )
 
 fun ResponseBody?.getErrorMessage(): String? {

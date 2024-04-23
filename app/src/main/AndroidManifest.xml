@@ -4,7 +4,7 @@
 
     <application
         android:name=".MovieInfoApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
@@ -23,7 +23,7 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MovieInfo"
-            tools:ignore="DiscouragedApi">
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

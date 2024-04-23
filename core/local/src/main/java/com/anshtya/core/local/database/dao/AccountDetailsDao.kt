@@ -12,6 +12,9 @@ interface AccountDetailsDao {
     @Query("SELECT * FROM account_details LIMIT 1")
     fun getAccountDetails(): Flow<AccountDetailsEntity?>
 
+    @Query("SELECT iso_3166_1 FROM account_details LIMIT 1")
+    suspend fun getRegionCode(): String?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAccountDetails(accountDetails: AccountDetailsEntity)
 

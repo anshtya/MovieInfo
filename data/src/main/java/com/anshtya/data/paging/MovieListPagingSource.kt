@@ -2,6 +2,7 @@ package com.anshtya.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.anshtya.core.local.database.dao.AccountDetailsDao
 import com.anshtya.core.model.content.ContentItem
 import com.anshtya.core.network.model.content.NetworkContentItem
 import com.anshtya.core.network.retrofit.TmdbApi
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 internal class MovieListPagingSource @Inject constructor(
     private val tmdbApi: TmdbApi,
-    private val categoryName: String
+    private val categoryName: String,
+    private val accountDetailsDao: AccountDetailsDao
 ) : PagingSource<Int, ContentItem>() {
     override fun getRefreshKey(state: PagingState<Int, ContentItem>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -22,10 +24,12 @@ internal class MovieListPagingSource @Inject constructor(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ContentItem> {
         val pageNumber = params.key ?: 1
+        val region = accountDetailsDao.getRegionCode()
         return try {
             val response = tmdbApi.getMovieLists(
                 category = categoryName,
-                page = pageNumber
+                page = pageNumber,
+                region = region
             )
             LoadResult.Page(
                 data = response.results.map(NetworkContentItem::asModel),

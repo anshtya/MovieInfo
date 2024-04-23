@@ -3,6 +3,7 @@ package com.anshtya.data.repository.impl
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.anshtya.core.local.database.dao.AccountDetailsDao
 import com.anshtya.core.model.content.ContentItem
 import com.anshtya.core.model.content.MovieListCategory
 import com.anshtya.core.network.retrofit.TmdbApi
@@ -14,7 +15,8 @@ import javax.inject.Inject
 private const val PAGE_SIZE = 20
 
 internal class MovieRepositoryImpl @Inject constructor(
-    private val tmdbApi: TmdbApi
+    private val tmdbApi: TmdbApi,
+    private val accountDetailsDao: AccountDetailsDao
 ) : MovieRepository {
     private val pagingConfig = PagingConfig(
         pageSize = PAGE_SIZE,
@@ -28,7 +30,8 @@ internal class MovieRepositoryImpl @Inject constructor(
             pagingSourceFactory = {
                 MovieListPagingSource(
                     tmdbApi = tmdbApi,
-                    categoryName = MovieListCategory.NOW_PLAYING.categoryName
+                    categoryName = MovieListCategory.NOW_PLAYING.categoryName,
+                    accountDetailsDao = accountDetailsDao
                 )
             }
         ).flow
@@ -40,7 +43,8 @@ internal class MovieRepositoryImpl @Inject constructor(
             pagingSourceFactory = {
                 MovieListPagingSource(
                     tmdbApi = tmdbApi,
-                    categoryName = MovieListCategory.POPULAR.categoryName
+                    categoryName = MovieListCategory.POPULAR.categoryName,
+                    accountDetailsDao = accountDetailsDao
                 )
             }
         ).flow
@@ -52,7 +56,8 @@ internal class MovieRepositoryImpl @Inject constructor(
             pagingSourceFactory = {
                 MovieListPagingSource(
                     tmdbApi = tmdbApi,
-                    categoryName = MovieListCategory.TOP_RATED.categoryName
+                    categoryName = MovieListCategory.TOP_RATED.categoryName,
+                    accountDetailsDao = accountDetailsDao
                 )
             }
         ).flow
@@ -64,7 +69,8 @@ internal class MovieRepositoryImpl @Inject constructor(
             pagingSourceFactory = {
                 MovieListPagingSource(
                     tmdbApi = tmdbApi,
-                    categoryName = MovieListCategory.UPCOMING.categoryName
+                    categoryName = MovieListCategory.UPCOMING.categoryName,
+                    accountDetailsDao = accountDetailsDao
                 )
             }
         ).flow

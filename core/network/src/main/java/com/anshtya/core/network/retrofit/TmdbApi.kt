@@ -27,7 +27,8 @@ interface TmdbApi {
     suspend fun getMovieLists(
         @Path("category") category: String,
         @Query("language") language: String = "en-US",
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("region") region: String? = null
     ): NetworkContentResponse
 
     @GET("tv/{category}")

@@ -3,6 +3,7 @@ package com.anshtya.data.repository.impl
 import com.anshtya.core.local.database.dao.AccountDetailsDao
 import com.anshtya.core.local.database.dao.FavoriteContentDao
 import com.anshtya.core.local.database.dao.WatchlistContentDao
+import com.anshtya.core.local.datastore.UserPreferencesDataStore
 import com.anshtya.core.local.shared_preferences.UserEncryptedSharedPreferences
 import com.anshtya.core.model.NetworkResponse
 import com.anshtya.core.network.model.auth.DeleteSessionRequest
@@ -22,6 +23,7 @@ internal class AuthRepositoryImpl @Inject constructor(
     private val favoriteContentDao: FavoriteContentDao,
     private val watchlistContentDao: WatchlistContentDao,
     private val accountDetailsDao: AccountDetailsDao,
+    private val userPreferencesDataStore: UserPreferencesDataStore,
     private val encryptedSharedPreferences: UserEncryptedSharedPreferences,
     private val syncManager: SyncManager
 ) : AuthRepository {
@@ -46,6 +48,7 @@ internal class AuthRepositoryImpl @Inject constructor(
 
             encryptedSharedPreferences.storeSessionId(sessionResponse.sessionId)
             accountDetailsDao.addAccountDetails(accountDetails)
+            userPreferencesDataStore.setAdultResultPreference(accountDetails.includeAdult)
 
             syncManager.scheduleLibrarySyncWork()
 

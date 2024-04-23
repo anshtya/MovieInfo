@@ -45,6 +45,7 @@ internal class UserRepositoryImpl @Inject constructor(
         return try {
             val accountDetails = tmdbApi.getAccountDetailsWithId(accountId).asEntity()
             accountDetailsDao.addAccountDetails(accountDetails)
+            userPreferencesDataStore.setAdultResultPreference(accountDetails.includeAdult)
 
             NetworkResponse.Success(Unit)
         } catch (e: IOException) {

@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -38,6 +39,13 @@ class YouViewModel @Inject constructor(
         )
 
     val userSettings = userRepository.userData
+        .map {
+            UserSettings(
+                useDynamicColor = it.useDynamicColor,
+                includeAdultResults = it.includeAdultResults,
+                darkMode = it.darkMode
+            )
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
@@ -109,4 +117,10 @@ data class YouUiState(
     val isRefreshing: Boolean = false,
     val isLoggingOut: Boolean = false,
     val errorMessage: String? = null
+)
+
+data class UserSettings(
+    val useDynamicColor: Boolean,
+    val includeAdultResults: Boolean,
+    val darkMode: SelectedDarkMode,
 )

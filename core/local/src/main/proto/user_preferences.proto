@@ -9,6 +9,7 @@ message UserPreferences {
   bool useDynamicColor = 1;
   DarkMode darkMode = 2;
   bool includeAdultResults = 3;
+  bool hideOnboarding = 8;
 
-  // Next available number = 8
+  // Next available number = 9
 }

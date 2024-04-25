@@ -20,7 +20,8 @@ class MainActivityViewModel @Inject constructor(
     val uiState: StateFlow<MainActivityUiState> = userRepository.userData.map {
         Success(
             useDynamicColor = it.useDynamicColor,
-            darkMode = it.darkMode
+            darkMode = it.darkMode,
+            hideOnboarding = it.hideOnboarding
         )
     }.stateIn(
         scope = viewModelScope,
@@ -33,6 +34,7 @@ sealed interface MainActivityUiState {
     data object Loading : MainActivityUiState
     data class Success(
         val useDynamicColor: Boolean,
-        val darkMode: SelectedDarkMode
+        val darkMode: SelectedDarkMode,
+        val hideOnboarding: Boolean
     ) : MainActivityUiState
 }

@@ -25,7 +25,8 @@ class UserPreferencesDataStore @Inject constructor(
 
                     DarkMode.DARK_MODE_DARK -> SelectedDarkMode.DARK
                     DarkMode.DARK_MODE_LIGHT -> SelectedDarkMode.LIGHT
-                }
+                },
+                hideOnboarding = it.hideOnboarding
             )
         }
 
@@ -50,6 +51,12 @@ class UserPreferencesDataStore @Inject constructor(
                     SelectedDarkMode.LIGHT -> DarkMode.DARK_MODE_LIGHT
                 }
             }
+        }
+    }
+
+    suspend fun setHideOnboarding(hideOnboarding: Boolean) {
+        userPreferences.updateData {
+            it.copy { this.hideOnboarding = hideOnboarding }
         }
     }
 }

@@ -65,7 +65,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MovieInfoApp()
+                    if (uiState is Success) {
+                        MovieInfoApp(
+                            hideOnboarding = (uiState as Success).hideOnboarding
+                        )
+                    }
                 }
             }
         }

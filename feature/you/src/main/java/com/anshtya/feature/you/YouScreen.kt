@@ -58,7 +58,6 @@ import com.anshtya.core.model.SelectedDarkMode.DARK
 import com.anshtya.core.model.SelectedDarkMode.LIGHT
 import com.anshtya.core.model.SelectedDarkMode.SYSTEM
 import com.anshtya.core.model.user.AccountDetails
-import com.anshtya.core.model.user.UserData
 import com.anshtya.core.ui.UserImage
 import com.anshtya.feature.you.library_items.LibraryItemType
 
@@ -94,7 +93,7 @@ internal fun YouScreen(
     youUiState: YouUiState,
     isSignedIn: Boolean,
     accountDetails: AccountDetails?,
-    userSettings: UserData?,
+    userSettings: UserSettings?,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
     onChangeIncludeAdult: (Boolean) -> Unit,
@@ -310,7 +309,7 @@ private fun LibraryItemOption(
 
 @Composable
 private fun SettingsDialog(
-    userSettings: UserData,
+    userSettings: UserSettings,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
     onChangeIncludeAdult: (Boolean) -> Unit,
@@ -353,7 +352,7 @@ private fun SettingsDialog(
 
 @Composable
 private fun SettingsPanel(
-    settings: UserData,
+    settings: UserSettings,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
     onChangeIncludeAdult: (Boolean) -> Unit,
@@ -445,7 +444,7 @@ fun supportsDynamicColorTheme() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 @Composable
 private fun SettingsDialogPreview() {
     SettingsDialog(
-        userSettings = UserData(
+        userSettings = UserSettings(
             useDynamicColor = true,
             includeAdultResults = true,
             darkMode = SYSTEM

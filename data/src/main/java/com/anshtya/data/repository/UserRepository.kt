@@ -20,4 +20,6 @@ interface UserRepository {
     suspend fun setDarkModePreference(selectedDarkMode: SelectedDarkMode)
 
     suspend fun updateAccountDetails(accountId: Int): NetworkResponse<Unit>
+
+    suspend fun setHideOnboarding(hideOnboarding: Boolean)
 }

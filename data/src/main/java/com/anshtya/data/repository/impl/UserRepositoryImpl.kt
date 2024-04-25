@@ -54,4 +54,8 @@ internal class UserRepositoryImpl @Inject constructor(
             NetworkResponse.Error()
         }
     }
+
+    override suspend fun setHideOnboarding(hideOnboarding: Boolean) {
+        userPreferencesDataStore.setHideOnboarding(hideOnboarding)
+    }
 }

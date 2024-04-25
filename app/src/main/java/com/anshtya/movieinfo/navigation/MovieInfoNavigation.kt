@@ -13,15 +13,25 @@ import com.anshtya.feature.search.searchScreen
 import com.anshtya.feature.you.navigateToLibraryItem
 import com.anshtya.feature.you.youGraph
 import com.anshtya.movieinfo.feature.tv.tvShowsScreen
+import com.anshtya.movieinfo.onboarding.onboardingNavigationRoute
+import com.anshtya.movieinfo.onboarding.onboardingScreen
 
 @Composable
 fun MovieInfoNavigation(
-    navController: NavHostController
+    navController: NavHostController,
+    hideOnboarding: Boolean
 ) {
+    val startDestination = if (hideOnboarding) {
+        moviesNavigationRoute
+    } else {
+        onboardingNavigationRoute
+    }
+
     NavHost(
         navController = navController,
-        startDestination = moviesNavigationRoute
+        startDestination = startDestination
     ) {
+        onboardingScreen(navController = navController)
         moviesScreen(
             navController = navController,
             onNavigateToDetail = navController::navigateToDetails

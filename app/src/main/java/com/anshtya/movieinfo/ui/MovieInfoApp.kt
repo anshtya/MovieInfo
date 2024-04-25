@@ -29,6 +29,7 @@ import com.anshtya.movieinfo.navigation.MovieInfoNavigation
 
 @Composable
 fun MovieInfoApp(
+    hideOnboarding: Boolean,
     navController: NavHostController = rememberNavController()
 ) {
     val bottomDestinations = MovieInfoDestination.entries
@@ -56,7 +57,10 @@ fun MovieInfoApp(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            MovieInfoNavigation(navController)
+            MovieInfoNavigation(
+                navController = navController,
+                hideOnboarding = hideOnboarding
+            )
         }
     }
 }

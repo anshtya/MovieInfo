@@ -216,9 +216,7 @@ private fun LoggedInView(
         LibrarySection(onLibraryItemClick = onLibraryItemClick)
 
         if (isLoggingOut) {
-            CircularProgressIndicator(
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+            CircularProgressIndicator()
         } else {
             Button(
                 onClick = onLogOutClick,

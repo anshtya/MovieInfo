@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.R
 
 @Composable
-fun OnboardingMainScreen(
+fun OnboardingScreen(
     navigateToAuth: () -> Unit
 ) {
     Box(Modifier.fillMaxSize()) {
@@ -127,7 +127,7 @@ fun OnboardingMainScreen(
 @Preview(showBackground = true)
 @Composable
 fun OnboardingScreenPreview() {
-    OnboardingMainScreen(
+    OnboardingScreen(
         navigateToAuth = {}
     )
 }

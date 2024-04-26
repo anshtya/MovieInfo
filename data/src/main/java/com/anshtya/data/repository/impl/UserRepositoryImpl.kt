@@ -11,6 +11,7 @@ import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.data.model.asEntity
 import com.anshtya.data.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.io.IOException
@@ -57,5 +58,9 @@ internal class UserRepositoryImpl @Inject constructor(
 
     override suspend fun setHideOnboarding(hideOnboarding: Boolean) {
         userPreferencesDataStore.setHideOnboarding(hideOnboarding)
+    }
+
+    override suspend fun shouldHideOnboarding(): Boolean {
+        return userPreferencesDataStore.userData.map { it.hideOnboarding }.first()
     }
 }

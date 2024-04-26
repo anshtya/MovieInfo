@@ -1,5 +1,8 @@
 package com.anshtya.movieinfo
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshtya.core.model.SelectedDarkMode
@@ -11,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,21 +24,27 @@ class MainActivityViewModel @Inject constructor(
     val uiState: StateFlow<MainActivityUiState> = userRepository.userData.map {
         Success(
             useDynamicColor = it.useDynamicColor,
-            darkMode = it.darkMode,
-            hideOnboarding = it.hideOnboarding
+            darkMode = it.darkMode
         )
     }.stateIn(
         scope = viewModelScope,
         initialValue = Loading,
         started = SharingStarted.WhileSubscribed(5000L),
     )
+
+    var hideOnboarding: Boolean? by mutableStateOf(null)
+
+    init {
+        viewModelScope.launch {
+            hideOnboarding = userRepository.shouldHideOnboarding()
+        }
+    }
 }
 
 sealed interface MainActivityUiState {
     data object Loading : MainActivityUiState
     data class Success(
         val useDynamicColor: Boolean,
-        val darkMode: SelectedDarkMode,
-        val hideOnboarding: Boolean
+        val darkMode: SelectedDarkMode
     ) : MainActivityUiState
 }

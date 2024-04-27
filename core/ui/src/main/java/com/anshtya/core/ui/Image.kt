@@ -18,7 +18,8 @@ import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImage
 
 @Composable
-fun TmdbImage(
+internal fun TmdbImage(
+    width: Int,
     imageUrl: String
 ) {
     Box(Modifier.fillMaxSize()) {
@@ -30,7 +31,7 @@ fun TmdbImage(
             )
         } else {
             AsyncImage(
-                model = "https://image.tmdb.org/t/p/w500$imageUrl",
+                model = "https://image.tmdb.org/t/p/w${width}${imageUrl}",
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds
             )
@@ -42,21 +43,10 @@ fun TmdbImage(
 fun BackdropImage(
     imageUrl: String
 ) {
-    Box(Modifier.fillMaxSize()) {
-        if (imageUrl.isEmpty()) {
-            Text(
-                text = stringResource(id = R.string.no_image_available),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        } else {
-            AsyncImage(
-                model = "https://image.tmdb.org/t/p/w1280$imageUrl",
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds
-            )
-        }
-    }
+    TmdbImage(
+        width = 1280,
+        imageUrl = imageUrl
+    )
 }
 
 @Composable

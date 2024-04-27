@@ -5,10 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.model.library.LibraryTask
-import com.anshtya.core.ui.ErrorText
 import com.anshtya.data.repository.LibraryRepository
 import com.anshtya.data.util.SyncManager
-import com.anshtya.feature.you.R
 import com.anshtya.feature.you.libraryItemTypeNavigationArgument
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,7 +31,7 @@ class LibraryItemsViewModel @Inject constructor(
     private val syncManager: SyncManager
 ) : ViewModel() {
 
-    private val _errorMessage = MutableStateFlow<ErrorText?>(null)
+    private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
 
     private val _mediaType = MutableStateFlow(LibraryMediaType.MOVIE)
@@ -115,7 +113,7 @@ class LibraryItemsViewModel @Inject constructor(
                     }
                 }
             } catch (e: IOException) {
-                _errorMessage.update { ErrorText.StringResource(id = R.string.error_message) }
+                _errorMessage.update { "An error occurred" }
             }
         }
     }

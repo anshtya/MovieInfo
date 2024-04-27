@@ -1,6 +1,5 @@
 package com.anshtya.feature.auth
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +20,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -28,10 +30,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.ui.noRippleClickable
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun AuthRoute(
@@ -84,125 +87,133 @@ internal fun AuthScreen(
     onPasswordChange: (String) -> Unit,
     onErrorShown: () -> Unit,
 ) {
-    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState) {
         uiState.isLoggedIn?.let { onLogIn() }
     }
 
     uiState.errorMessage?.let {
-        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        scope.launch { snackbarHostState.showSnackbar(it) }
         onErrorShown()
     }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 12.dp)
-    ) {
-        TopAppBar(
-            title = {},
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = stringResource(
-                        id = com.anshtya.core.ui.R.string.back
-                    ),
-                    modifier = Modifier.noRippleClickable { onBackClick() }
-                )
-            }
-        )
-
-        Spacer(Modifier.height(100.dp))
-
-        val focusManager = LocalFocusManager.current
-        var passwordVisible by remember { mutableStateOf(false) }
-
-        Text(
-            text = stringResource(id = R.string.sign_in),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(Modifier.height(10.dp))
-
-        OutlinedTextField(
-            value = uiState.username,
-            onValueChange = onUsernameChange,
-            label = { Text(stringResource(id = R.string.username)) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            shape = RoundedCornerShape(20.dp)
-        )
-
-        Spacer(Modifier.height(10.dp))
-
-        OutlinedTextField(
-            value = uiState.password,
-            onValueChange = onPasswordChange,
-            label = { Text(stringResource(id = R.string.password)) },
-            placeholder = { Text(stringResource(id = R.string.password)) },
-            singleLine = true,
-            visualTransformation = if (passwordVisible) {
-                VisualTransformation.None
-            } else {
-                PasswordVisualTransformation()
-            },
-            trailingIcon = {
-                IconButton(
-                    onClick = { passwordVisible = !passwordVisible }
-                ) {
-                    if (passwordVisible) {
-                        Icon(
-                            imageVector = Icons.Default.VisibilityOff,
-                            contentDescription = stringResource(id = R.string.hide_password),
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Visibility,
-                            contentDescription = stringResource(id = R.string.show_password),
-                        )
-                    }
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Password
-            ),
-            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            shape = RoundedCornerShape(20.dp)
-        )
-
-        Spacer(Modifier.height(20.dp))
-
-        if (uiState.isLoading) {
-            CircularProgressIndicator()
-        } else {
-            Button(
-                onClick = {
-                    onLogInClick()
-                    focusManager.clearFocus()
-                },
-                modifier = Modifier
-                    .height(48.dp)
-                    .width(250.dp)
-            ) {
-                Text(stringResource(id = R.string.sign_in))
-            }
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
+    ) { paddingValues ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 12.dp)
+        ) {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = stringResource(
+                            id = com.anshtya.core.ui.R.string.back
+                        ),
+                        modifier = Modifier.noRippleClickable { onBackClick() }
+                    )
+                }
+            )
 
-        hideOnboarding?.let {
+            Spacer(Modifier.height(100.dp))
+
+            val focusManager = LocalFocusManager.current
+            var passwordVisible by remember { mutableStateOf(false) }
+
+            Text(
+                text = stringResource(id = R.string.sign_in),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+
             Spacer(Modifier.height(10.dp))
 
-            if (!it) {
+            OutlinedTextField(
+                value = uiState.username,
+                onValueChange = onUsernameChange,
+                label = { Text(stringResource(id = R.string.username)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                shape = RoundedCornerShape(20.dp)
+            )
+
+            Spacer(Modifier.height(10.dp))
+
+            OutlinedTextField(
+                value = uiState.password,
+                onValueChange = onPasswordChange,
+                label = { Text(stringResource(id = R.string.password)) },
+                placeholder = { Text(stringResource(id = R.string.password)) },
+                singleLine = true,
+                visualTransformation = if (passwordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = { passwordVisible = !passwordVisible }
+                    ) {
+                        if (passwordVisible) {
+                            Icon(
+                                imageVector = Icons.Default.VisibilityOff,
+                                contentDescription = stringResource(id = R.string.hide_password),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Visibility,
+                                contentDescription = stringResource(id = R.string.show_password),
+                            )
+                        }
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Password
+                ),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                shape = RoundedCornerShape(20.dp)
+            )
+
+            Spacer(Modifier.height(20.dp))
+
+            if (uiState.isLoading) {
+                CircularProgressIndicator()
+            } else {
                 Button(
-                    onClick = onContinueWithoutSignInClick,
+                    onClick = {
+                        onLogInClick()
+                        focusManager.clearFocus()
+                    },
                     modifier = Modifier
                         .height(48.dp)
                         .width(250.dp)
                 ) {
-                    Text(stringResource(id = R.string.continue_without_sign_in))
+                    Text(stringResource(id = R.string.sign_in))
+                }
+            }
+
+            hideOnboarding?.let {
+                Spacer(Modifier.height(10.dp))
+
+                if (!it) {
+                    Button(
+                        onClick = onContinueWithoutSignInClick,
+                        modifier = Modifier
+                            .height(48.dp)
+                            .width(250.dp)
+                    ) {
+                        Text(stringResource(id = R.string.continue_without_sign_in))
+                    }
                 }
             }
         }

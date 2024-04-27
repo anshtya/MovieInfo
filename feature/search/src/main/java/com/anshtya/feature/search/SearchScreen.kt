@@ -1,6 +1,5 @@
 package com.anshtya.feature.search
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,21 +7,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.SearchItem
 import com.anshtya.core.ui.MovieInfoSearchBar
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun SearchRoute(
@@ -31,11 +36,11 @@ internal fun SearchRoute(
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
-    val showError by viewModel.showError.collectAsStateWithLifecycle()
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
 
     SearchScreen(
         searchQuery = searchQuery,
-        showError = showError,
+        errorMessage = errorMessage,
         searchSuggestions = searchSuggestions,
         onSearchQueryChange = viewModel::changeSearchQuery,
         onBack = viewModel::onBack,
@@ -47,54 +52,66 @@ internal fun SearchRoute(
 @Composable
 internal fun SearchScreen(
     searchQuery: String,
-    showError: Boolean?,
+    errorMessage: String?,
     searchSuggestions: List<SearchItem>,
     onSearchQueryChange: (String) -> Unit,
     onBack: () -> Unit,
     onSearchResultClick: (String) -> Unit,
     onErrorShown: () -> Unit
 ) {
-    val context = LocalContext.current
-    showError?.let {
-        Toast.makeText(context, context.getString(R.string.error), Toast.LENGTH_SHORT).show()
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    errorMessage?.let {
+        scope.launch { snackbarHostState.showSnackbar(it) }
         onErrorShown()
     }
 
-    Column(Modifier.fillMaxSize()) {
-        MovieInfoSearchBar(
-            value = searchQuery,
-            onQueryChange = { onSearchQueryChange(it) }
-        )
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            MovieInfoSearchBar(
+                value = searchQuery,
+                onQueryChange = { onSearchQueryChange(it) }
+            )
 
-        if (searchQuery.isNotEmpty()) {
-            BackHandler {
-                onSearchQueryChange("")
-                onBack()
-            }
+            if (searchQuery.isNotEmpty()) {
+                BackHandler {
+                    onSearchQueryChange("")
+                    onBack()
+                }
 
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(140.dp),
-                contentPadding = PaddingValues(horizontal = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(
-                    items = searchSuggestions,
-                    key = { it.id }
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(140.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    SearchSuggestionItem(
-                        name = it.name,
-                        imagePath = it.imagePath,
-                        onItemClick = {
-                            // Converting type to uppercase for [MediaType]
-                            onSearchResultClick("${it.id},${it.mediaType.uppercase()}")
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    items(
+                        items = searchSuggestions,
+                        key = { it.id }
+                    ) {
+                        SearchSuggestionItem(
+                            name = it.name,
+                            imagePath = it.imagePath,
+                            onItemClick = {
+                                // Converting type to uppercase for [MediaType]
+                                onSearchResultClick("${it.id},${it.mediaType.uppercase()}")
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
+            SearchHistoryContent(history = listOf())
         }
-        SearchHistoryContent(history = listOf())
     }
 }
 

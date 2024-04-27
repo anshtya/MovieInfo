@@ -1,6 +1,5 @@
 package com.anshtya.feature.you.library_items
 
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +25,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -41,13 +43,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.library.LibraryItem
-import com.anshtya.core.ui.ErrorText
 import com.anshtya.core.ui.MediaItemCard
 import com.anshtya.feature.you.R
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -83,90 +83,100 @@ internal fun LibraryItemsScreen(
     movieItems: List<LibraryItem>,
     tvItems: List<LibraryItem>,
     libraryItemType: LibraryItemType?,
-    errorMessage: ErrorText?,
+    errorMessage: String?,
     onDeleteItem: (LibraryItem, LibraryItemType) -> Unit,
     onMediaTypeChange: (LibraryMediaType) -> Unit,
     onNavigateToDetails: (String) -> Unit,
     onBackClick: () -> Unit,
     onErrorShown: () -> Unit
 ) {
-    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     errorMessage?.let {
-        Toast.makeText(context, it.toText(context), Toast.LENGTH_SHORT).show()
+        scope.launch { snackbarHostState.showSnackbar(it) }
         onErrorShown()
     }
 
-    Column(Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = {
-                libraryItemType?.let {
-                    Text(text = stringResource(id = it.displayName))
+    Scaffold (
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            TopAppBar(
+                title = {
+                    libraryItemType?.let {
+                        Text(text = stringResource(id = it.displayName))
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = com.anshtya.core.ui.R.string.back)
+                        )
+                    }
                 }
-            },
-            navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(id = com.anshtya.core.ui.R.string.back)
+            )
+
+            val libraryMediaTabs = LibraryMediaType.entries
+            val pagerState = rememberPagerState(pageCount = { libraryMediaTabs.size })
+
+            val selectedTabIndex by remember(pagerState.currentPage) {
+                mutableIntStateOf(pagerState.currentPage)
+            }
+
+            LaunchedEffect(pagerState) {
+                snapshotFlow { pagerState.currentPage }
+                    .distinctUntilChanged()
+                    .collect { onMediaTypeChange(libraryMediaTabs[it]) }
+            }
+
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                libraryMediaTabs.forEachIndexed { index, mediaTypeTab ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        },
+                        text = { Text(text = stringResource(id = mediaTypeTab.displayName)) }
                     )
                 }
             }
-        )
 
-        val libraryMediaTabs = LibraryMediaType.entries
-        val pagerState = rememberPagerState(pageCount = { libraryMediaTabs.size })
-        val scope = rememberCoroutineScope()
-        val selectedTabIndex by remember(pagerState.currentPage) {
-            mutableIntStateOf(pagerState.currentPage)
-        }
+            Spacer(Modifier.height(4.dp))
 
-        LaunchedEffect(pagerState) {
-            snapshotFlow { pagerState.currentPage }
-                .distinctUntilChanged()
-                .collect { onMediaTypeChange(libraryMediaTabs[it]) }
-        }
-
-        TabRow(
-            selectedTabIndex = selectedTabIndex,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            libraryMediaTabs.forEachIndexed { index, mediaTypeTab ->
-                Tab(
-                    selected = selectedTabIndex == index,
-                    onClick = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(index)
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                Column(Modifier.fillMaxSize()) {
+                    when (libraryMediaTabs[page]) {
+                        LibraryMediaType.MOVIE -> {
+                            LibraryContent(
+                                content = movieItems,
+                                libraryItemType = libraryItemType,
+                                onLibraryItemClick = onNavigateToDetails,
+                                onDeleteClick = onDeleteItem
+                            )
                         }
-                    },
-                    text = { Text(text = stringResource(id = mediaTypeTab.displayName)) }
-                )
-            }
-        }
 
-        Spacer(Modifier.height(4.dp))
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            Column(Modifier.fillMaxSize()) {
-                when (libraryMediaTabs[page]) {
-                    LibraryMediaType.MOVIE -> {
-                        LibraryContent(
-                            content = movieItems,
-                            libraryItemType = libraryItemType,
-                            onLibraryItemClick = onNavigateToDetails,
-                            onDeleteClick = onDeleteItem
-                        )
-                    }
-
-                    LibraryMediaType.TV -> {
-                        LibraryContent(
-                            content = tvItems,
-                            libraryItemType = libraryItemType,
-                            onLibraryItemClick = onNavigateToDetails,
-                            onDeleteClick = onDeleteItem
-                        )
+                        LibraryMediaType.TV -> {
+                            LibraryContent(
+                                content = tvItems,
+                                libraryItemType = libraryItemType,
+                                onLibraryItemClick = onNavigateToDetails,
+                                onDeleteClick = onDeleteItem
+                            )
+                        }
                     }
                 }
             }

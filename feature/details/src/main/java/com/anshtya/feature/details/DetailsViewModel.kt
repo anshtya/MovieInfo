@@ -4,13 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshtya.core.model.MediaType
+import com.anshtya.core.model.NetworkResponse
 import com.anshtya.core.model.details.MovieDetails
 import com.anshtya.core.model.details.PersonDetails
 import com.anshtya.core.model.details.tv.TvDetails
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.model.library.LibraryTask
-import com.anshtya.core.ui.ErrorText
-import com.anshtya.core.model.NetworkResponse
 import com.anshtya.data.repository.DetailsRepository
 import com.anshtya.data.repository.LibraryRepository
 import com.anshtya.data.util.SyncManager
@@ -95,7 +94,7 @@ class DetailsViewModel @Inject constructor(
                 syncManager.scheduleLibraryTaskWork(libraryTask)
             } catch (e: IOException) {
                 _uiState.update {
-                    it.copy(errorMessage = ErrorText.StringResource(id = R.string.error_message))
+                    it.copy(errorMessage = "An error occurred")
                 }
             }
         }
@@ -113,7 +112,7 @@ class DetailsViewModel @Inject constructor(
                 syncManager.scheduleLibraryTaskWork(libraryTask)
             } catch (e: IOException) {
                 _uiState.update {
-                    it.copy(errorMessage = ErrorText.StringResource(id = R.string.error_message))
+                    it.copy(errorMessage = "An error occurred")
                 }
             }
         }
@@ -135,8 +134,7 @@ class DetailsViewModel @Inject constructor(
             }
 
             is NetworkResponse.Error -> {
-                val error = ErrorText.StringResource(id = R.string.error_message)
-                _uiState.update { it.copy(errorMessage = error) }
+                _uiState.update { it.copy(errorMessage = response.errorMessage) }
                 ContentDetailUiState.Empty
             }
         }
@@ -151,8 +149,7 @@ class DetailsViewModel @Inject constructor(
             }
 
             is NetworkResponse.Error -> {
-                val error = ErrorText.StringResource(id = R.string.error_message)
-                _uiState.update { it.copy(errorMessage = error) }
+                _uiState.update { it.copy(errorMessage = response.errorMessage) }
                 ContentDetailUiState.Empty
             }
         }
@@ -167,8 +164,7 @@ class DetailsViewModel @Inject constructor(
             }
 
             is NetworkResponse.Error -> {
-                val error = ErrorText.StringResource(id = R.string.error_message)
-                _uiState.update { it.copy(errorMessage = error) }
+                _uiState.update { it.copy(errorMessage = response.errorMessage) }
                 ContentDetailUiState.Empty
             }
         }
@@ -177,7 +173,7 @@ class DetailsViewModel @Inject constructor(
 
 data class DetailsUiState(
     val isLoading: Boolean = false,
-    val errorMessage: ErrorText? = null
+    val errorMessage: String? = null
 )
 
 sealed interface ContentDetailUiState {

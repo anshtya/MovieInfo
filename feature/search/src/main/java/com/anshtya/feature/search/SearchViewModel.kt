@@ -37,8 +37,8 @@ class SearchViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
-    private val _showError = MutableStateFlow<Boolean?>(null)
-    val showError = _showError.asStateFlow()
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage = _errorMessage.asStateFlow()
 
     val searchSuggestions: StateFlow<List<SearchItem>> = _searchQuery
         .mapLatest { query ->
@@ -54,7 +54,7 @@ class SearchViewModel @Inject constructor(
                     is NetworkResponse.Success -> response.data
 
                     is NetworkResponse.Error -> {
-                        _showError.update { true }
+                        _errorMessage.update { response.errorMessage }
                         emptyList()
                     }
                 }
@@ -75,7 +75,7 @@ class SearchViewModel @Inject constructor(
     }
 
     fun onErrorShown() {
-        _showError.update { null }
+        _errorMessage.update { null }
     }
 
     private fun getIncludeAdult() {

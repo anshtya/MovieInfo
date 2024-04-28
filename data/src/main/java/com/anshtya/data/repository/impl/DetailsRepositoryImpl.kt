@@ -1,7 +1,7 @@
 package com.anshtya.data.repository.impl
 
 import com.anshtya.core.model.details.MovieDetails
-import com.anshtya.core.model.details.PersonDetails
+import com.anshtya.core.model.details.people.PersonDetails
 import com.anshtya.core.model.details.tv.TvDetails
 import com.anshtya.core.network.retrofit.TmdbApi
 import com.anshtya.core.model.NetworkResponse

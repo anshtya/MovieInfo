@@ -1,6 +1,6 @@
-package com.anshtya.core.network.model.details
+package com.anshtya.core.network.model.details.people
 
-import com.anshtya.core.model.details.PersonDetails
+import com.anshtya.core.model.details.people.PersonDetails
 import com.squareup.moshi.Json
 
 data class NetworkPersonDetails(
@@ -18,7 +18,7 @@ data class NetworkPersonDetails(
 ) {
 
     // According to https://developer.themoviedb.org/reference/person-details#genders
-    fun getGender(): String {
+    private fun getGender(): String {
         return when (gender) {
             1 -> "Female"
             2 -> "Male"

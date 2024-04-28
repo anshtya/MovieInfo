@@ -9,7 +9,7 @@ import com.anshtya.core.network.model.auth.SessionRequest
 import com.anshtya.core.network.model.auth.SessionResponse
 import com.anshtya.core.network.model.content.NetworkContentResponse
 import com.anshtya.core.network.model.details.NetworkMovieDetails
-import com.anshtya.core.network.model.details.NetworkPersonDetails
+import com.anshtya.core.network.model.details.people.NetworkPersonDetails
 import com.anshtya.core.network.model.details.tv.NetworkTvDetails
 import com.anshtya.core.network.model.library.FavoriteRequest
 import com.anshtya.core.network.model.library.WatchlistRequest
@@ -22,7 +22,8 @@ internal class FakeTmdbApi(
     override suspend fun getMovieLists(
         category: String,
         language: String,
-        page: Int
+        page: Int,
+        region: String?
     ): NetworkContentResponse {
         return movieListResponse
     }
@@ -43,7 +44,7 @@ internal class FakeTmdbApi(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getMovieDetails(id: Int): NetworkMovieDetails {
+    override suspend fun getMovieDetails(id: Int, appendToResponse: String): NetworkMovieDetails {
         TODO("Not yet implemented")
     }
 

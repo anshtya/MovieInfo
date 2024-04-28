@@ -1,6 +1,8 @@
 package com.anshtya.core.network.model.details
 
 import com.anshtya.core.model.details.MovieDetails
+import com.anshtya.core.network.model.content.NetworkContentItem
+import com.anshtya.core.network.model.content.NetworkContentResponse
 import com.squareup.moshi.Json
 import java.util.Locale
 
@@ -9,6 +11,7 @@ data class NetworkMovieDetails(
     @Json(name = "backdrop_path") val backdropPath: String?,
 //    val belongs_to_collection: Any,
     val budget: Int,
+    val credits: NetworkCredits,
     val genres: List<NetworkGenre>,
     val id: Int,
     @Json(name = "original_language") val originalLanguage: String,
@@ -17,6 +20,7 @@ data class NetworkMovieDetails(
     @Json(name = "poster_path") val posterPath: String?,
     @Json(name = "production_companies") val productionCompanies: List<NetworkProductionCompany>,
     @Json(name = "production_countries") val productionCountries: List<NetworkProductionCountry>,
+    val recommendations: NetworkContentResponse,
     @Json(name = "release_date") val releaseDate: String,
     val revenue: Int,
     val runtime: Int,
@@ -29,6 +33,7 @@ data class NetworkMovieDetails(
         adult = adult,
         backdropPath = backdropPath ?: "",
         budget = "%,d".format(budget),
+        credits = credits.asModel(),
         genres = genres.joinToString(separator = ", ") { it.name },
         id = id,
         originalLanguage = Locale(originalLanguage).displayLanguage,
@@ -36,7 +41,8 @@ data class NetworkMovieDetails(
         posterPath = posterPath ?: "",
         productionCompanies = productionCompanies.joinToString(separator = ", ") { it.name },
         productionCountries = productionCountries.joinToString(separator = ", ") { it.name },
-        rating = voteAverage/2,
+        rating = voteAverage / 2,
+        recommendations = recommendations.results.map(NetworkContentItem::asModel),
         releaseDate = releaseDate,
         releaseYear = releaseDate.split("-").first().toInt(),
         revenue = "%,d".format(revenue),

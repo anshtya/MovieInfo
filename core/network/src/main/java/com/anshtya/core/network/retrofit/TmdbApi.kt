@@ -9,7 +9,7 @@ import com.anshtya.core.network.model.auth.SessionRequest
 import com.anshtya.core.network.model.auth.SessionResponse
 import com.anshtya.core.network.model.content.NetworkContentResponse
 import com.anshtya.core.network.model.details.NetworkMovieDetails
-import com.anshtya.core.network.model.details.NetworkPersonDetails
+import com.anshtya.core.network.model.details.people.NetworkPersonDetails
 import com.anshtya.core.network.model.details.tv.NetworkTvDetails
 import com.anshtya.core.network.model.library.FavoriteRequest
 import com.anshtya.core.network.model.library.WatchlistRequest
@@ -47,7 +47,8 @@ interface TmdbApi {
 
     @GET("movie/{movie_id}")
     suspend fun getMovieDetails(
-        @Path("movie_id") id: Int
+        @Path("movie_id") id: Int,
+        @Query("append_to_response") appendToResponse: String = "recommendations,credits"
     ): NetworkMovieDetails
 
     @GET("tv/{series_id}")

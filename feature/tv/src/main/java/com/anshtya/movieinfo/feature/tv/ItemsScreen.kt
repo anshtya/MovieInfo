@@ -1,33 +1,34 @@
 package com.anshtya.movieinfo.feature.tv
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.content.TvShowListCategory
 import com.anshtya.core.ui.MediaItemCard
+import com.anshtya.core.ui.PagingLazyVerticalGrid
 import com.anshtya.core.ui.noRippleClickable
 
-private val horizontalPadding = 10.dp
+private val horizontalPadding = 8.dp
 
 @Composable
 fun ItemsRoute(
@@ -37,11 +38,11 @@ fun ItemsRoute(
     viewModel: TvShowsViewModel
 ) {
     val category = enumValueOf<TvShowListCategory>(categoryName)
-    val content = when (category) {
-        TvShowListCategory.AIRING_TODAY -> viewModel.airingTodayTvShows.collectAsLazyPagingItems()
-        TvShowListCategory.POPULAR -> viewModel.popularTvShows.collectAsLazyPagingItems()
-        TvShowListCategory.TOP_RATED -> viewModel.topRatedTvShows.collectAsLazyPagingItems()
-        TvShowListCategory.ON_THE_AIR -> viewModel.onAirTvShows.collectAsLazyPagingItems()
+    val content by when (category) {
+        TvShowListCategory.AIRING_TODAY -> viewModel.airingTodayTvShows.collectAsStateWithLifecycle()
+        TvShowListCategory.POPULAR -> viewModel.popularTvShows.collectAsStateWithLifecycle()
+        TvShowListCategory.TOP_RATED -> viewModel.topRatedTvShows.collectAsStateWithLifecycle()
+        TvShowListCategory.ON_THE_AIR -> viewModel.onAirTvShows.collectAsStateWithLifecycle()
     }
     val categoryDisplayName = when (category) {
         TvShowListCategory.AIRING_TODAY -> stringResource(id = R.string.airing_today)
@@ -50,8 +51,9 @@ fun ItemsRoute(
         TvShowListCategory.POPULAR -> stringResource(id = R.string.popular)
     }
     ItemsScreen(
-        content = LazyPagingContent(content),
+        content = content,
         categoryDisplayName = categoryDisplayName,
+        appendItems = viewModel::appendItems,
         onItemClick = { onItemClick("$it,${MediaType.TV}") },
         onBackClick = onBackClick
     )
@@ -60,8 +62,9 @@ fun ItemsRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ItemsScreen(
-    content: LazyPagingContent,
+    content: ContentUiState,
     categoryDisplayName: String,
+    appendItems: (TvShowListCategory) -> Unit,
     onItemClick: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -84,25 +87,34 @@ internal fun ItemsScreen(
             }
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
+        PagingLazyVerticalGrid(
+            itemsEmpty = content.items.isEmpty(),
+            isLoading = content.isLoading,
+            endReached = content.endReached,
             contentPadding = PaddingValues(horizontal = horizontalPadding),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxSize()
+            appendItems = { appendItems(content.category) }
         ) {
             items(
-                count = content.items.itemCount,
-                key = content.items.itemKey { it.id }
-            ) { index ->
-                content.items[index]?.let { contentItem ->
-                    MediaItemCard(
-                        posterPath = contentItem.imagePath,
-                        onItemClick = { onItemClick("${contentItem.id}") },
+                items = content.items,
+                key = { it.id }
+            ) {
+                MediaItemCard(
+                    posterPath = it.imagePath,
+                    onItemClick = { onItemClick("${it.id},${MediaType.TV}") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp)
+                )
+            }
+            if (content.isLoading) {
+                item {
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(160.dp)
-                    )
+                    ) {
+                        CircularProgressIndicator(Modifier.align(Alignment.Center))
+                    }
                 }
             }
         }

@@ -60,6 +60,9 @@ fun MovieInfoNavigation(
             onNavigateToLibraryItem = navController::navigateToLibraryItem,
             onNavigateToDetails = navController::navigateToDetails
         )
-        detailsScreen()
+        detailsScreen(
+            onItemClick = navController::navigateToDetails,
+            onBackClick = navController::popBackStack
+        )
     }
 }

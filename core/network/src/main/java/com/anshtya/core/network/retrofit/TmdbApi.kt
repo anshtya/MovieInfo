@@ -53,7 +53,8 @@ interface TmdbApi {
 
     @GET("tv/{series_id}")
     suspend fun getTvShowDetails(
-        @Path("series_id") id: Int
+        @Path("series_id") id: Int,
+        @Query("append_to_response") appendToResponse: String = "recommendations,credits"
     ): NetworkTvDetails
 
     @GET("person/{person_id}")

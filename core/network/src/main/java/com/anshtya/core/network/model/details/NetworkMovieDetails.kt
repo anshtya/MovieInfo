@@ -3,6 +3,7 @@ package com.anshtya.core.network.model.details
 import com.anshtya.core.model.details.MovieDetails
 import com.anshtya.core.network.model.content.NetworkContentItem
 import com.anshtya.core.network.model.content.NetworkContentResponse
+import com.anshtya.core.network.util.formatDate
 import com.squareup.moshi.Json
 import java.util.Locale
 
@@ -43,7 +44,7 @@ data class NetworkMovieDetails(
         productionCountries = productionCountries.joinToString(separator = ", ") { it.name },
         rating = voteAverage / 2,
         recommendations = recommendations.results.map(NetworkContentItem::asModel),
-        releaseDate = releaseDate,
+        releaseDate = formatDate(releaseDate),
         releaseYear = releaseDate.split("-").first().toInt(),
         revenue = "%,d".format(revenue),
         runtime = getFormattedRuntime(),

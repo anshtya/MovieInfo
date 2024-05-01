@@ -1,6 +1,7 @@
 package com.anshtya.core.network.model.details.tv
 
 import com.anshtya.core.model.details.tv.EpisodeDetails
+import com.anshtya.core.network.util.formatDate
 import com.squareup.moshi.Json
 
 data class NetworkEpisodeDetails(
@@ -18,7 +19,7 @@ data class NetworkEpisodeDetails(
     @Json(name = "vote_count") val voteCount: Int
 ) {
     fun asModel() = EpisodeDetails(
-        airDate = airDate,
+        airDate = formatDate(airDate),
         episodeNumber = episodeNumber,
         id = id,
         name = name,

@@ -6,8 +6,8 @@ import com.squareup.moshi.Json
 data class NetworkPersonDetails(
     val adult: Boolean,
     @Json(name = "also_known_as") val alsoKnownAs: List<String>,
-    val biography: String,
-    val birthday: String,
+    val biography: String?,
+    val birthday: String?,
     val deathday: String?,
     val gender: Int,
     val id: Int,
@@ -30,8 +30,8 @@ data class NetworkPersonDetails(
     fun asModel() = PersonDetails(
         adult = adult,
         alsoKnownAs = alsoKnownAs.joinToString(", "),
-        biography = biography,
-        birthday = birthday,
+        biography = biography ?: "",
+        birthday = birthday ?: "",
         deathday = deathday,
         gender = getGender(),
         id = id,

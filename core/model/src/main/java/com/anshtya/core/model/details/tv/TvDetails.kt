@@ -1,12 +1,15 @@
 package com.anshtya.core.model.details.tv
 
 import com.anshtya.core.model.MediaType
+import com.anshtya.core.model.content.ContentItem
+import com.anshtya.core.model.details.people.Credits
 import com.anshtya.core.model.library.LibraryItem
 
 data class TvDetails(
     val adult: Boolean,
     val backdropPath: String,
     val createdBy: List<CreatedBy>,
+    val credits: Credits,
     val episodeRunTime: String,
     val firstAirDate: String,
     val genres: String,
@@ -26,6 +29,7 @@ data class TvDetails(
     val productionCompanies: String,
     val productionCountries: String,
     val rating: Double,
+    val recommendations: List<ContentItem>,
     val releaseYear: Int,
 //    val seasons: List<Season>,
     val status: String,

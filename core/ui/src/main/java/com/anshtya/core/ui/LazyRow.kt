@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LazyRowContentSection(
+    modifier: Modifier = Modifier,
     pagingEnabled: Boolean = false,
     isLoading: Boolean = false,
     endReached: Boolean = false,
@@ -64,7 +65,7 @@ fun LazyRowContentSection(
         sectionHeaderContent()
 
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .height(160.dp)
         ) {
@@ -75,7 +76,6 @@ fun LazyRowContentSection(
                     contentPadding = rowContentPadding,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     state = lazyRowState,
-                    modifier = Modifier.fillMaxWidth(),
                     content = rowContent
                 )
             }

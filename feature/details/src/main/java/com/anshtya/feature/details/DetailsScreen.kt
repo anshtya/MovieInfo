@@ -1,55 +1,71 @@
 package com.anshtya.feature.details
 
-import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.details.MovieDetails
-import com.anshtya.core.model.details.PersonDetails
 import com.anshtya.core.model.details.asLibraryItem
+import com.anshtya.core.model.details.people.PersonDetails
 import com.anshtya.core.model.details.tv.TvDetails
 import com.anshtya.core.model.details.tv.asLibraryItem
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.ui.BackdropImage
+import com.anshtya.core.ui.ContentSectionHeader
 import com.anshtya.core.ui.FavoriteButton
+import com.anshtya.core.ui.LazyRowContentSection
+import com.anshtya.core.ui.MediaItemCard
 import com.anshtya.core.ui.Rating
-import com.anshtya.core.ui.TmdbImage
 import com.anshtya.core.ui.WatchlistButton
+import com.anshtya.core.ui.noRippleClickable
+import kotlinx.coroutines.launch
 
-private val horizontalPadding = 10.dp
+private val horizontalPadding = 8.dp
+private val verticalPadding = 4.dp
 
 @Composable
 internal fun DetailsRoute(
+    onItemClick: (String) -> Unit,
+    onBackClick: () -> Unit,
     viewModel: DetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -60,7 +76,10 @@ internal fun DetailsRoute(
         contentDetailsUiState = contentDetailsUiState,
         onErrorShown = viewModel::onErrorShown,
         onFavoriteClick = viewModel::addOrRemoveFavorite,
-        onWatchlistClick = viewModel::addOrRemoveFromWatchlist
+        onWatchlistClick = viewModel::addOrRemoveFromWatchlist,
+        onItemClick = onItemClick,
+        onSeeAllCastClick = {},
+        onBackClick = onBackClick
     )
 }
 
@@ -70,43 +89,62 @@ internal fun DetailsScreen(
     contentDetailsUiState: ContentDetailUiState,
     onErrorShown: () -> Unit,
     onFavoriteClick: (LibraryItem) -> Unit,
-    onWatchlistClick: (LibraryItem) -> Unit
+    onWatchlistClick: (LibraryItem) -> Unit,
+    onItemClick: (String) -> Unit,
+    onSeeAllCastClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
-    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Column(Modifier.fillMaxSize()) {
-
-        if (uiState.isLoading) {
-            Box(Modifier.fillMaxSize()) {
-                CircularProgressIndicator(Modifier.align(Alignment.Center))
-            }
-        } else {
-            when (contentDetailsUiState) {
-                ContentDetailUiState.Empty -> {
-                    uiState.errorMessage?.let {
-                        Toast.makeText(context, it.toText(context), Toast.LENGTH_SHORT).show()
-                        onErrorShown()
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            if (uiState.isLoading) {
+                Box(Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                }
+            } else {
+                when (contentDetailsUiState) {
+                    ContentDetailUiState.Empty -> {
+                        uiState.errorMessage?.let {
+                            scope.launch { snackbarHostState.showSnackbar(it) }
+                            onErrorShown()
+                        }
                     }
-                }
 
-                is ContentDetailUiState.Movie -> {
-                    MovieDetailsContent(
-                        movieDetails = contentDetailsUiState.data,
-                        onFavoriteClick = onFavoriteClick,
-                        onWatchlistClick = onWatchlistClick
-                    )
-                }
+                    is ContentDetailUiState.Movie -> {
+                        MovieDetailsContent(
+                            movieDetails = contentDetailsUiState.data,
+                            onFavoriteClick = onFavoriteClick,
+                            onWatchlistClick = onWatchlistClick,
+                            onSeeAllCastClick = onSeeAllCastClick,
+                            onItemClick = onItemClick
+                        )
+                    }
 
-                is ContentDetailUiState.TV -> {
-                    TvDetailsContent(
-                        tvDetails = contentDetailsUiState.data,
-                        onFavoriteClick = onFavoriteClick,
-                        onWatchlistClick = onWatchlistClick
-                    )
-                }
+                    is ContentDetailUiState.TV -> {
+                        TvDetailsContent(
+                            tvDetails = contentDetailsUiState.data,
+                            onFavoriteClick = onFavoriteClick,
+                            onWatchlistClick = onWatchlistClick,
+                            onSeeAllCastClick = onSeeAllCastClick,
+                            onItemClick = onItemClick
+                        )
+                    }
 
-                is ContentDetailUiState.Person -> {
-                    PersonDetailsContent(personDetails = contentDetailsUiState.data)
+                    is ContentDetailUiState.Person -> {
+                        PersonDetailsContent(
+                            personDetails = contentDetailsUiState.data
+                        )
+                    }
                 }
             }
         }
@@ -117,7 +155,9 @@ internal fun DetailsScreen(
 private fun MovieDetailsContent(
     movieDetails: MovieDetails,
     onFavoriteClick: (LibraryItem) -> Unit,
-    onWatchlistClick: (LibraryItem) -> Unit
+    onWatchlistClick: (LibraryItem) -> Unit,
+    onItemClick: (String) -> Unit,
+    onSeeAllCastClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -134,19 +174,21 @@ private fun MovieDetailsContent(
         )
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = horizontalPadding)
+                .padding(horizontal = horizontalPadding, vertical = verticalPadding)
         ) {
-            Row(Modifier.fillMaxWidth()) {
-                Poster(
-                    path = movieDetails.posterPath,
-                    modifier = Modifier
-                        .size(height = 200.dp, width = 140.dp)
-                        .offset(y = (-20).dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+            ) {
+                MediaItemCard(
+                    posterPath = movieDetails.posterPath,
+                    modifier = Modifier.size(height = 200.dp, width = 140.dp)
                 )
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.width(10.dp))
                 InfoSection(
                     count = movieDetails.voteCount,
                     genres = movieDetails.genres,
@@ -154,28 +196,71 @@ private fun MovieDetailsContent(
                     rating = movieDetails.rating,
                     releaseYear = movieDetails.releaseYear,
                     runtime = movieDetails.runtime,
-                    tagline = movieDetails.tagline,
-                    modifier = Modifier.padding(top = 2.dp)
+                    tagline = movieDetails.tagline
                 )
             }
 
-            Row {
+            Row(
+                modifier = Modifier.padding(vertical = 2.dp)
+            ) {
                 FavoriteButton(
                     active = false,
                     onClick = { onFavoriteClick(movieDetails.asLibraryItem()) }
                 )
-
                 Spacer(Modifier.width(6.dp))
-
                 WatchlistButton(
                     active = false,
                     onClick = { onWatchlistClick(movieDetails.asLibraryItem()) }
                 )
             }
 
-            OverviewSection(movieDetails.overview)
+            LazyRowContentSection(
+                pagingEnabled = false,
+                sectionHeaderContent = {
+                    ContentSectionHeader(
+                        sectionName = stringResource(id = R.string.top_billed_cast),
+                        onSeeAllClick = onSeeAllCastClick
+                    )
+                },
+                rowContent = {
+                    items(
+                        items = movieDetails.credits.cast.take(10),
+                        key = { it.id }
+                    ) {
+                        CastItem(
+                            id = it.id,
+                            imagePath = it.profilePath,
+                            name = it.name,
+                            characterName = it.character,
+                            onItemClick = onItemClick,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(140.dp)
+                        )
+                    }
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(140.dp)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.view_all),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .noRippleClickable { onSeeAllCastClick() }
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(280.dp)
+                    .padding(bottom = 2.dp)
+            )
 
-            Spacer(Modifier.height(4.dp))
+            OverviewSection(movieDetails.overview)
 
             MovieDetailsSection(
                 releaseDate = movieDetails.releaseDate,
@@ -185,6 +270,34 @@ private fun MovieDetailsContent(
                 budget = movieDetails.budget,
                 revenue = movieDetails.revenue
             )
+
+            LazyRowContentSection(
+                pagingEnabled = false,
+                sectionHeaderContent = {
+                    Text(
+                        text = stringResource(id = R.string.recommendations),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                rowContent = {
+                    items(
+                        items = movieDetails.recommendations,
+                        key = { it.id }
+                    ) {
+                        MediaItemCard(
+                            posterPath = it.imagePath,
+                            onItemClick = { onItemClick("${it.id},${MediaType.MOVIE}") },
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(110.dp)
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp)
+            )
         }
     }
 }
@@ -193,7 +306,9 @@ private fun MovieDetailsContent(
 private fun TvDetailsContent(
     tvDetails: TvDetails,
     onFavoriteClick: (LibraryItem) -> Unit,
-    onWatchlistClick: (LibraryItem) -> Unit
+    onWatchlistClick: (LibraryItem) -> Unit,
+    onItemClick: (String) -> Unit,
+    onSeeAllCastClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -210,20 +325,22 @@ private fun TvDetailsContent(
         )
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = horizontalPadding)
+                .padding(horizontal = horizontalPadding, vertical = verticalPadding)
         ) {
-            Row(Modifier.fillMaxWidth()) {
-                Poster(
-                    path = tvDetails.posterPath,
-                    modifier = Modifier
-                        .size(height = 200.dp, width = 140.dp)
-                        .offset(y = (-20).dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+            ) {
+                MediaItemCard(
+                    posterPath = tvDetails.posterPath,
+                    modifier = Modifier.size(height = 200.dp, width = 140.dp)
                 )
 
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.width(10.dp))
 
                 InfoSection(
                     count = tvDetails.voteCount,
@@ -232,30 +349,72 @@ private fun TvDetailsContent(
                     rating = tvDetails.rating,
                     releaseYear = tvDetails.releaseYear,
                     tagline = tvDetails.tagline,
-                    runtime = tvDetails.episodeRunTime,
-                    modifier = Modifier.padding(top = 2.dp)
+                    runtime = tvDetails.episodeRunTime
                 )
             }
 
-            Row {
-                Row {
-                    FavoriteButton(
-                        active = false,
-                        onClick = { onFavoriteClick(tvDetails.asLibraryItem()) }
-                    )
-
-                    Spacer(Modifier.width(6.dp))
-
-                    WatchlistButton(
-                        active = false,
-                        onClick = { onWatchlistClick(tvDetails.asLibraryItem()) }
-                    )
-                }
+            Row(
+                modifier = Modifier.padding(vertical = 2.dp)
+            ) {
+                FavoriteButton(
+                    active = false,
+                    onClick = { onFavoriteClick(tvDetails.asLibraryItem()) }
+                )
+                Spacer(Modifier.width(6.dp))
+                WatchlistButton(
+                    active = false,
+                    onClick = { onWatchlistClick(tvDetails.asLibraryItem()) }
+                )
             }
 
-            OverviewSection(tvDetails.overview)
+            LazyRowContentSection(
+                pagingEnabled = false,
+                sectionHeaderContent = {
+                    ContentSectionHeader(
+                        sectionName = stringResource(id = R.string.top_billed_cast),
+                        onSeeAllClick = onSeeAllCastClick
+                    )
+                },
+                rowContent = {
+                    items(
+                        items = tvDetails.credits.cast.take(10),
+                        key = { it.id }
+                    ) {
+                        CastItem(
+                            id = it.id,
+                            imagePath = it.profilePath,
+                            name = it.name,
+                            characterName = it.character,
+                            onItemClick = onItemClick,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(140.dp)
+                        )
+                    }
 
-            Spacer(Modifier.height(4.dp))
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(140.dp)
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.view_all),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .noRippleClickable { onSeeAllCastClick() }
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(280.dp)
+                    .padding(bottom = 2.dp)
+            )
+
+            OverviewSection(tvDetails.overview)
 
             TvDetailsSection(
                 originalLanguage = tvDetails.originalLanguage,
@@ -270,6 +429,34 @@ private fun TvDetailsContent(
                 productionCompanies = tvDetails.productionCompanies,
                 productionCountries = tvDetails.productionCountries
             )
+
+            LazyRowContentSection(
+                pagingEnabled = false,
+                sectionHeaderContent = {
+                    Text(
+                        text = stringResource(id = R.string.recommendations),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                rowContent = {
+                    items(
+                        items = tvDetails.recommendations,
+                        key = { it.id }
+                    ) {
+                        MediaItemCard(
+                            posterPath = it.imagePath,
+                            onItemClick = { onItemClick("${it.id},${MediaType.TV}") },
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(110.dp)
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp)
+            )
         }
     }
 }
@@ -279,16 +466,19 @@ private fun PersonDetailsContent(
     personDetails: PersonDetails
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = horizontalPadding, vertical = 6.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Row(Modifier.fillMaxWidth()) {
-            Poster(personDetails.profilePath)
+            MediaItemCard(
+                personDetails.profilePath,
+                modifier = Modifier.size(height = 200.dp, width = 140.dp)
+            )
 
-            Spacer(Modifier.width(6.dp))
+            Spacer(Modifier.width(10.dp))
 
             PersonInfoSection(
                 name = personDetails.name,
@@ -322,22 +512,6 @@ private fun BackdropImageSection(
 }
 
 @Composable
-private fun Poster(
-    path: String,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier) {
-        Surface(
-            shape = RoundedCornerShape(6.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            shadowElevation = 8.dp
-        ) {
-            TmdbImage(imageUrl = path)
-        }
-    }
-}
-
-@Composable
 private fun InfoSection(
     count: Int,
     genres: String,
@@ -360,14 +534,16 @@ private fun InfoSection(
 
         Rating(rating = rating, count = count)
 
-        Text(genres)
+        if (genres.isNotEmpty()) Text(genres)
 
-        Text(runtime)
+        if (runtime.isNotEmpty()) Text(runtime)
 
-        Text(
-            text = tagline,
-            fontStyle = FontStyle.Italic
-        )
+        if (tagline.isNotEmpty()) {
+            Text(
+                text = tagline,
+                fontStyle = FontStyle.Italic
+            )
+        }
     }
 }
 
@@ -396,7 +572,7 @@ private fun MovieDetailsSection(
     revenue: String
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = Modifier.padding(bottom = 6.dp)
     ) {
         DetailItem(
@@ -580,4 +756,49 @@ private fun DetailItem(
         append(value)
     }
     Text(text)
+}
+
+@Composable
+private fun CastItem(
+    id: Int,
+    imagePath: String,
+    name: String,
+    characterName: String,
+    onItemClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        shape = RoundedCornerShape(6.dp),
+        shadowElevation = 4.dp,
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { onItemClick("${id},${MediaType.PERSON}") }
+        ) {
+            MediaItemCard(
+                posterPath = imagePath,
+                onItemClick = { onItemClick("${id},${MediaType.PERSON}") },
+                modifier = Modifier.height(160.dp)
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 2.dp, horizontal = 4.dp)
+            ) {
+                Text(
+                    text = name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = characterName,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
 }

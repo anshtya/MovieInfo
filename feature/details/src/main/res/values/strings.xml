@@ -22,4 +22,7 @@
     <string name="next_air_date">"Next air date: "</string>
     <string name="number_episodes">"Number of episodes: "</string>
     <string name="number_seasons">"Number of seasons: "</string>
+    <string name="recommendations">Recommendations</string>
+    <string name="top_billed_cast">Top Billed Cast</string>
+    <string name="view_all"><![CDATA[View Full Cast & Crew]]></string>
 </resources>

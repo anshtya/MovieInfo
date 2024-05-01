@@ -2,9 +2,13 @@ package com.anshtya.core.network.model.details.tv
 
 import com.anshtya.core.model.details.tv.CreatedBy
 import com.anshtya.core.model.details.tv.TvDetails
+import com.anshtya.core.network.model.content.NetworkContentItem
+import com.anshtya.core.network.model.content.NetworkContentResponse
+import com.anshtya.core.network.model.details.NetworkCredits
 import com.anshtya.core.network.model.details.NetworkGenre
 import com.anshtya.core.network.model.details.NetworkProductionCompany
 import com.anshtya.core.network.model.details.NetworkProductionCountry
+import com.anshtya.core.network.util.formatDate
 import com.squareup.moshi.Json
 import java.util.Locale
 
@@ -12,6 +16,7 @@ data class NetworkTvDetails(
     val adult: Boolean,
     @Json(name = "backdrop_path") val backdropPath: String?,
     @Json(name = "created_by") val createdBy: List<CreatedBy>,
+    val credits: NetworkCredits,
     @Json(name = "episode_run_time") val episodeRunTime: List<Int>,
     @Json(name = "first_air_date") val firstAirDate: String,
     val genres: List<NetworkGenre>,
@@ -30,6 +35,7 @@ data class NetworkTvDetails(
     @Json(name = "poster_path") val posterPath: String?,
     @Json(name = "production_companies") val productionCompanies: List<NetworkProductionCompany>,
     @Json(name = "production_countries") val productionCountries: List<NetworkProductionCountry>,
+    val recommendations: NetworkContentResponse,
 //    val seasons: List<Season>,
     val status: String,
     val tagline: String,
@@ -41,12 +47,13 @@ data class NetworkTvDetails(
         adult = adult,
         backdropPath = backdropPath ?: "",
         createdBy = createdBy,
+        credits = credits.asModel(),
         episodeRunTime = getFormattedRuntime(),
-        firstAirDate = firstAirDate,
+        firstAirDate = formatDate(firstAirDate),
         genres = genres.joinToString(separator = ", ") { it.name },
         id = id,
         inProduction = if (inProduction) "Yes" else "No",
-        lastAirDate = lastAirDate,
+        lastAirDate = formatDate(lastAirDate),
         lastEpisodeToAir = lastEpisodeToAir.asModel(),
         name = name,
         networks = networks.joinToString(separator = ", ") { it.name },
@@ -59,14 +66,15 @@ data class NetworkTvDetails(
         posterPath = posterPath ?: "",
         productionCompanies = productionCompanies.joinToString(separator = ", ") { it.name },
         productionCountries = productionCountries.joinToString(separator = ", ") { it.name },
+        recommendations = recommendations.results.map(NetworkContentItem::asModel),
         releaseYear = firstAirDate.split("-").first().toInt(),
         status = status,
         tagline = tagline,
         type = type,
-        rating = voteAverage/2,
+        rating = voteAverage / 2,
         voteCount = voteCount
     )
-    
+
     private fun getFormattedRuntime(): String {
         if (episodeRunTime.isEmpty()) return ""
 

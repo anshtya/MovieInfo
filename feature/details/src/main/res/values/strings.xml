@@ -25,4 +25,6 @@
     <string name="recommendations">Recommendations</string>
     <string name="top_billed_cast">Top Billed Cast</string>
     <string name="view_all"><![CDATA[View Full Cast & Crew]]></string>
+    <string name="cast">Cast</string>
+    <string name="crew">Crew</string>
 </resources>

@@ -29,15 +29,15 @@ data class NetworkPersonDetails(
 
     fun asModel() = PersonDetails(
         adult = adult,
-        alsoKnownAs = alsoKnownAs.joinToString(", "),
-        biography = biography ?: "",
-        birthday = birthday ?: "",
+        alsoKnownAs = if (alsoKnownAs.isEmpty()) "Unknown" else alsoKnownAs.joinToString(", "),
+        biography = if (biography.isNullOrEmpty()) "Not available" else biography,
+        birthday = birthday ?: "Unknown",
         deathday = deathday,
         gender = getGender(),
         id = id,
         knownForDepartment = knownForDepartment,
         name = name,
-        placeOfBirth = placeOfBirth ?: "",
+        placeOfBirth = placeOfBirth ?: "Unknown",
         profilePath = profilePath ?: ""
     )
 }

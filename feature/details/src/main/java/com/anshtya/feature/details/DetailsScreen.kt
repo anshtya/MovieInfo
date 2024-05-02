@@ -39,8 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.details.MovieDetails
@@ -65,8 +63,9 @@ private val verticalPadding = 4.dp
 @Composable
 internal fun DetailsRoute(
     onItemClick: (String) -> Unit,
+    onSeeAllCastClick: () -> Unit,
     onBackClick: () -> Unit,
-    viewModel: DetailsViewModel = hiltViewModel()
+    viewModel: DetailsViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val contentDetailsUiState by viewModel.contentDetailsUiState.collectAsStateWithLifecycle()
@@ -78,7 +77,7 @@ internal fun DetailsRoute(
         onFavoriteClick = viewModel::addOrRemoveFavorite,
         onWatchlistClick = viewModel::addOrRemoveFromWatchlist,
         onItemClick = onItemClick,
-        onSeeAllCastClick = {},
+        onSeeAllCastClick = onSeeAllCastClick,
         onBackClick = onBackClick
     )
 }
@@ -243,6 +242,7 @@ private fun MovieDetailsContent(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(140.dp)
+                                .noRippleClickable { onSeeAllCastClick() }
                         ) {
                             Text(
                                 text = stringResource(id = R.string.view_all),
@@ -397,6 +397,7 @@ private fun TvDetailsContent(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(140.dp)
+                                .noRippleClickable { onSeeAllCastClick() }
                         ) {
                             Text(
                                 text = stringResource(id = R.string.view_all),
@@ -782,7 +783,7 @@ private fun CastItem(
                 onItemClick = { onItemClick("${id},${MediaType.PERSON}") },
                 modifier = Modifier.height(160.dp)
             )
-
+            Spacer(Modifier.height(4.dp))
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -791,7 +792,7 @@ private fun CastItem(
                 Text(
                     text = name,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(

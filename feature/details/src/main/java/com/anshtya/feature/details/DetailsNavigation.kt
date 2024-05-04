@@ -12,7 +12,10 @@ private const val creditsNavigationRoute = "credits"
 internal const val idNavigationArgument = "id"
 private const val detailsNavigationRouteWithArg = "$detailsNavigationRoute/{$idNavigationArgument}"
 
-fun NavGraphBuilder.detailsScreen(navController: NavController) {
+fun NavGraphBuilder.detailsScreen(
+    navController: NavController,
+    navigateToAuth: () -> Unit
+) {
     navigation(
         route = detailsNavigationRouteWithArg,
         startDestination = detailsNavigationRoute
@@ -29,6 +32,7 @@ fun NavGraphBuilder.detailsScreen(navController: NavController) {
                 onBackClick = navController::popBackStack,
                 onItemClick = navController::navigateToDetails,
                 onSeeAllCastClick = navController::navigateToCredits,
+                navigateToAuth = navigateToAuth,
                 viewModel = viewModel
             )
         }

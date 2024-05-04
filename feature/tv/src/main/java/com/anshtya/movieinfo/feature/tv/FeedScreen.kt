@@ -86,7 +86,7 @@ internal fun FeedScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(paddingValues)
-                .padding(vertical = 10.dp)
+                .padding(top = 4.dp, bottom = 8.dp)
                 .verticalScroll(state = scrollState),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {

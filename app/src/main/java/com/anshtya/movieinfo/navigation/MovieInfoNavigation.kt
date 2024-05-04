@@ -60,6 +60,9 @@ fun MovieInfoNavigation(
             onNavigateToLibraryItem = navController::navigateToLibraryItem,
             onNavigateToDetails = navController::navigateToDetails
         )
-        detailsScreen(navController = navController)
+        detailsScreen(
+            navController = navController,
+            navigateToAuth = navController::navigateToAuth
+        )
     }
 }

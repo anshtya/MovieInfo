@@ -8,6 +8,7 @@ import com.anshtya.core.local.database.entity.WatchlistContentEntity
 import com.anshtya.core.local.database.entity.asFavoriteContentEntity
 import com.anshtya.core.local.database.entity.asWatchlistContentEntity
 import com.anshtya.core.model.library.LibraryItem
+import com.anshtya.core.model.library.LibraryTask
 import com.anshtya.core.model.library.LibraryTaskType
 import com.anshtya.core.network.model.content.NetworkContentItem
 import com.anshtya.core.network.model.library.FavoriteRequest
@@ -17,14 +18,16 @@ import com.anshtya.data.model.asFavoriteContentEntity
 import com.anshtya.data.model.asWatchlistContentEntity
 import com.anshtya.data.repository.LibraryRepository
 import com.anshtya.data.util.SyncManager
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class LibraryRepositoryImpl @Inject constructor(
+internal class LibraryRepositoryImpl @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val favoriteContentDao: FavoriteContentDao,
     private val watchlistContentDao: WatchlistContentDao,
@@ -47,16 +50,44 @@ class LibraryRepositoryImpl @Inject constructor(
         watchlistContentDao.getTvShowsWatchlist()
             .map { it.map(WatchlistContentEntity::asModel) }
 
+    override suspend fun favoriteItemExists(mediaId: Int): Boolean {
+        return favoriteContentDao.checkFavoriteItemExists(mediaId)
+    }
+
+    override suspend fun itemInWatchlistExists(mediaId: Int): Boolean {
+        return watchlistContentDao.checkWatchlistItemExists(mediaId)
+    }
+
     override suspend fun addOrRemoveFavorite(libraryItem: LibraryItem): Boolean {
         val favoriteContentEntity = libraryItem.asFavoriteContentEntity()
-        val itemExists = favoriteContentDao.checkFavoriteItemExists(libraryItem.id)
 
         try {
+            val itemExists = favoriteContentDao.checkFavoriteItemExists(libraryItem.id)
             if (itemExists) {
                 favoriteContentDao.deleteFavoriteItem(favoriteContentEntity)
             } else {
                 favoriteContentDao.insertFavoriteItem(favoriteContentEntity)
             }
+
+            withContext(NonCancellable) {
+                val accountId = accountDetailsDao.getAccountDetails().first()!!.id
+                val favoriteRequest = FavoriteRequest(
+                    mediaType = libraryItem.mediaType.lowercase(),
+                    mediaId = libraryItem.id,
+                    favorite = !itemExists
+                )
+
+                val response = tmdbApi.addOrRemoveFavorite(accountId, favoriteRequest)
+                if (!response.isSuccessful) {
+                    val libraryTask = LibraryTask.favoriteItemTask(
+                        mediaId = libraryItem.id,
+                        mediaType = libraryItem.mediaType.lowercase(),
+                        itemExists = !itemExists
+                    )
+                    syncManager.scheduleLibraryTaskWork(libraryTask)
+                }
+            }
+
             return itemExists
         } catch (e: IOException) {
             throw e
@@ -65,13 +96,31 @@ class LibraryRepositoryImpl @Inject constructor(
 
     override suspend fun addOrRemoveFromWatchlist(libraryItem: LibraryItem): Boolean {
         val watchlistContentEntity = libraryItem.asWatchlistContentEntity()
-        val itemExists = watchlistContentDao.checkWatchlistItemExists(libraryItem.id)
 
         try {
+            val itemExists = watchlistContentDao.checkWatchlistItemExists(libraryItem.id)
             if (itemExists) {
                 watchlistContentDao.deleteWatchlistItem(watchlistContentEntity)
             } else {
                 watchlistContentDao.insertWatchlistItem(watchlistContentEntity)
+            }
+
+            withContext(NonCancellable) {
+                val accountId = accountDetailsDao.getAccountDetails().first()!!.id
+                val watchlistRequest = WatchlistRequest(
+                    mediaType = libraryItem.mediaType.lowercase(),
+                    mediaId = libraryItem.id,
+                    watchlist = !itemExists
+                )
+                val response = tmdbApi.addOrRemoveFromWatchlist(accountId, watchlistRequest)
+                if (!response.isSuccessful) {
+                    val libraryTask = LibraryTask.watchlistItemTask(
+                        mediaId = libraryItem.id,
+                        mediaType = libraryItem.mediaType.lowercase(),
+                        itemExists = !itemExists
+                    )
+                    syncManager.scheduleLibraryTaskWork(libraryTask)
+                }
             }
             return itemExists
         } catch (e: IOException) {
@@ -117,7 +166,7 @@ class LibraryRepositoryImpl @Inject constructor(
 
     /**
      * This function inserts items from server to database for which no work is scheduled
-     * and removes items which are stale (i.e not present on server) and for which no work is
+     * and removes items which are stale (i.e. not present on server) and for which no work is
      * scheduled.
      */
     override suspend fun syncLibrary(): Boolean {

@@ -1,5 +1,6 @@
 package com.anshtya.sync
 
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
@@ -20,6 +21,7 @@ import com.anshtya.sync.workers.LibraryTaskWorker.Companion.ITEM_EXISTS_KEY
 import com.anshtya.sync.workers.LibraryTaskWorker.Companion.MEDIA_TYPE_KEY
 import com.anshtya.sync.workers.LibraryTaskWorker.Companion.TASK_KEY
 import com.anshtya.sync.workers.LibraryTaskWorker.Companion.TASK_TYPE_KEY
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 internal class SyncManagerImpl @Inject constructor(
@@ -28,7 +30,11 @@ internal class SyncManagerImpl @Inject constructor(
     override fun scheduleLibraryTaskWork(libraryTask: LibraryTask) {
         val libraryTaskWorkRequest = OneTimeWorkRequestBuilder<LibraryTaskWorker>()
             .setConstraints(getWorkConstraints())
-            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                10L,
+                TimeUnit.SECONDS
+            )
             .setInputData(generateInputData(libraryTask))
             .build()
 
@@ -89,7 +95,7 @@ internal class SyncManagerImpl @Inject constructor(
 
     private fun generateInputData(libraryTask: LibraryTask) = Data.Builder()
         .putInt(TASK_KEY, libraryTask.mediaId)
-        .putEnum(MEDIA_TYPE_KEY, libraryTask.mediaType)
+        .putString(MEDIA_TYPE_KEY, libraryTask.mediaType)
         .putEnum(TASK_TYPE_KEY, libraryTask.taskType)
         .putBoolean(ITEM_EXISTS_KEY, libraryTask.itemExistLocally)
         .build()

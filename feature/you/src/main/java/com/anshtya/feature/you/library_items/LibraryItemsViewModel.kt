@@ -96,7 +96,7 @@ class LibraryItemsViewModel @Inject constructor(
                         val itemExists = libraryRepository.addOrRemoveFavorite(libraryItem)
                         val libraryTask = LibraryTask.favoriteItemTask(
                             mediaId = libraryItem.id,
-                            mediaType = enumValueOf(libraryItem.mediaType),
+                            mediaType = libraryItem.mediaType.lowercase(),
                             itemExists = !itemExists
                         )
                         syncManager.scheduleLibraryTaskWork(libraryTask)
@@ -106,7 +106,7 @@ class LibraryItemsViewModel @Inject constructor(
                         val itemExists = libraryRepository.addOrRemoveFromWatchlist(libraryItem)
                         val libraryTask = LibraryTask.watchlistItemTask(
                             mediaId = libraryItem.id,
-                            mediaType = enumValueOf(libraryItem.mediaType),
+                            mediaType = libraryItem.mediaType.lowercase(),
                             itemExists = !itemExists
                         )
                         syncManager.scheduleLibraryTaskWork(libraryTask)

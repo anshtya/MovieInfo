@@ -9,10 +9,9 @@ import com.anshtya.core.model.details.MovieDetails
 import com.anshtya.core.model.details.people.PersonDetails
 import com.anshtya.core.model.details.tv.TvDetails
 import com.anshtya.core.model.library.LibraryItem
-import com.anshtya.core.model.library.LibraryTask
 import com.anshtya.data.repository.DetailsRepository
 import com.anshtya.data.repository.LibraryRepository
-import com.anshtya.data.util.SyncManager
+import com.anshtya.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +33,7 @@ class DetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val detailsRepository: DetailsRepository,
     private val libraryRepository: LibraryRepository,
-    private val syncManager: SyncManager
+    private val userRepository: UserRepository
 ) : ViewModel() {
     private val idDetailsString = savedStateHandle.getStateFlow(
         key = idNavigationArgument,
@@ -78,23 +77,22 @@ class DetailsViewModel @Inject constructor(
             initialValue = ContentDetailUiState.Empty
         )
 
-    fun onErrorShown() {
-        _uiState.update { it.copy(errorMessage = null) }
-    }
-
     fun addOrRemoveFavorite(libraryItem: LibraryItem) {
         viewModelScope.launch {
             try {
-                val itemExists = libraryRepository.addOrRemoveFavorite(libraryItem)
-                val libraryTask = LibraryTask.favoriteItemTask(
-                    mediaId = libraryItem.id,
-                    mediaType = enumValueOf(libraryItem.mediaType),
-                    itemExists = !itemExists
-                )
-                syncManager.scheduleLibraryTaskWork(libraryTask)
+                val isSignedIn = userRepository.isSignedIn()
+                if (isSignedIn) {
+                    _uiState.update { it.copy(markedFavorite = !(it.markedFavorite)) }
+                    libraryRepository.addOrRemoveFavorite(libraryItem)
+                } else {
+                    _uiState.update { it.copy(showSignInSheet = true) }
+                }
             } catch (e: IOException) {
                 _uiState.update {
-                    it.copy(errorMessage = "An error occurred")
+                    it.copy(
+                        markedFavorite = !(it.markedFavorite),
+                        errorMessage = "An error occurred"
+                    )
                 }
             }
         }
@@ -103,19 +101,30 @@ class DetailsViewModel @Inject constructor(
     fun addOrRemoveFromWatchlist(libraryItem: LibraryItem) {
         viewModelScope.launch {
             try {
-                val itemExists = libraryRepository.addOrRemoveFromWatchlist(libraryItem)
-                val libraryTask = LibraryTask.watchlistItemTask(
-                    mediaId = libraryItem.id,
-                    mediaType = enumValueOf(libraryItem.mediaType),
-                    itemExists = !itemExists
-                )
-                syncManager.scheduleLibraryTaskWork(libraryTask)
+                val isSignedIn = userRepository.isSignedIn()
+                if (isSignedIn) {
+                    _uiState.update { it.copy(savedInWatchlist = !(it.savedInWatchlist)) }
+                    libraryRepository.addOrRemoveFromWatchlist(libraryItem)
+                } else {
+                    _uiState.update { it.copy(showSignInSheet = true) }
+                }
             } catch (e: IOException) {
                 _uiState.update {
-                    it.copy(errorMessage = "An error occurred")
+                    it.copy(
+                        savedInWatchlist = !(it.savedInWatchlist),
+                        errorMessage = "An error occurred"
+                    )
                 }
             }
         }
+    }
+
+    fun onErrorShown() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun onHideBottomSheet() {
+        _uiState.update { it.copy(showSignInSheet = false) }
     }
 
     private fun getIdAndMediaType(detailsString: String): Pair<Int, MediaType?> {
@@ -125,12 +134,19 @@ class DetailsViewModel @Inject constructor(
         return Pair(id, mediaType)
     }
 
-    private fun handleMovieDetailsResponse(
+    private suspend fun handleMovieDetailsResponse(
         response: NetworkResponse<MovieDetails>
     ): ContentDetailUiState {
         return when (response) {
             is NetworkResponse.Success -> {
-                ContentDetailUiState.Movie(data = response.data)
+                val data = response.data
+                _uiState.update {
+                    it.copy(
+                        markedFavorite = libraryRepository.favoriteItemExists(data.id),
+                        savedInWatchlist = libraryRepository.itemInWatchlistExists(data.id)
+                    )
+                }
+                ContentDetailUiState.Movie(data = data)
             }
 
             is NetworkResponse.Error -> {
@@ -140,12 +156,19 @@ class DetailsViewModel @Inject constructor(
         }
     }
 
-    private fun handleTvDetailsResponse(
+    private suspend fun handleTvDetailsResponse(
         response: NetworkResponse<TvDetails>
     ): ContentDetailUiState {
         return when (response) {
             is NetworkResponse.Success -> {
-                ContentDetailUiState.TV(data = response.data)
+                val data = response.data
+                _uiState.update {
+                    it.copy(
+                        markedFavorite = libraryRepository.favoriteItemExists(data.id),
+                        savedInWatchlist = libraryRepository.itemInWatchlistExists(data.id)
+                    )
+                }
+                ContentDetailUiState.TV(data = data)
             }
 
             is NetworkResponse.Error -> {
@@ -173,6 +196,9 @@ class DetailsViewModel @Inject constructor(
 
 data class DetailsUiState(
     val isLoading: Boolean = false,
+    val markedFavorite: Boolean = false,
+    val savedInWatchlist: Boolean = false,
+    val showSignInSheet: Boolean = false,
     val errorMessage: String? = null
 )
 

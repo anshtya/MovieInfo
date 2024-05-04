@@ -3,14 +3,10 @@ package com.anshtya.sync.workers
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
-import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.library.LibraryTaskType
 import com.anshtya.data.repository.LibraryRepository
-import com.anshtya.sync.util.SYNC_NOTIFICATION_ID
 import com.anshtya.sync.util.getEnum
-import com.anshtya.sync.util.workNotification
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -20,13 +16,9 @@ class LibraryTaskWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val libraryRepository: LibraryRepository
 ) : CoroutineWorker(appContext, workerParams) {
-    override suspend fun getForegroundInfo(): ForegroundInfo {
-        return ForegroundInfo(SYNC_NOTIFICATION_ID, appContext.workNotification())
-    }
-
     override suspend fun doWork(): Result {
         val itemId = inputData.getInt(TASK_KEY, 0)
-        val mediaType = inputData.getEnum<MediaType>(MEDIA_TYPE_KEY).name.lowercase()
+        val mediaType = inputData.getString(MEDIA_TYPE_KEY)!!
         val taskType = inputData.getEnum<LibraryTaskType>(TASK_TYPE_KEY)
         val itemExists = inputData.getBoolean(ITEM_EXISTS_KEY, false)
 

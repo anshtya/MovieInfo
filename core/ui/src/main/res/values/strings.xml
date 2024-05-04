@@ -4,8 +4,6 @@
     <string name="search_placeholder">Search content or people</string>
     <string name="clear">Clear</string>
     <string name="retry">Retry</string>
-    <string name="favorite">Mark as favorite</string>
-    <string name="watchlist">Add to your watchlist</string>
     <string name="no_image_available">No image available</string>
     <string name="see_all">See All</string>
 </resources>

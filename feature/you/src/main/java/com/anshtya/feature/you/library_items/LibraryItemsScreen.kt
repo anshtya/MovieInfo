@@ -2,7 +2,6 @@ package com.anshtya.feature.you.library_items
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -50,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.model.library.LibraryItemType
 import com.anshtya.core.ui.MediaItemCard
+import com.anshtya.core.ui.LazyVerticalContentGrid
 import com.anshtya.feature.you.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -105,7 +103,7 @@ internal fun LibraryItemsScreen(
         else -> null
     }
 
-    Scaffold (
+    Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Column(
@@ -168,7 +166,7 @@ internal fun LibraryItemsScreen(
                         LibraryMediaType.MOVIE -> {
                             LibraryContent(
                                 content = movieItems,
-                                onLibraryItemClick = onItemClick,
+                                onItemClick = onItemClick,
                                 onDeleteClick = onDeleteItem
                             )
                         }
@@ -176,7 +174,7 @@ internal fun LibraryItemsScreen(
                         LibraryMediaType.TV -> {
                             LibraryContent(
                                 content = tvItems,
-                                onLibraryItemClick = onItemClick,
+                                onItemClick = onItemClick,
                                 onDeleteClick = onDeleteItem
                             )
                         }
@@ -190,7 +188,7 @@ internal fun LibraryItemsScreen(
 @Composable
 private fun LibraryContent(
     content: List<LibraryItem>,
-    onLibraryItemClick: (String) -> Unit,
+    onItemClick: (String) -> Unit,
     onDeleteClick: (LibraryItem) -> Unit
 ) {
     Box(Modifier.fillMaxSize()) {
@@ -201,25 +199,23 @@ private fun LibraryContent(
                 modifier = Modifier.align(Alignment.Center)
             )
         } else {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(140.dp),
-                contentPadding = PaddingValues(horizontal = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxSize()
+            LazyVerticalContentGrid(
+                pagingEnabled = false,
+                contentPadding = PaddingValues(horizontal = 10.dp)
             ) {
                 items(
                     items = content,
                     key = { it.id }
                 ) {
                     LibraryItem(
-                        imagePath = it.imagePath,
-                        onClick = { onLibraryItemClick("${it.id},${it.mediaType.uppercase()}") },
+                        posterPath = it.imagePath,
+                        onItemClick = {
+                            onItemClick("${it.id},${it.mediaType.uppercase()}")
+                        },
                         onDeleteClick = { onDeleteClick(it) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(vertical = 8.dp)
+                            .height(160.dp)
                     )
                 }
             }
@@ -229,20 +225,21 @@ private fun LibraryContent(
 
 @Composable
 private fun LibraryItem(
-    imagePath: String,
-    onClick: () -> Unit,
+    posterPath: String,
+    onItemClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier) {
         MediaItemCard(
-            posterPath = imagePath,
-            onItemClick = onClick
+            posterPath = posterPath,
+            onItemClick = onItemClick,
+            modifier = Modifier.fillMaxSize()
         )
 
         Surface(
             shape = CircleShape,
-            color = Color.LightGray.copy(alpha = 0.4f),
+            color = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.5f),
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .size(42.dp)

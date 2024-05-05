@@ -20,37 +20,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PagingLazyVerticalGrid(
-    itemsEmpty: Boolean,
-    isLoading: Boolean,
-    endReached: Boolean,
+fun LazyVerticalContentGrid(
+    isLoading: Boolean = false,
+    endReached: Boolean = false,
+    itemsEmpty: Boolean = false,
+    appendItems: () -> Unit = {},
+    pagingEnabled: Boolean,
     contentPadding: PaddingValues,
-    appendItems: () -> Unit,
     content: LazyGridScope.() -> Unit
 ) {
     val lazyGridState = rememberLazyGridState()
 
-    val isAtBottom by remember {
-        derivedStateOf {
-            val layoutInfo = lazyGridState.layoutInfo
-            if (layoutInfo.totalItemsCount == 0) {
-                false
-            } else {
-                val lastVisibleItem = layoutInfo.visibleItemsInfo.last()
-                val viewPortHeight = layoutInfo.viewportStartOffset + layoutInfo.viewportEndOffset
+    if (pagingEnabled) {
+        val isAtBottom by remember {
+            derivedStateOf {
+                val layoutInfo = lazyGridState.layoutInfo
+                if (layoutInfo.totalItemsCount == 0) {
+                    false
+                } else {
+                    val lastVisibleItem = layoutInfo.visibleItemsInfo.last()
+                    val viewPortHeight =
+                        layoutInfo.viewportStartOffset + layoutInfo.viewportEndOffset
 
-                val isLastItemReached = lastVisibleItem.index + 1 == layoutInfo.totalItemsCount
-                val isLastItemDisplayed =
-                    lastVisibleItem.offset.y + lastVisibleItem.size.height <= viewPortHeight
+                    val isLastItemReached = lastVisibleItem.index + 1 == layoutInfo.totalItemsCount
+                    val isLastItemDisplayed =
+                        lastVisibleItem.offset.y + lastVisibleItem.size.height <= viewPortHeight
 
-                (isLastItemReached && isLastItemDisplayed)
+                    (isLastItemReached && isLastItemDisplayed)
+                }
             }
         }
-    }
 
-    val shouldAppend = isAtBottom && !isLoading && !endReached
-    LaunchedEffect(isAtBottom) {
-        if (shouldAppend) appendItems()
+        val shouldAppend = isAtBottom && !isLoading && !endReached
+        LaunchedEffect(isAtBottom) {
+            if (shouldAppend) appendItems()
+        }
     }
 
     Box(Modifier.fillMaxWidth()) {

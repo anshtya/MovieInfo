@@ -22,11 +22,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LazyRowContentSection(
     modifier: Modifier = Modifier,
-    pagingEnabled: Boolean = false,
     isLoading: Boolean = false,
     endReached: Boolean = false,
     itemsEmpty: Boolean = false,
     appendItems: () -> Unit = {},
+    pagingEnabled: Boolean,
     rowContentPadding: PaddingValues = PaddingValues(0.dp),
     sectionHeaderContent: @Composable () -> Unit,
     rowContent: LazyListScope.() -> Unit,

@@ -25,7 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.content.TvShowListCategory
 import com.anshtya.core.ui.MediaItemCard
-import com.anshtya.core.ui.PagingLazyVerticalGrid
+import com.anshtya.core.ui.LazyVerticalContentGrid
 import com.anshtya.core.ui.noRippleClickable
 
 private val horizontalPadding = 8.dp
@@ -87,7 +87,8 @@ internal fun ItemsScreen(
             }
         )
 
-        PagingLazyVerticalGrid(
+        LazyVerticalContentGrid(
+            pagingEnabled = true,
             itemsEmpty = content.items.isEmpty(),
             isLoading = content.isLoading,
             endReached = content.endReached,

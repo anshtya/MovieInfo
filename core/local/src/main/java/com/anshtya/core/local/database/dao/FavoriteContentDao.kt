@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FavoriteContentDao {
 
-    @Query("SELECT * FROM favorite_content WHERE media_type = 'MOVIE' ORDER BY created_at")
+    @Query("SELECT * FROM favorite_content WHERE media_type = 'movie' ORDER BY created_at")
     fun getFavoriteMovies(): Flow<List<FavoriteContentEntity>>
 
-    @Query("SELECT * FROM favorite_content WHERE media_type = 'TV' ORDER BY created_at")
+    @Query("SELECT * FROM favorite_content WHERE media_type = 'tv' ORDER BY created_at")
     fun getFavoriteTvShows(): Flow<List<FavoriteContentEntity>>
 
     @Query("SELECT * FROM favorite_content")

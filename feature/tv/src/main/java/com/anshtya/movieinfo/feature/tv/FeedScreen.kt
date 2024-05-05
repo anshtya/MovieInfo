@@ -35,8 +35,8 @@ private val horizontalPadding = 8.dp
 
 @Composable
 internal fun FeedRoute(
-    onItemClick: (String) -> Unit,
-    onSeeAllClick: (String) -> Unit,
+    navigateToDetails: (String) -> Unit,
+    navigateToItems: (String) -> Unit,
     viewModel: TvShowsViewModel
 ) {
     val airingTodayTvShows by viewModel.airingTodayTvShows.collectAsStateWithLifecycle()
@@ -52,8 +52,8 @@ internal fun FeedRoute(
         popularTvShows = popularTvShows,
         errorMessage = errorMessage,
         appendItems = viewModel::appendItems,
-        onItemClick = onItemClick,
-        onSeeAllClick = onSeeAllClick,
+        onItemClick = navigateToDetails,
+        onSeeAllClick = navigateToItems,
         onErrorShown = viewModel::onErrorShown
     )
 }

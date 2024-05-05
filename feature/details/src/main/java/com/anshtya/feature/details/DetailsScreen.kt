@@ -364,7 +364,7 @@ internal fun LibraryActions(
     ) {
         LibraryActionButton(
             active = isFavorite,
-            name = stringResource(id = R.string.favorite),
+            name = stringResource(id = R.string.mark_favorite),
             icon = Icons.Rounded.Favorite,
             onClick = onFavoriteClick,
             modifier = Modifier
@@ -374,7 +374,7 @@ internal fun LibraryActions(
         Spacer(Modifier.width(8.dp))
         LibraryActionButton(
             active = isAddedToWatchList,
-            name = stringResource(id = R.string.watchlist),
+            name = stringResource(id = R.string.add_to_watchlist),
             icon = Icons.Rounded.Bookmark,
             onClick = onWatchlistClick,
             modifier = Modifier

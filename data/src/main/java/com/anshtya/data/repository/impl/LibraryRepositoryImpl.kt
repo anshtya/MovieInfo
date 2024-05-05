@@ -10,7 +10,7 @@ import com.anshtya.core.local.database.entity.asWatchlistContentEntity
 import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.model.library.LibraryTask
-import com.anshtya.core.model.library.LibraryTaskType
+import com.anshtya.core.model.library.LibraryItemType
 import com.anshtya.core.network.model.content.NetworkContentItem
 import com.anshtya.core.network.model.library.FavoriteRequest
 import com.anshtya.core.network.model.library.WatchlistRequest
@@ -132,14 +132,14 @@ internal class LibraryRepositoryImpl @Inject constructor(
     override suspend fun addOrRemoveItemSync(
         id: Int,
         mediaType: String,
-        libraryTaskType: LibraryTaskType,
+        libraryItemType: LibraryItemType,
         itemExistsLocally: Boolean
     ): Boolean {
         val accountId = accountDetailsDao.getAccountDetails().first()?.id ?: return false
 
         return try {
-            when (libraryTaskType) {
-                LibraryTaskType.FAVORITE -> {
+            when (libraryItemType) {
+                LibraryItemType.FAVORITE -> {
                     val favoriteRequest = FavoriteRequest(
                         mediaType = mediaType,
                         mediaId = id,
@@ -148,7 +148,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
                     tmdbApi.addOrRemoveFavorite(accountId, favoriteRequest)
                 }
 
-                LibraryTaskType.WATCHLIST -> {
+                LibraryItemType.WATCHLIST -> {
                     val watchlistRequest = WatchlistRequest(
                         mediaType = mediaType,
                         mediaId = id,
@@ -178,7 +178,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
             do {
                 val result = tmdbApi.getLibraryItems(
                     accountId = accountId,
-                    itemType = LibraryTaskType.FAVORITE.name.lowercase(),
+                    itemType = LibraryItemType.FAVORITE.name.lowercase(),
                     mediaType = "${MediaType.MOVIE.name.lowercase()}s",
                     page = page++
                 ).results
@@ -191,7 +191,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
             do {
                 val result = tmdbApi.getLibraryItems(
                     accountId = accountId,
-                    itemType = LibraryTaskType.FAVORITE.name.lowercase(),
+                    itemType = LibraryItemType.FAVORITE.name.lowercase(),
                     mediaType = MediaType.TV.name.lowercase(),
                     page = page++
                 ).results
@@ -200,7 +200,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
             } while (result.isNotEmpty())
 
             val favoriteItems = (favoriteMovies + favoriteTvShows).filter {
-                syncManager.isWorkNotScheduled(id = it.id, taskType = LibraryTaskType.FAVORITE)
+                syncManager.isWorkNotScheduled(id = it.id, itemType = LibraryItemType.FAVORITE)
             }
 
             val favoriteItemsIds = favoriteItems.map { it.id }
@@ -209,7 +209,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
                 .filter {
                     (it.id !in favoriteItemsIds) && syncManager.isWorkNotScheduled(
                         id = it.id,
-                        taskType = LibraryTaskType.FAVORITE
+                        itemType = LibraryItemType.FAVORITE
                     )
                 }
                 .map { it.id }
@@ -239,7 +239,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
             do {
                 val result = tmdbApi.getLibraryItems(
                     accountId = accountId,
-                    itemType = LibraryTaskType.WATCHLIST.name.lowercase(),
+                    itemType = LibraryItemType.WATCHLIST.name.lowercase(),
                     mediaType = "${MediaType.MOVIE.name.lowercase()}s",
                     page = page++
                 ).results
@@ -252,7 +252,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
             do {
                 val result = tmdbApi.getLibraryItems(
                     accountId = accountId,
-                    itemType = LibraryTaskType.WATCHLIST.name.lowercase(),
+                    itemType = LibraryItemType.WATCHLIST.name.lowercase(),
                     mediaType = MediaType.TV.name.lowercase(),
                     page = page++
                 ).results
@@ -261,7 +261,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
             } while (result.isNotEmpty())
 
             val watchlistItems = (moviesWatchlist + tvShowsWatchlist).filter {
-                syncManager.isWorkNotScheduled(id = it.id, taskType = LibraryTaskType.WATCHLIST)
+                syncManager.isWorkNotScheduled(id = it.id, itemType = LibraryItemType.WATCHLIST)
             }
             val watchlistItemsIds = watchlistItems.map { it.id }
 
@@ -269,7 +269,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
                 .filter {
                     (it.id !in watchlistItemsIds) && syncManager.isWorkNotScheduled(
                         id = it.id,
-                        taskType = LibraryTaskType.WATCHLIST
+                        itemType = LibraryItemType.WATCHLIST
                     )
                 }
                 .map { it.id }

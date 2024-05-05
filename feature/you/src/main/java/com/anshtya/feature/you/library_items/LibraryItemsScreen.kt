@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.core.model.library.LibraryItem
+import com.anshtya.core.model.library.LibraryItemType
 import com.anshtya.core.ui.MediaItemCard
 import com.anshtya.feature.you.R
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -56,7 +57,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun LibraryItemsRoute(
     onBackClick: () -> Unit,
-    onNavigateToDetails: (String) -> Unit,
+    navigateToDetails: (String) -> Unit,
     viewModel: LibraryItemsViewModel = hiltViewModel()
 ) {
     val movieItems by viewModel.movieItems.collectAsStateWithLifecycle()
@@ -72,7 +73,7 @@ internal fun LibraryItemsRoute(
         onDeleteItem = viewModel::deleteItem,
         onMediaTypeChange = viewModel::onMediaTypeChange,
         onBackClick = onBackClick,
-        onNavigateToDetails = onNavigateToDetails,
+        onItemClick = navigateToDetails,
         onErrorShown = viewModel::onErrorShown
     )
 }
@@ -84,9 +85,9 @@ internal fun LibraryItemsScreen(
     tvItems: List<LibraryItem>,
     libraryItemType: LibraryItemType?,
     errorMessage: String?,
-    onDeleteItem: (LibraryItem, LibraryItemType) -> Unit,
+    onDeleteItem: (LibraryItem) -> Unit,
     onMediaTypeChange: (LibraryMediaType) -> Unit,
-    onNavigateToDetails: (String) -> Unit,
+    onItemClick: (String) -> Unit,
     onBackClick: () -> Unit,
     onErrorShown: () -> Unit
 ) {
@@ -96,6 +97,12 @@ internal fun LibraryItemsScreen(
     errorMessage?.let {
         scope.launch { snackbarHostState.showSnackbar(it) }
         onErrorShown()
+    }
+
+    val libraryItemTitle = when (libraryItemType) {
+        LibraryItemType.FAVORITE -> stringResource(id = R.string.favorites)
+        LibraryItemType.WATCHLIST -> stringResource(id = R.string.watchlist)
+        else -> null
     }
 
     Scaffold (
@@ -108,9 +115,7 @@ internal fun LibraryItemsScreen(
         ) {
             TopAppBar(
                 title = {
-                    libraryItemType?.let {
-                        Text(text = stringResource(id = it.displayName))
-                    }
+                    libraryItemTitle?.let { Text(text = it) }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
@@ -163,8 +168,7 @@ internal fun LibraryItemsScreen(
                         LibraryMediaType.MOVIE -> {
                             LibraryContent(
                                 content = movieItems,
-                                libraryItemType = libraryItemType,
-                                onLibraryItemClick = onNavigateToDetails,
+                                onLibraryItemClick = onItemClick,
                                 onDeleteClick = onDeleteItem
                             )
                         }
@@ -172,8 +176,7 @@ internal fun LibraryItemsScreen(
                         LibraryMediaType.TV -> {
                             LibraryContent(
                                 content = tvItems,
-                                libraryItemType = libraryItemType,
-                                onLibraryItemClick = onNavigateToDetails,
+                                onLibraryItemClick = onItemClick,
                                 onDeleteClick = onDeleteItem
                             )
                         }
@@ -187,9 +190,8 @@ internal fun LibraryItemsScreen(
 @Composable
 private fun LibraryContent(
     content: List<LibraryItem>,
-    libraryItemType: LibraryItemType?,
     onLibraryItemClick: (String) -> Unit,
-    onDeleteClick: (LibraryItem, LibraryItemType) -> Unit
+    onDeleteClick: (LibraryItem) -> Unit
 ) {
     Box(Modifier.fillMaxSize()) {
         if (content.isEmpty()) {
@@ -212,8 +214,8 @@ private fun LibraryContent(
                 ) {
                     LibraryItem(
                         imagePath = it.imagePath,
-                        onClick = { onLibraryItemClick("${it.id},${it.mediaType}") },
-                        onDeleteClick = { onDeleteClick(it, libraryItemType!!) },
+                        onClick = { onLibraryItemClick("${it.id},${it.mediaType.uppercase()}") },
+                        onDeleteClick = { onDeleteClick(it) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp)

@@ -27,8 +27,8 @@
     <string name="view_all"><![CDATA[View Full Cast & Crew]]></string>
     <string name="cast">Cast</string>
     <string name="crew">Crew</string>
-    <string name="favorite">Mark as favorite</string>
-    <string name="watchlist">Add to watchlist</string>
+    <string name="mark_favorite">Mark as favorite</string>
+    <string name="add_to_watchlist">Add to watchlist</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_in_sheet_text">Sign in to your TMDB account to mark item as favorite or add item to watchlist</string>
 </resources>

@@ -1,7 +1,7 @@
 package com.anshtya.data.util
 
 import com.anshtya.core.model.library.LibraryTask
-import com.anshtya.core.model.library.LibraryTaskType
+import com.anshtya.core.model.library.LibraryItemType
 
 // Interface for class which schedules work
 interface SyncManager {
@@ -9,7 +9,7 @@ interface SyncManager {
 
     fun scheduleLibrarySyncWork()
 
-    fun isWorkNotScheduled(id: Int, taskType: LibraryTaskType): Boolean
+    fun isWorkNotScheduled(id: Int, itemType: LibraryItemType): Boolean
 }
 
 // Interface for class which manages sync between local and remote data source
@@ -17,7 +17,7 @@ interface Synchronizer {
     suspend fun addOrRemoveItemSync(
         id: Int,
         mediaType: String,
-        libraryTaskType: LibraryTaskType,
+        libraryItemType: LibraryItemType,
         itemExistsLocally: Boolean
     ): Boolean
 

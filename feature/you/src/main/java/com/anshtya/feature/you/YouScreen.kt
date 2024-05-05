@@ -60,15 +60,15 @@ import com.anshtya.core.model.SelectedDarkMode
 import com.anshtya.core.model.SelectedDarkMode.DARK
 import com.anshtya.core.model.SelectedDarkMode.LIGHT
 import com.anshtya.core.model.SelectedDarkMode.SYSTEM
+import com.anshtya.core.model.library.LibraryItemType
 import com.anshtya.core.model.user.AccountDetails
 import com.anshtya.core.ui.UserImage
-import com.anshtya.feature.you.library_items.LibraryItemType
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun YouRoute(
-    onNavigateToAuth: () -> Unit,
-    onNavigateToLibraryItem: (String) -> Unit,
+    navigateToAuth: () -> Unit,
+    navigateToLibraryItem: (String) -> Unit,
     viewModel: YouViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -83,8 +83,8 @@ internal fun YouRoute(
         onChangeTheme = viewModel::setDynamicColorPreference,
         onChangeDarkMode = viewModel::setDarkModePreference,
         onChangeIncludeAdult = viewModel::setAdultResultPreference,
-        onNavigateToAuth = onNavigateToAuth,
-        onLibraryItemClick = onNavigateToLibraryItem,
+        onNavigateToAuth = navigateToAuth,
+        onLibraryItemClick = navigateToLibraryItem,
         onRefresh = viewModel::onRefresh,
         onLogOutClick = viewModel::logOut,
         onErrorShown = viewModel::onErrorShown
@@ -289,7 +289,7 @@ private fun LibrarySection(
         )
         LibraryItemOption(
             optionName = stringResource(id = R.string.favorites),
-            onClick = { onLibraryItemClick(LibraryItemType.FAVORITES.name) }
+            onClick = { onLibraryItemClick(LibraryItemType.FAVORITE.name) }
         )
         LibraryItemOption(
             optionName = stringResource(id = R.string.watchlist),

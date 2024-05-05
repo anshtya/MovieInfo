@@ -4,9 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshtya.core.model.library.LibraryItem
-import com.anshtya.core.model.library.LibraryTask
+import com.anshtya.core.model.library.LibraryItemType
 import com.anshtya.data.repository.LibraryRepository
-import com.anshtya.data.util.SyncManager
 import com.anshtya.feature.you.libraryItemTypeNavigationArgument
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,8 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LibraryItemsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val libraryRepository: LibraryRepository,
-    private val syncManager: SyncManager
+    private val libraryRepository: LibraryRepository
 ) : ViewModel() {
 
     private val _errorMessage = MutableStateFlow<String?>(null)
@@ -59,7 +57,7 @@ class LibraryItemsViewModel @Inject constructor(
             } else {
                 val itemType = enumValueOf<LibraryItemType>(itemTypeString)
                 when (itemType) {
-                    LibraryItemType.FAVORITES -> libraryRepository.favoriteMovies
+                    LibraryItemType.FAVORITE -> libraryRepository.favoriteMovies
                     LibraryItemType.WATCHLIST -> libraryRepository.moviesWatchlist
                 }
             }
@@ -77,7 +75,7 @@ class LibraryItemsViewModel @Inject constructor(
             } else {
                 val itemType = enumValueOf<LibraryItemType>(itemTypeString)
                 when (itemType) {
-                    LibraryItemType.FAVORITES -> libraryRepository.favoriteTvShows
+                    LibraryItemType.FAVORITE -> libraryRepository.favoriteTvShows
                     LibraryItemType.WATCHLIST -> libraryRepository.tvShowsWatchlist
                 }
             }
@@ -88,30 +86,10 @@ class LibraryItemsViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    fun deleteItem(libraryItem: LibraryItem, itemType: LibraryItemType) {
+    fun deleteItem(libraryItem: LibraryItem) {
         viewModelScope.launch {
             try {
-                when (itemType) {
-                    LibraryItemType.FAVORITES -> {
-                        val itemExists = libraryRepository.addOrRemoveFavorite(libraryItem)
-                        val libraryTask = LibraryTask.favoriteItemTask(
-                            mediaId = libraryItem.id,
-                            mediaType = libraryItem.mediaType.lowercase(),
-                            itemExists = !itemExists
-                        )
-                        syncManager.scheduleLibraryTaskWork(libraryTask)
-                    }
-
-                    LibraryItemType.WATCHLIST -> {
-                        val itemExists = libraryRepository.addOrRemoveFromWatchlist(libraryItem)
-                        val libraryTask = LibraryTask.watchlistItemTask(
-                            mediaId = libraryItem.id,
-                            mediaType = libraryItem.mediaType.lowercase(),
-                            itemExists = !itemExists
-                        )
-                        syncManager.scheduleLibraryTaskWork(libraryTask)
-                    }
-                }
+                libraryRepository.addOrRemoveFromWatchlist(libraryItem)
             } catch (e: IOException) {
                 _errorMessage.update { "An error occurred" }
             }

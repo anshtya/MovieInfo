@@ -10,7 +10,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.anshtya.core.model.library.LibraryTask
-import com.anshtya.core.model.library.LibraryTaskType
+import com.anshtya.core.model.library.LibraryItemType
 import com.anshtya.data.util.SyncManager
 import com.anshtya.sync.util.FAVORITES_TAG
 import com.anshtya.sync.util.WATCHLIST_TAG
@@ -20,7 +20,7 @@ import com.anshtya.sync.workers.LibraryTaskWorker
 import com.anshtya.sync.workers.LibraryTaskWorker.Companion.ITEM_EXISTS_KEY
 import com.anshtya.sync.workers.LibraryTaskWorker.Companion.MEDIA_TYPE_KEY
 import com.anshtya.sync.workers.LibraryTaskWorker.Companion.TASK_KEY
-import com.anshtya.sync.workers.LibraryTaskWorker.Companion.TASK_TYPE_KEY
+import com.anshtya.sync.workers.LibraryTaskWorker.Companion.ITEM_TYPE_KEY
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -58,9 +58,9 @@ internal class SyncManagerImpl @Inject constructor(
         )
     }
 
-    override fun isWorkNotScheduled(id: Int, taskType: LibraryTaskType): Boolean {
+    override fun isWorkNotScheduled(id: Int, itemType: LibraryItemType): Boolean {
         var workInfoFound = false
-        val workTag = getWorkTag(taskType)
+        val workTag = getWorkTag(itemType)
         val shouldUpsert = workManager.getWorkInfosForUniqueWork("${workTag}_${id}")
             .get()
             .any {
@@ -87,23 +87,23 @@ internal class SyncManagerImpl @Inject constructor(
     }
 
     private fun generateWorkerName(libraryTask: LibraryTask): String {
-        return when (libraryTask.taskType) {
-            LibraryTaskType.FAVORITE -> "${FAVORITES_TAG}_${libraryTask.mediaId}"
-            LibraryTaskType.WATCHLIST -> "${WATCHLIST_TAG}_${libraryTask.mediaId}"
+        return when (libraryTask.itemType) {
+            LibraryItemType.FAVORITE -> "${FAVORITES_TAG}_${libraryTask.mediaId}"
+            LibraryItemType.WATCHLIST -> "${WATCHLIST_TAG}_${libraryTask.mediaId}"
         }
     }
 
     private fun generateInputData(libraryTask: LibraryTask) = Data.Builder()
         .putInt(TASK_KEY, libraryTask.mediaId)
         .putString(MEDIA_TYPE_KEY, libraryTask.mediaType)
-        .putEnum(TASK_TYPE_KEY, libraryTask.taskType)
+        .putEnum(ITEM_TYPE_KEY, libraryTask.itemType)
         .putBoolean(ITEM_EXISTS_KEY, libraryTask.itemExistLocally)
         .build()
 
-    private fun getWorkTag(libraryTaskType: LibraryTaskType): String {
-        return when (libraryTaskType) {
-            LibraryTaskType.FAVORITE -> FAVORITES_TAG
-            LibraryTaskType.WATCHLIST -> WATCHLIST_TAG
+    private fun getWorkTag(libraryItemType: LibraryItemType): String {
+        return when (libraryItemType) {
+            LibraryItemType.FAVORITE -> FAVORITES_TAG
+            LibraryItemType.WATCHLIST -> WATCHLIST_TAG
         }
     }
 

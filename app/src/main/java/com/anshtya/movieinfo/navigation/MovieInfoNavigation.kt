@@ -12,8 +12,7 @@ import com.anshtya.feature.details.navigateToDetails
 import com.anshtya.movieinfo.feature.movies.moviesNavigationRoute
 import com.anshtya.movieinfo.feature.movies.moviesScreen
 import com.anshtya.feature.search.searchScreen
-import com.anshtya.feature.you.navigateToLibraryItem
-import com.anshtya.feature.you.youGraph
+import com.anshtya.feature.you.youScreen
 import com.anshtya.movieinfo.feature.movies.navigateToMovies
 import com.anshtya.movieinfo.feature.tv.tvShowsScreen
 import com.anshtya.movieinfo.onboarding.onboardingNavigationRoute
@@ -47,18 +46,17 @@ fun MovieInfoNavigation(
         )
         moviesScreen(
             navController = navController,
-            onNavigateToDetail = navController::navigateToDetails
+            navigateToDetails = navController::navigateToDetails
         )
         tvShowsScreen(
             navController = navController,
-            onNavigateToDetail = navController::navigateToDetails
+            navigateToDetails = navController::navigateToDetails
         )
-        searchScreen(onNavigateToDetail = navController::navigateToDetails)
-        youGraph(
-            onBackClick = navController::popBackStack,
-            onNavigateToAuth = navController::navigateToAuth,
-            onNavigateToLibraryItem = navController::navigateToLibraryItem,
-            onNavigateToDetails = navController::navigateToDetails
+        searchScreen(navigateToDetail = navController::navigateToDetails)
+        youScreen(
+            navController = navController,
+            navigateToAuth = navController::navigateToAuth,
+            navigateToDetails = navController::navigateToDetails
         )
         detailsScreen(
             navController = navController,

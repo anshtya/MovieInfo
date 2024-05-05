@@ -14,7 +14,7 @@ const val moviesNavigationRoute = "movies"
 
 fun NavGraphBuilder.moviesScreen(
     navController: NavController,
-    onNavigateToDetail: (String) -> Unit
+    navigateToDetails: (String) -> Unit
 ) {
     navigation(
         route = moviesNavigationRoute,
@@ -26,8 +26,8 @@ fun NavGraphBuilder.moviesScreen(
             }
             val viewModel = hiltViewModel<MoviesViewModel>(parentEntry)
             FeedRoute(
-                onItemClick = onNavigateToDetail,
-                onSeeAllClick = { navController.navigate("${MoviesScreenRoutes.ITEMS}/$it") },
+                navigateToDetails = navigateToDetails,
+                navigateToItems = { navController.navigate("${MoviesScreenRoutes.ITEMS}/$it") },
                 viewModel = viewModel,
             )
         }
@@ -44,7 +44,7 @@ fun NavGraphBuilder.moviesScreen(
             val viewModel = hiltViewModel<MoviesViewModel>(parentEntry)
             ItemsRoute(
                 categoryName = backStackEntry.arguments?.getString("category")!!,
-                onItemClick = onNavigateToDetail,
+                onItemClick = navigateToDetails,
                 onBackClick = { navController.popBackStack() },
                 viewModel = viewModel
             )

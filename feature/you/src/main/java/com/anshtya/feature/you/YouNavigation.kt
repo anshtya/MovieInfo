@@ -14,11 +14,10 @@ private const val youNavigationRoute = "you"
 private const val libraryItemsNavigationRoute = "library_items"
 const val libraryItemTypeNavigationArgument = "type"
 
-fun NavGraphBuilder.youGraph(
-    onBackClick: () -> Unit,
-    onNavigateToAuth: () -> Unit,
-    onNavigateToLibraryItem: (String) -> Unit,
-    onNavigateToDetails: (String) -> Unit,
+fun NavGraphBuilder.youScreen(
+    navController: NavController,
+    navigateToAuth: () -> Unit,
+    navigateToDetails: (String) -> Unit,
 ) {
     navigation(
         route = youNavigationGraphRoute,
@@ -26,8 +25,8 @@ fun NavGraphBuilder.youGraph(
     ) {
         composable(route = youNavigationRoute) {
             YouRoute(
-                onNavigateToAuth = onNavigateToAuth,
-                onNavigateToLibraryItem = onNavigateToLibraryItem
+                navigateToAuth = navigateToAuth,
+                navigateToLibraryItem = navController::navigateToLibraryItem
             )
         }
         composable(
@@ -37,8 +36,8 @@ fun NavGraphBuilder.youGraph(
             )
         ) {
             LibraryItemsRoute(
-                onBackClick = onBackClick,
-                onNavigateToDetails = onNavigateToDetails
+                onBackClick = navController::popBackStack,
+                navigateToDetails = navigateToDetails
             )
         }
     }

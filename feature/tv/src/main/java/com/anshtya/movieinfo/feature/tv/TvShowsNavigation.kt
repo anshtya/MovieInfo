@@ -14,7 +14,7 @@ private const val tvShowsNavigationRoute = "tv_shows"
 
 fun NavGraphBuilder.tvShowsScreen(
     navController: NavController,
-    onNavigateToDetail: (String) -> Unit
+    navigateToDetails: (String) -> Unit
 ) {
     navigation(
         route = tvShowsNavigationRoute,
@@ -26,8 +26,8 @@ fun NavGraphBuilder.tvShowsScreen(
             }
             val viewModel = hiltViewModel<TvShowsViewModel>(parentEntry)
             FeedRoute(
-                onItemClick = onNavigateToDetail,
-                onSeeAllClick = { navController.navigate("${TvShowsScreenRoutes.ITEMS}/$it") },
+                navigateToDetails = navigateToDetails,
+                navigateToItems = { navController.navigate("${TvShowsScreenRoutes.ITEMS}/$it") },
                 viewModel = viewModel,
             )
         }
@@ -44,7 +44,7 @@ fun NavGraphBuilder.tvShowsScreen(
             val viewModel = hiltViewModel<TvShowsViewModel>(parentEntry)
             ItemsRoute(
                 categoryName = backStackEntry.arguments?.getString("category")!!,
-                onItemClick = onNavigateToDetail,
+                onItemClick = navigateToDetails,
                 onBackClick = { navController.popBackStack() },
                 viewModel = viewModel
             )

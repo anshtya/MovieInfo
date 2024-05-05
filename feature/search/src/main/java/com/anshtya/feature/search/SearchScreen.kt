@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 internal fun SearchRoute(
-    onSearchResultClick: (String) -> Unit,
+    navigateToDetail: (String) -> Unit,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -44,7 +44,7 @@ internal fun SearchRoute(
         searchSuggestions = searchSuggestions,
         onSearchQueryChange = viewModel::changeSearchQuery,
         onBack = viewModel::onBack,
-        onSearchResultClick = onSearchResultClick,
+        onSearchResultClick = navigateToDetail,
         onErrorShown = viewModel::onErrorShown
     )
 }

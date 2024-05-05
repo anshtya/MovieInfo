@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WatchlistContentDao {
 
-    @Query("SELECT * FROM watchlist_content WHERE media_type = 'MOVIE' ORDER BY created_at")
+    @Query("SELECT * FROM watchlist_content WHERE media_type = 'movie' ORDER BY created_at")
     fun getMoviesWatchlist(): Flow<List<WatchlistContentEntity>>
 
-    @Query("SELECT * FROM watchlist_content WHERE media_type = 'TV' ORDER BY created_at")
+    @Query("SELECT * FROM watchlist_content WHERE media_type = 'tv' ORDER BY created_at")
     fun getTvShowsWatchlist(): Flow<List<WatchlistContentEntity>>
 
     @Query("SELECT * FROM watchlist_content")

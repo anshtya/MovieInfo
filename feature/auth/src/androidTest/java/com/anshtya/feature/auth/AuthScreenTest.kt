@@ -4,7 +4,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import com.anshtya.core.ui.ErrorText
 import org.junit.Rule
 import org.junit.Test
 
@@ -14,22 +13,26 @@ class AuthScreenTest {
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
-    fun snackbar_whenErrorOccurs_exists() {
+    fun toastAppears_whenErrorState() {
+        val errorMessage = "error message"
         composeTestRule.setContent {
             AuthScreen(
                 uiState = AuthUiState(
-                    errorMessage = ErrorText.StringResource(id = R.string.error_message)
+                    errorMessage = errorMessage
                 ),
+                hideOnboarding = null,
                 onLogIn = {},
                 onLogInClick = {},
                 onErrorShown = {},
                 onUsernameChange = {},
-                onPasswordChange = {}
+                onPasswordChange = {},
+                onBackClick = {},
+                onContinueWithoutSignInClick = {}
             )
         }
 
         composeTestRule
-            .onNodeWithText(composeTestRule.activity.resources.getString(R.string.error_message))
+            .onNodeWithText(errorMessage)
             .assertIsDisplayed()
     }
 }

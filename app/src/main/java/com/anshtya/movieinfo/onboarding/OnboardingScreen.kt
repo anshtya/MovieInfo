@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,8 +26,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.R
@@ -35,6 +40,8 @@ import com.anshtya.movieinfo.R
 fun OnboardingScreen(
     navigateToAuth: () -> Unit
 ) {
+    val uriHandler = LocalUriHandler.current
+
     Box(Modifier.fillMaxSize()) {
         val animationState = remember {
             MutableTransitionState(false).apply {
@@ -97,7 +104,56 @@ fun OnboardingScreen(
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    val attributionString = buildAnnotatedString {
+                        append("Photo by ")
+
+                        pushStringAnnotation(
+                            tag = "photo",
+                            annotation = "https://unsplash.com/photos/the-walking-dead-dvd-movie-wMkaMXTJjlQ"
+                        )
+                        withStyle(
+                            style = SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        ) {
+                            append("Samuel Regan-Asante")
+                        }
+
+                        append(" on ")
+
+                        pushStringAnnotation(
+                            tag = "unsplash",
+                            annotation = "https://unsplash.com"
+                        )
+                        withStyle(
+                            style = SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        ) {
+                            append("Unsplash")
+                        }
+                    }
+                    AttributionText(
+                        attributionString = attributionString,
+                        onClick = { offset ->
+                            attributionString.getStringAnnotations(
+                                tag = "photo",
+                                start = offset,
+                                end = offset
+                            ).firstOrNull()?.let { uriHandler.openUri(it.item) }
+
+                            attributionString.getStringAnnotations(
+                                tag = "unsplash",
+                                start = offset,
+                                end = offset
+                            ).firstOrNull()?.let { uriHandler.openUri(it.item) }
+                        }
+                    )
+
                     Button(
                         onClick = navigateToAuth,
                         colors = ButtonDefaults.buttonColors(contentColor = Color.Black),
@@ -111,8 +167,6 @@ fun OnboardingScreen(
                             fontWeight = FontWeight.SemiBold
                         )
                     }
-
-                    Spacer(Modifier.height(8.dp))
 
                     Text(
                         text = stringResource(id = R.string.disclaimer),

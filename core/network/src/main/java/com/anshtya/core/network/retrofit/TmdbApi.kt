@@ -63,24 +63,12 @@ interface TmdbApi {
         @Path("person_id") id: Int
     ): NetworkPersonDetails
 
-    @GET("account/{account_id}/favorite/movies")
-    suspend fun getFavoriteMovies(
-        @Path("account_id") accountId: Int
-    ): NetworkContentResponse
-
-    @GET("account/{account_id}/favorite/tv")
-    suspend fun getFavoriteTvShows(
-        @Path("account_id") accountId: Int
-    ): NetworkContentResponse
-
-    @GET("account/{account_id}/watchlist/movies")
-    suspend fun getMoviesWatchlist(
-        @Path("account_id") accountId: Int
-    ): NetworkContentResponse
-
-    @GET("account/{account_id}/watchlist/tv")
-    suspend fun getTvShowsWatchlist(
-        @Path("account_id") accountId: Int
+    @GET("account/{account_id}/{item_type}/{media_type}")
+    suspend fun getLibraryItems(
+        @Path("account_id") accountId: Int,
+        @Path("item_type") itemType: String,
+        @Path("media_type") mediaType: String,
+        @Query("page") page: Int
     ): NetworkContentResponse
 
     @Headers("content-type: application/json")

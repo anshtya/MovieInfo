@@ -3,6 +3,7 @@ package com.anshtya.core.local.di
 import android.content.Context
 import androidx.room.Room
 import com.anshtya.core.local.database.MovieInfoDatabase
+import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_10_11
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_1_2
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_2_3
 import com.anshtya.core.local.database.MovieInfoDatabase.Companion.MIGRATION_3_4
@@ -39,7 +40,8 @@ internal object DatabaseModule {
                 MIGRATION_6_7,
                 MIGRATION_7_8,
                 MIGRATION_8_9,
-                MIGRATION_9_10
+                MIGRATION_9_10,
+                MIGRATION_10_11
             )
             .build()
     }

@@ -20,7 +20,7 @@ import com.anshtya.core.local.database.entity.WatchlistContentEntity
         WatchlistContentEntity::class,
         AccountDetailsEntity::class
     ],
-    version = 10,
+    version = 11,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = MovieInfoDatabase.Companion.Migration5to6::class)
     ],
@@ -201,6 +201,48 @@ abstract class MovieInfoDatabase : RoomDatabase() {
                     username TEXT NOT NULL)
                     """.trimIndent()
                 )
+            }
+        }
+
+        val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE fc (
+                    id INTEGER NOT NULL,
+                    media_type TEXT NOT NULL,
+                    image_path TEXT NOT NULL, 
+                    name TEXT NOT NULL,
+                    created_at INTEGER NOT NULL,
+                    PRIMARY KEY(id,media_type))
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    INSERT INTO fc SELECT * FROM favorite_content   
+                    """.trimIndent()
+                )
+                db.execSQL("DROP TABLE favorite_content")
+                db.execSQL("ALTER TABLE fc RENAME TO favorite_content")
+
+                db.execSQL(
+                    """
+                    CREATE TABLE wc (
+                    id INTEGER NOT NULL,
+                    media_type TEXT NOT NULL,
+                    image_path TEXT NOT NULL, 
+                    name TEXT NOT NULL,
+                    created_at INTEGER NOT NULL,
+                    PRIMARY KEY(id,media_type))
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    INSERT INTO wc SELECT * FROM watchlist_content   
+                    """.trimIndent()
+                )
+                db.execSQL("DROP TABLE watchlist_content")
+                db.execSQL("ALTER TABLE wc RENAME TO watchlist_content")
             }
         }
     }

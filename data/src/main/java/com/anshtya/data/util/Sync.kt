@@ -21,5 +21,7 @@ interface Synchronizer {
         itemExistsLocally: Boolean
     ): Boolean
 
-    suspend fun syncLibrary(): Boolean
+    suspend fun syncFavorites(): Boolean
+
+    suspend fun syncWatchlist(): Boolean
 }

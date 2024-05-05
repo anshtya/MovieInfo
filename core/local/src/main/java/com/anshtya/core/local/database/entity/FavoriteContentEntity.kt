@@ -2,12 +2,14 @@ package com.anshtya.core.local.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.anshtya.core.model.library.LibraryItem
 
-@Entity(tableName = "favorite_content")
+@Entity(
+    tableName = "favorite_content",
+    primaryKeys = ["id", "media_type"]
+)
 data class FavoriteContentEntity(
-    @PrimaryKey val id: Int,
+    val id: Int,
     @ColumnInfo(name = "media_type") val mediaType: String,
     @ColumnInfo(name = "image_path") val imagePath: String,
     val name: String,

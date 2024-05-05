@@ -1,6 +1,7 @@
 package com.anshtya.core.network.model.details.people
 
 import com.anshtya.core.model.details.people.PersonDetails
+import com.anshtya.core.network.util.formatDate
 import com.squareup.moshi.Json
 
 data class NetworkPersonDetails(
@@ -31,8 +32,8 @@ data class NetworkPersonDetails(
         adult = adult,
         alsoKnownAs = if (alsoKnownAs.isEmpty()) "Unknown" else alsoKnownAs.joinToString(", "),
         biography = if (biography.isNullOrEmpty()) "Not available" else biography,
-        birthday = birthday ?: "Unknown",
-        deathday = deathday,
+        birthday = birthday?.let { formatDate(it) } ?: "Unknown",
+        deathday = deathday?.let { formatDate(it) },
         gender = getGender(),
         id = id,
         knownForDepartment = knownForDepartment,

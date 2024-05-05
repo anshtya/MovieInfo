@@ -72,7 +72,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
             withContext(NonCancellable) {
                 val accountId = accountDetailsDao.getAccountDetails().first()!!.id
                 val favoriteRequest = FavoriteRequest(
-                    mediaType = libraryItem.mediaType.lowercase(),
+                    mediaType = libraryItem.mediaType,
                     mediaId = libraryItem.id,
                     favorite = !itemExists
                 )
@@ -81,7 +81,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
                 if (!response.isSuccessful) {
                     val libraryTask = LibraryTask.favoriteItemTask(
                         mediaId = libraryItem.id,
-                        mediaType = libraryItem.mediaType.lowercase(),
+                        mediaType = libraryItem.mediaType,
                         itemExists = !itemExists
                     )
                     syncManager.scheduleLibraryTaskWork(libraryTask)
@@ -108,7 +108,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
             withContext(NonCancellable) {
                 val accountId = accountDetailsDao.getAccountDetails().first()!!.id
                 val watchlistRequest = WatchlistRequest(
-                    mediaType = libraryItem.mediaType.lowercase(),
+                    mediaType = libraryItem.mediaType,
                     mediaId = libraryItem.id,
                     watchlist = !itemExists
                 )
@@ -116,7 +116,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
                 if (!response.isSuccessful) {
                     val libraryTask = LibraryTask.watchlistItemTask(
                         mediaId = libraryItem.id,
-                        mediaType = libraryItem.mediaType.lowercase(),
+                        mediaType = libraryItem.mediaType,
                         itemExists = !itemExists
                     )
                     syncManager.scheduleLibraryTaskWork(libraryTask)
@@ -138,7 +138,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
 
         return try {
             when (libraryTaskType) {
-                LibraryTaskType.FAVORITES -> {
+                LibraryTaskType.FAVORITE -> {
                     val favoriteRequest = FavoriteRequest(
                         mediaType = mediaType,
                         mediaId = id,
@@ -174,10 +174,10 @@ internal class LibraryRepositoryImpl @Inject constructor(
             val accountId = accountDetailsDao.getAccountDetails().first()?.id ?: return false
 
             val favoriteMovies = tmdbApi.getFavoriteMovies(accountId).results
-                .filter { syncManager.isWorkNotScheduled(it.id, LibraryTaskType.FAVORITES) }
+                .filter { syncManager.isWorkNotScheduled(it.id, LibraryTaskType.FAVORITE) }
 
             val favoriteTvShows = tmdbApi.getFavoriteTvShows(accountId).results
-                .filter { syncManager.isWorkNotScheduled(it.id, LibraryTaskType.FAVORITES) }
+                .filter { syncManager.isWorkNotScheduled(it.id, LibraryTaskType.FAVORITE) }
 
             val favoriteItems = favoriteMovies + favoriteTvShows
             val favoriteItemsIds = favoriteItems.map { it.id }
@@ -186,7 +186,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
                 .filter {
                     (it.id !in favoriteItemsIds) && syncManager.isWorkNotScheduled(
                         it.id,
-                        LibraryTaskType.FAVORITES
+                        LibraryTaskType.FAVORITE
                     )
                 }
                 .map { it.id }

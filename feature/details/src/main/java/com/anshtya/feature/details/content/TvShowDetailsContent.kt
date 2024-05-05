@@ -26,7 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anshtya.core.model.MediaType
 import com.anshtya.core.model.details.tv.TvDetails
-import com.anshtya.core.model.details.tv.asLibraryItem
 import com.anshtya.core.model.library.LibraryItem
 import com.anshtya.core.ui.ContentSectionHeader
 import com.anshtya.core.ui.LazyRowContentSection

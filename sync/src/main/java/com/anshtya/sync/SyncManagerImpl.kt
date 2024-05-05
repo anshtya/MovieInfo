@@ -88,7 +88,7 @@ internal class SyncManagerImpl @Inject constructor(
 
     private fun generateWorkerName(libraryTask: LibraryTask): String {
         return when (libraryTask.taskType) {
-            LibraryTaskType.FAVORITES -> "${FAVORITES_TAG}_${libraryTask.mediaId}"
+            LibraryTaskType.FAVORITE -> "${FAVORITES_TAG}_${libraryTask.mediaId}"
             LibraryTaskType.WATCHLIST -> "${WATCHLIST_TAG}_${libraryTask.mediaId}"
         }
     }
@@ -102,7 +102,7 @@ internal class SyncManagerImpl @Inject constructor(
 
     private fun getWorkTag(libraryTaskType: LibraryTaskType): String {
         return when (libraryTaskType) {
-            LibraryTaskType.FAVORITES -> FAVORITES_TAG
+            LibraryTaskType.FAVORITE -> FAVORITES_TAG
             LibraryTaskType.WATCHLIST -> WATCHLIST_TAG
         }
     }

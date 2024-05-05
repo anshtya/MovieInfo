@@ -9,12 +9,20 @@ fun NetworkContentItem.asFavoriteContentEntity() = FavoriteContentEntity(
     id = id,
     name = title ?: name ?: "",
     imagePath = posterPath ?: "",
-    mediaType = if (title != null) MediaType.MOVIE.name else MediaType.TV.name
+    mediaType = if (title != null) {
+        MediaType.MOVIE.name.lowercase()
+    } else {
+        MediaType.TV.name.lowercase()
+    }
 )
 
 fun NetworkContentItem.asWatchlistContentEntity() = WatchlistContentEntity(
     id = id,
     name = title ?: name ?: "",
     imagePath = posterPath ?: "",
-    mediaType = if (title != null) MediaType.MOVIE.name else MediaType.TV.name
+    mediaType = if (title != null) {
+        MediaType.MOVIE.name.lowercase()
+    } else {
+        MediaType.TV.name.lowercase()
+    }
 )

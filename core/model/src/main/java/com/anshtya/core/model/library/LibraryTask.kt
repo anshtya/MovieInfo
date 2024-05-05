@@ -8,7 +8,7 @@ class LibraryTask private constructor(
 ) {
     companion object {
         fun favoriteItemTask(mediaId: Int, mediaType: String, itemExists: Boolean) =
-            LibraryTask(mediaId, mediaType, LibraryTaskType.FAVORITES, itemExists)
+            LibraryTask(mediaId, mediaType, LibraryTaskType.FAVORITE, itemExists)
 
         fun watchlistItemTask(mediaId: Int, mediaType: String, itemExists: Boolean) =
             LibraryTask(mediaId, mediaType, LibraryTaskType.WATCHLIST, itemExists)
@@ -16,5 +16,5 @@ class LibraryTask private constructor(
 }
 
 enum class LibraryTaskType {
-    FAVORITES, WATCHLIST
+    FAVORITE, WATCHLIST
 }

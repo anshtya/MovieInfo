@@ -1,6 +1,6 @@
 package com.anshtya.core.network.model.details.people
 
-import com.anshtya.core.model.details.Cast
+import com.anshtya.core.model.details.people.Cast
 import com.squareup.moshi.Json
 
 data class NetworkCast(

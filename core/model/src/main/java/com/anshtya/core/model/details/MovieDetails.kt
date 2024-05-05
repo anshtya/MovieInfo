@@ -27,11 +27,11 @@ data class MovieDetails(
     val tagline: String,
     val title: String,
     val voteCount: Int
-)
-
-fun MovieDetails.asLibraryItem() = LibraryItem(
-    id = id,
-    imagePath = posterPath,
-    name = title,
-    mediaType = MediaType.MOVIE.toString()
-)
+) {
+    fun asLibraryItem() = LibraryItem(
+        id = id,
+        imagePath = posterPath,
+        name = title,
+        mediaType = MediaType.MOVIE.name.lowercase()
+    )
+}

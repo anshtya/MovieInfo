@@ -1,4 +1,4 @@
-package com.anshtya.core.model.details
+package com.anshtya.core.model.details.people
 
 data class Cast(
     val character: String,

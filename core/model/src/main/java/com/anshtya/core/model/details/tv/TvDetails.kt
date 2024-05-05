@@ -36,11 +36,11 @@ data class TvDetails(
     val tagline: String,
     val type: String,
     val voteCount: Int
-)
-
-fun TvDetails.asLibraryItem() = LibraryItem(
-    id = id,
-    imagePath = posterPath,
-    name = name,
-    mediaType = MediaType.TV.toString(),
-)
+) {
+    fun asLibraryItem() = LibraryItem(
+        id = id,
+        imagePath = posterPath,
+        name = name,
+        mediaType = MediaType.TV.name.lowercase(),
+    )
+}

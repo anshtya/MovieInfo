@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.StarHalf
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StarBorder
-import androidx.compose.material.icons.rounded.StarHalf
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,7 +44,7 @@ fun Rating(
                 }
                 if (isHalfFilledStar) {
                     Icon(
-                        imageVector = Icons.Rounded.StarHalf,
+                        imageVector = Icons.AutoMirrored.Rounded.StarHalf,
                         contentDescription = null,
                         tint = starColor
                     )

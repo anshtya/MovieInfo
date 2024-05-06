@@ -1,4 +1,4 @@
-package com.anshtya.core.testing.rules
+package com.anshtya.core.testing
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

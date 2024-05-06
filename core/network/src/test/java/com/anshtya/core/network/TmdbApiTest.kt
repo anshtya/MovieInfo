@@ -1,8 +1,10 @@
 package com.anshtya.core.network
 
+import com.anshtya.core.network.model.auth.ErrorResponse
+import com.anshtya.core.network.model.auth.LoginRequest
+import com.anshtya.core.network.model.auth.getErrorMessage
 import com.anshtya.core.network.model.content.NetworkContentItem
 import com.anshtya.core.network.retrofit.TmdbApi
-import com.anshtya.core.testing.rules.MainDispatcherRule
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import junit.framework.TestCase.assertEquals
@@ -11,17 +13,15 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.net.HttpURLConnection
 
 class TmdbApiTest {
     private lateinit var tmdbApi: TmdbApi
     private lateinit var mockWebServer: MockWebServer
-
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
 
     @Before
     fun setUp() {
@@ -54,6 +54,30 @@ class TmdbApiTest {
             ),
             content.results.first()
         )
+    }
+
+    @Test
+    fun `test error deserialization`() = runTest {
+        val errorMessage = ErrorResponse("error occurred")
+        val moshiAdapter = Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
+            .build()
+            .adapter(ErrorResponse::class.java)
+
+        val response = MockResponse()
+            .setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED)
+            .setBody(moshiAdapter.toJson(errorMessage))
+        mockWebServer.enqueue(response)
+
+        try {
+            tmdbApi.validateWithLogin(LoginRequest("", "", ""))
+            mockWebServer.takeRequest()
+        } catch (e: HttpException) {
+            assertEquals(
+                errorMessage.statusMessage,
+                getErrorMessage(e)
+            )
+        }
     }
 
     @After

@@ -56,7 +56,7 @@ internal class AuthRepositoryImpl @Inject constructor(
         } catch (e: IOException) {
             NetworkResponse.Error()
         } catch (e: HttpException) {
-            val errorMessage = e.response()?.errorBody().getErrorMessage()
+            val errorMessage = getErrorMessage(e)
             NetworkResponse.Error(errorMessage)
         }
     }
@@ -77,7 +77,7 @@ internal class AuthRepositoryImpl @Inject constructor(
         } catch (e: IOException) {
             NetworkResponse.Error()
         } catch (e: HttpException) {
-            val errorMessage = e.response()?.errorBody().getErrorMessage()
+            val errorMessage = getErrorMessage(e)
             NetworkResponse.Error(errorMessage)
         }
     }

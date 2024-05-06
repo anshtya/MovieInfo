@@ -5,13 +5,15 @@ plugins {
 
 android {
     namespace = "com.anshtya.core.ui"
+
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }
 
 dependencies {
     api(libs.coil.kt.compose)
     api(libs.compose.material.iconsExtended)
-
-    implementation(libs.kotlinx.collections.immutable)
 
     androidTestImplementation(projects.core.testing)
 }

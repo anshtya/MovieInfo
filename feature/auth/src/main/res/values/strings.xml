@@ -6,4 +6,5 @@
     <string name="continue_without_sign_in">CONTINUE WITHOUT SIGN IN</string>
     <string name="show_password">Show Password</string>
     <string name="hide_password">Hide Password</string>
+    <string name="auth_circular_progress_indicator">Auth cirecular progress indicator</string>
 </resources>

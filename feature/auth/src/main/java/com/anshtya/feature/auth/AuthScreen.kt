@@ -36,6 +36,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -187,7 +189,14 @@ internal fun AuthScreen(
             Spacer(Modifier.height(20.dp))
 
             if (uiState.isLoading) {
-                CircularProgressIndicator()
+                val authIndicatorDescription = stringResource(
+                    id = R.string.auth_circular_progress_indicator
+                )
+                CircularProgressIndicator(
+                    modifier = Modifier.semantics {
+                        contentDescription = authIndicatorDescription
+                    }
+                )
             } else {
                 Button(
                     onClick = {
@@ -198,7 +207,11 @@ internal fun AuthScreen(
                         .height(48.dp)
                         .width(250.dp)
                 ) {
-                    Text(stringResource(id = R.string.sign_in))
+                    val signInText = stringResource(id = R.string.sign_in)
+                    Text(
+                        text = signInText,
+                        modifier = Modifier.semantics { contentDescription = signInText }
+                    )
                 }
             }
 

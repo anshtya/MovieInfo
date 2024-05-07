@@ -22,6 +22,4 @@ interface UserRepository {
     suspend fun updateAccountDetails(accountId: Int): NetworkResponse<Unit>
 
     suspend fun setHideOnboarding(hideOnboarding: Boolean)
-
-    suspend fun shouldHideOnboarding(): Boolean
 }

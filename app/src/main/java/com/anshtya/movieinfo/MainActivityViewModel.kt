@@ -12,6 +12,7 @@ import com.anshtya.movieinfo.MainActivityUiState.Success
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -36,7 +37,9 @@ class MainActivityViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            hideOnboarding = userRepository.shouldHideOnboarding()
+            hideOnboarding = userRepository.userData
+                .map { it.hideOnboarding }
+                .first()
         }
     }
 }

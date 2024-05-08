@@ -22,11 +22,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.core.model.MediaType
-import com.anshtya.core.model.content.TvShowListCategory
-import com.anshtya.core.ui.MediaItemCard
-import com.anshtya.core.ui.LazyVerticalContentGrid
-import com.anshtya.core.ui.noRippleClickable
+import com.anshtya.movieinfo.core.model.MediaType
+import com.anshtya.movieinfo.core.model.content.TvShowListCategory
+import com.anshtya.movieinfo.core.ui.MediaItemCard
+import com.anshtya.movieinfo.core.ui.LazyVerticalContentGrid
+import com.anshtya.movieinfo.core.ui.noRippleClickable
 
 private val horizontalPadding = 8.dp
 
@@ -79,7 +79,9 @@ internal fun ItemsScreen(
             navigationIcon = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = stringResource(id = com.anshtya.core.ui.R.string.back),
+                    contentDescription = stringResource(
+                        id = com.anshtya.movieinfo.core.ui.R.string.back
+                    ),
                     modifier = Modifier
                         .padding(start = 2.dp, end = 4.dp)
                         .noRippleClickable { onBackClick() }

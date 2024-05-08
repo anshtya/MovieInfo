@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.core.network"
+    namespace = "com.anshtya.movieinfo.core.network"
 
     buildFeatures {
         buildConfig = true

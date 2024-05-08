@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.core.testing"
+    namespace = "com.anshtya.movieinfo.core.testing"
 }
 
 dependencies {

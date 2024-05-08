@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.core.ui"
+    namespace = "com.anshtya.movieinfo.core.ui"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

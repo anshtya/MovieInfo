@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.anshtya.feature.you.supportsDynamicColorTheme
+import com.anshtya.movieinfo.feature.you.supportsDynamicColorTheme
 
 private val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,

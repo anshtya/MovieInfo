@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.data"
+    namespace = "com.anshtya.movieinfo.data"
 }
 
 dependencies {

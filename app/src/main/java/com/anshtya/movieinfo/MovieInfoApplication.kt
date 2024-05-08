@@ -5,8 +5,8 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import coil.ImageLoader
 import coil.ImageLoaderFactory
-import com.anshtya.data.repository.UserRepository
-import com.anshtya.data.util.SyncManager
+import com.anshtya.movieinfo.data.repository.UserRepository
+import com.anshtya.movieinfo.data.util.SyncManager
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 

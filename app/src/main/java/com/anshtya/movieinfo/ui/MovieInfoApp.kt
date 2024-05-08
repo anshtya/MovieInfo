@@ -21,8 +21,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.anshtya.movieinfo.feature.movies.navigateToMovies
-import com.anshtya.feature.search.navigateToSearch
-import com.anshtya.feature.you.navigateToYou
+import com.anshtya.movieinfo.feature.search.navigateToSearch
+import com.anshtya.movieinfo.feature.you.navigateToYou
 import com.anshtya.movieinfo.feature.tv.navigateToTvShows
 import com.anshtya.movieinfo.navigation.MovieInfoDestination
 import com.anshtya.movieinfo.navigation.MovieInfoNavigation

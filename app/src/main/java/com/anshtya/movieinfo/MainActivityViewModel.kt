@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.core.model.SelectedDarkMode
-import com.anshtya.data.repository.UserRepository
+import com.anshtya.movieinfo.core.model.SelectedDarkMode
+import com.anshtya.movieinfo.data.repository.UserRepository
 import com.anshtya.movieinfo.MainActivityUiState.Loading
 import com.anshtya.movieinfo.MainActivityUiState.Success
 import dagger.hilt.android.lifecycle.HiltViewModel

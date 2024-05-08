@@ -24,11 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.core.model.MediaType
-import com.anshtya.core.model.content.MovieListCategory
-import com.anshtya.core.ui.ContentSectionHeader
-import com.anshtya.core.ui.LazyRowContentSection
-import com.anshtya.core.ui.MediaItemCard
+import com.anshtya.movieinfo.core.model.MediaType
+import com.anshtya.movieinfo.core.model.content.MovieListCategory
+import com.anshtya.movieinfo.core.ui.ContentSectionHeader
+import com.anshtya.movieinfo.core.ui.LazyRowContentSection
+import com.anshtya.movieinfo.core.ui.MediaItemCard
 import kotlinx.coroutines.launch
 
 private val horizontalPadding = 8.dp

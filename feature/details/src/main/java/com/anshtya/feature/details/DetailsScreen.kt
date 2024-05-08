@@ -39,6 +39,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -120,11 +122,15 @@ internal fun DetailsScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         sheetContent = {
+            val signInSheetContentDescription = stringResource(id = R.string.details_sign_in_sheet)
             if (uiState.showSignInSheet) {
                 ModalBottomSheet(
                     onDismissRequest = onHideBottomSheet,
                     sheetState = bottomSheetState,
-                    windowInsets = WindowInsets.navigationBars
+                    windowInsets = WindowInsets.navigationBars,
+                    modifier = Modifier.semantics {
+                        contentDescription = signInSheetContentDescription
+                    }
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -166,8 +172,15 @@ internal fun DetailsScreen(
                 .padding(paddingValues)
         ) {
             if (uiState.isLoading) {
+                val loadingContentDescription = stringResource(id = R.string.details_loading)
                 Box(Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .semantics {
+                                contentDescription = loadingContentDescription
+                            }
+                    )
                 }
             } else {
                 when (contentDetailsUiState) {

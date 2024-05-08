@@ -31,4 +31,6 @@
     <string name="add_to_watchlist">Add to watchlist</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_in_sheet_text">Sign in to your TMDB account to mark item as favorite or add item to watchlist</string>
+    <string name="details_loading">details loading</string>
+    <string name="details_sign_in_sheet">details sign in sheet</string>
 </resources>

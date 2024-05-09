@@ -75,13 +75,13 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: run tests
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@v2.30.1
         with:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest
+          script: ./gradlew connectedDebugAndroidTest --daemon
 
       - name: Upload test reports
         if: always()

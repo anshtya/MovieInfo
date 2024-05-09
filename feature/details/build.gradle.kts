@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.feature.details"
+    namespace = "com.anshtya.movieinfo.feature.details"
 }
 
 dependencies {

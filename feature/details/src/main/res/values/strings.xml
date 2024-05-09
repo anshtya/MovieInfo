@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="error_message">An error occurred</string>
     <string name="overview">Overview</string>
     <string name="budget">"Budget: "</string>
     <string name="revenue">"Revenue: "</string>
@@ -23,4 +22,15 @@
     <string name="next_air_date">"Next air date: "</string>
     <string name="number_episodes">"Number of episodes: "</string>
     <string name="number_seasons">"Number of seasons: "</string>
+    <string name="recommendations">Recommendations</string>
+    <string name="top_billed_cast">Top Billed Cast</string>
+    <string name="view_all"><![CDATA[View Full Cast & Crew]]></string>
+    <string name="cast">Cast</string>
+    <string name="crew">Crew</string>
+    <string name="mark_favorite">Mark as favorite</string>
+    <string name="add_to_watchlist">Add to watchlist</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_in_sheet_text">Sign in to your TMDB account to mark item as favorite or add item to watchlist</string>
+    <string name="details_loading">details loading</string>
+    <string name="details_sign_in_sheet">details sign in sheet</string>
 </resources>

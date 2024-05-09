@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.benchmark"
+    namespace = "com.anshtya.movieinfo.benchmark"
     compileSdk = 34
 
     compileOptions {

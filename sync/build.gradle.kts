@@ -4,7 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.sync"
+    namespace = "com.anshtya.movieinfo.sync"
+
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }
 
 dependencies {

@@ -4,13 +4,16 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.core.ui"
+    namespace = "com.anshtya.movieinfo.core.ui"
+
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }
 
 dependencies {
-    implementation(libs.compose.material.iconsExtended)
-    implementation(libs.coil.kt.compose)
-    implementation(libs.kotlinx.collections.immutable)
+    api(libs.coil.kt.compose)
+    api(libs.compose.material.iconsExtended)
 
     androidTestImplementation(projects.core.testing)
 }

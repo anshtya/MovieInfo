@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.anshtya.data"
+    namespace = "com.anshtya.movieinfo.data"
 }
 
 dependencies {
@@ -12,8 +12,6 @@ dependencies {
 
     implementation(projects.core.local)
     implementation(projects.core.network)
-
-    implementation(libs.androidx.paging.runtime)
 
     testImplementation(projects.core.testing)
 }

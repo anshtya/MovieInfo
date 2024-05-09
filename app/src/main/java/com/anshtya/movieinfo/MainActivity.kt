@@ -5,7 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -14,12 +17,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.anshtya.core.model.SelectedDarkMode
 import com.anshtya.movieinfo.MainActivityUiState.Loading
 import com.anshtya.movieinfo.MainActivityUiState.Success
+import com.anshtya.movieinfo.core.model.SelectedDarkMode
 import com.anshtya.movieinfo.ui.MovieInfoApp
 import com.anshtya.movieinfo.ui.theme.MovieInfoTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +37,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         val splashScreen = installSplashScreen()
 
         var uiState: MainActivityUiState by mutableStateOf(Loading)
@@ -62,10 +68,12 @@ class MainActivity : ComponentActivity() {
             ) {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MovieInfoApp()
+                    viewModel.hideOnboarding?.let {
+                        MovieInfoApp(hideOnboarding = it)
+                    }
                 }
             }
         }

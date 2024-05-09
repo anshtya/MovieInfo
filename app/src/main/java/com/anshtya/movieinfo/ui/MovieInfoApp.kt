@@ -20,14 +20,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.anshtya.feature.home.navigateToHome
-import com.anshtya.feature.search.navigateToSearch
-import com.anshtya.feature.you.navigateToYou
+import com.anshtya.movieinfo.feature.movies.navigateToMovies
+import com.anshtya.movieinfo.feature.search.navigateToSearch
+import com.anshtya.movieinfo.feature.you.navigateToYou
+import com.anshtya.movieinfo.feature.tv.navigateToTvShows
 import com.anshtya.movieinfo.navigation.MovieInfoDestination
 import com.anshtya.movieinfo.navigation.MovieInfoNavigation
 
 @Composable
 fun MovieInfoApp(
+    hideOnboarding: Boolean,
     navController: NavHostController = rememberNavController()
 ) {
     val bottomDestinations = MovieInfoDestination.entries
@@ -55,7 +57,10 @@ fun MovieInfoApp(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            MovieInfoNavigation(navController)
+            MovieInfoNavigation(
+                navController = navController,
+                hideOnboarding = hideOnboarding
+            )
         }
     }
 }
@@ -100,7 +105,8 @@ private fun NavController.navigateToDestination(destination: MovieInfoDestinatio
     }
 
     when (destination) {
-        MovieInfoDestination.HOME -> navigateToHome(navOptions)
+        MovieInfoDestination.MOVIES -> navigateToMovies(navOptions)
+        MovieInfoDestination.TV_SHOWS -> navigateToTvShows(navOptions)
         MovieInfoDestination.SEARCH -> navigateToSearch(navOptions)
         MovieInfoDestination.YOU -> navigateToYou(navOptions)
     }

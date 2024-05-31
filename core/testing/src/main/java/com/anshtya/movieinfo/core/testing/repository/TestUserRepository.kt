@@ -43,7 +43,7 @@ class TestUserRepository: UserRepository {
     )
     override val accountDetails: Flow<AccountDetails?> = _accountDetails.asSharedFlow()
 
-    private var userSessionId: String? = null
+    private var userSessionId: String? = "id"
 
     override fun isSignedIn(): Boolean = userSessionId != null
 

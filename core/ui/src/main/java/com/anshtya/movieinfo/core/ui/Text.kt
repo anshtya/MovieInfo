@@ -1,4 +1,4 @@
-package com.anshtya.movieinfo.onboarding
+package com.anshtya.movieinfo.core.ui
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.Text
@@ -6,14 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.style.TextAlign
 
 @Composable
-fun AttributionText(
+fun AnnotatedClickableText(
     attributionString: AnnotatedString,
     onClick: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -29,11 +27,7 @@ fun AttributionText(
 
     Text(
         text = attributionString,
-        color = Color.White,
-        textAlign = TextAlign.Center,
-        onTextLayout = {
-            layoutResult.value = it
-        },
+        onTextLayout = { layoutResult.value = it },
         modifier = modifier.then(pressIndicator)
     )
 }

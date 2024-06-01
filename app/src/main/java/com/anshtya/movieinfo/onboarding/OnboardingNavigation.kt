@@ -1,16 +1,31 @@
 package com.anshtya.movieinfo.onboarding
 
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
+import com.anshtya.movieinfo.feature.auth.authScreen
+import com.anshtya.movieinfo.feature.auth.navigateToAuth
 
-const val onboardingNavigationRoute = "onboarding"
+const val onboardingNavigationGraphRoute = "onboardingGraph"
+private const val onboardingNavigationRoute = "onboarding"
 
-fun NavGraphBuilder.onboardingScreen(
-    navigateToAuth: () -> Unit
+fun NavGraphBuilder.onboardingNavGraph(
+    navController: NavHostController,
+    navigateToMainGraph: () -> Unit
 ) {
-    composable(
-        route = onboardingNavigationRoute
+    navigation(
+        route = onboardingNavigationGraphRoute,
+        startDestination = onboardingNavigationRoute
     ) {
-        OnboardingScreen(navigateToAuth = navigateToAuth)
+        composable(
+            route = onboardingNavigationRoute
+        ) {
+            OnboardingScreen(navigateToAuth = navController::navigateToAuth)
+        }
+        authScreen(
+            navigateToMovies = navigateToMainGraph,
+            onBackClick = navController::popBackStack
+        )
     }
 }

@@ -17,6 +17,8 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
@@ -26,10 +28,43 @@ import com.anshtya.movieinfo.feature.you.navigateToYou
 import com.anshtya.movieinfo.feature.tv.navigateToTvShows
 import com.anshtya.movieinfo.navigation.MovieInfoDestination
 import com.anshtya.movieinfo.navigation.MovieInfoNavigation
+import com.anshtya.movieinfo.onboarding.onboardingNavGraph
+import com.anshtya.movieinfo.onboarding.onboardingNavigationGraphRoute
 
 @Composable
 fun MovieInfoApp(
     hideOnboarding: Boolean,
+    navController: NavHostController = rememberNavController()
+) {
+    val mainNavigationGraphRoute = "main"
+    val startDestination = if (hideOnboarding) {
+        mainNavigationGraphRoute
+    } else {
+        onboardingNavigationGraphRoute
+    }
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        onboardingNavGraph(
+            navController = navController,
+            navigateToMainGraph = {
+                navController.navigate(mainNavigationGraphRoute) {
+                    popUpTo(onboardingNavigationGraphRoute) { inclusive = true }
+                }
+            }
+        )
+
+        composable(
+            route = mainNavigationGraphRoute
+        ) {
+            MainGraph()
+        }
+    }
+}
+
+@Composable
+fun MainGraph(
     navController: NavHostController = rememberNavController()
 ) {
     val bottomDestinations = MovieInfoDestination.entries
@@ -57,10 +92,7 @@ fun MovieInfoApp(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            MovieInfoNavigation(
-                navController = navController,
-                hideOnboarding = hideOnboarding
-            )
+            MovieInfoNavigation(navController = navController)
         }
     }
 }

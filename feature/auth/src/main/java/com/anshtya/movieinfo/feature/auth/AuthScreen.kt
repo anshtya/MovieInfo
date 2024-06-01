@@ -52,7 +52,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 internal fun AuthRoute(
-    hideOnboarding: Boolean?,
     navigateToMovies: () -> Unit,
     onBackClick: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
@@ -61,9 +60,9 @@ internal fun AuthRoute(
 
     AuthScreen(
         uiState = uiState,
-        hideOnboarding = hideOnboarding,
+        hideOnboarding = viewModel.hideOnboarding,
         onLogIn = {
-            hideOnboarding?.let {
+            viewModel.hideOnboarding?.let {
                 if (it) onBackClick() else navigateToMovies()
             }
         },

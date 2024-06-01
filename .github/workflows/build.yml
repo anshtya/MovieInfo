@@ -26,7 +26,7 @@ jobs:
           distribution: 'zulu'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3.3.2
+        uses: gradle/actions/setup-gradle@v3.3.2
 
       - name: Check build-logic
         run: ./gradlew check -p build-logic
@@ -72,7 +72,7 @@ jobs:
           distribution: 'zulu'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3.3.2
+        uses: gradle/actions/setup-gradle@v3.3.2
 
       - name: Enable KVM
         run: |

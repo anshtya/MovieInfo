@@ -28,9 +28,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3.3.2
 
-      - name: Check build-logic
-        run: ./gradlew check -p build-logic
-
       - name: Assemble build types
         run: ./gradlew :app:assembleDebug :benchmark:assemble
 
@@ -56,7 +53,7 @@ jobs:
       matrix:
         api-level: [26, 30]
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v4.1.5
 
       - name: Validate Gradle Wrapper

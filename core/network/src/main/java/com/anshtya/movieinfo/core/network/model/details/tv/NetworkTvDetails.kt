@@ -1,6 +1,5 @@
 package com.anshtya.movieinfo.core.network.model.details.tv
 
-import com.anshtya.movieinfo.core.model.details.tv.CreatedBy
 import com.anshtya.movieinfo.core.model.details.tv.TvDetails
 import com.anshtya.movieinfo.core.network.model.content.NetworkContentItem
 import com.anshtya.movieinfo.core.network.model.content.NetworkContentResponse
@@ -17,7 +16,7 @@ import java.util.Locale
 data class NetworkTvDetails(
     val adult: Boolean,
     @Json(name = "backdrop_path") val backdropPath: String?,
-    @Json(name = "created_by") val createdBy: List<CreatedBy>,
+    @Json(name = "created_by") val createdBy: List<NetworkCreatedBy>,
     val credits: NetworkCredits,
     @Json(name = "episode_run_time") val episodeRunTime: List<Int>,
     @Json(name = "first_air_date") val firstAirDate: String,
@@ -48,7 +47,7 @@ data class NetworkTvDetails(
     fun asModel() = TvDetails(
         adult = adult,
         backdropPath = backdropPath ?: "",
-        createdBy = createdBy,
+        createdBy = createdBy.map(NetworkCreatedBy::asModel),
         credits = credits.asModel(),
         episodeRunTime = getFormattedRuntime(),
         firstAirDate = formatDate(firstAirDate),

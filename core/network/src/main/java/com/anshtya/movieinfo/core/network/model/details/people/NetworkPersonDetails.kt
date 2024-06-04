@@ -3,7 +3,9 @@ package com.anshtya.movieinfo.core.network.model.details.people
 import com.anshtya.movieinfo.core.model.details.people.PersonDetails
 import com.anshtya.movieinfo.core.network.util.formatDate
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class NetworkPersonDetails(
     val adult: Boolean,
     @Json(name = "also_known_as") val alsoKnownAs: List<String>,

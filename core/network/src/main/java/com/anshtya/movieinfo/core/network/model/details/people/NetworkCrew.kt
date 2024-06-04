@@ -2,7 +2,9 @@ package com.anshtya.movieinfo.core.network.model.details.people
 
 import com.anshtya.movieinfo.core.model.details.people.Crew
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class NetworkCrew(
     @Json(name = "credit_id") val creditId: String,
     val department: String?,

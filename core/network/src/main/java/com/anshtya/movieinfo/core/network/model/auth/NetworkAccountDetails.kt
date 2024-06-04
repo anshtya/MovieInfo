@@ -1,7 +1,9 @@
 package com.anshtya.movieinfo.core.network.model.auth
 
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class NetworkAccountDetails(
     val avatar: Avatar,
     val id: Int,
@@ -12,15 +14,18 @@ data class NetworkAccountDetails(
     val username: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Avatar(
     val gravatar: Gravatar,
     val tmdb: Tmdb
 )
 
+@JsonClass(generateAdapter = true)
 data class Gravatar(
     val hash: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Tmdb(
     @Json(name = "avatar_path") val avatarPath: String?
 )

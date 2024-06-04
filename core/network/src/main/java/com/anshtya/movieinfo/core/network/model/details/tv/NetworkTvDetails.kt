@@ -10,8 +10,10 @@ import com.anshtya.movieinfo.core.network.model.details.NetworkProductionCompany
 import com.anshtya.movieinfo.core.network.model.details.NetworkProductionCountry
 import com.anshtya.movieinfo.core.network.util.formatDate
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import java.util.Locale
 
+@JsonClass(generateAdapter = true)
 data class NetworkTvDetails(
     val adult: Boolean,
     @Json(name = "backdrop_path") val backdropPath: String?,

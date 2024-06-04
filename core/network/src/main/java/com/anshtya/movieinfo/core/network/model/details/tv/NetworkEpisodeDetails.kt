@@ -3,7 +3,9 @@ package com.anshtya.movieinfo.core.network.model.details.tv
 import com.anshtya.movieinfo.core.model.details.tv.EpisodeDetails
 import com.anshtya.movieinfo.core.network.util.formatDate
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class NetworkEpisodeDetails(
     @Json(name = "air_date") val airDate: String,
     @Json(name = "episode_number") val episodeNumber: Int,

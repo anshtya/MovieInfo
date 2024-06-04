@@ -5,8 +5,10 @@ import com.anshtya.movieinfo.core.network.model.content.NetworkContentItem
 import com.anshtya.movieinfo.core.network.model.content.NetworkContentResponse
 import com.anshtya.movieinfo.core.network.util.formatDate
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import java.util.Locale
 
+@JsonClass(generateAdapter = true)
 data class NetworkMovieDetails(
     val adult: Boolean,
     @Json(name = "backdrop_path") val backdropPath: String?,

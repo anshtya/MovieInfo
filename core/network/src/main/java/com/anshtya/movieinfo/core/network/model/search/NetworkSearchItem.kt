@@ -2,7 +2,9 @@ package com.anshtya.movieinfo.core.network.model.search
 
 import com.anshtya.movieinfo.core.model.SearchItem
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class NetworkSearchItem(
     val id: Int,
     val name: String?,

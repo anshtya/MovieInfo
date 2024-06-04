@@ -26,8 +26,8 @@ dependencies {
 
     api(libs.retrofit)
     implementation(libs.converter.moshi)
-    implementation(libs.moshi.kotlin)
     implementation(libs.okhttp.logging.interceptor)
+    ksp(libs.moshi.kotlin.codegen)
 
     testImplementation(projects.core.testing)
     testImplementation(libs.kotlinx.coroutines.test)

@@ -6,7 +6,6 @@ import com.anshtya.movieinfo.core.network.model.auth.getErrorMessage
 import com.anshtya.movieinfo.core.network.model.content.NetworkContentItem
 import com.anshtya.movieinfo.core.network.retrofit.TmdbApi
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
@@ -26,12 +25,9 @@ class TmdbApiTest {
     @Before
     fun setUp() {
         mockWebServer = MockWebServer()
-        val moshi = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .build()
         tmdbApi = Retrofit.Builder()
             .baseUrl(mockWebServer.url("/"))
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(TmdbApi::class.java)
     }
@@ -60,7 +56,6 @@ class TmdbApiTest {
     fun `test error deserialization`() = runTest {
         val errorMessage = ErrorResponse("error occurred")
         val moshiAdapter = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
             .build()
             .adapter(ErrorResponse::class.java)
 

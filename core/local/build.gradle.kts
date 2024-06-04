@@ -14,6 +14,8 @@ android {
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
+
+        consumerProguardFiles("consumer-proguard-rules.pro")
     }
 }
 

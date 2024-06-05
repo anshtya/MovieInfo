@@ -50,17 +50,14 @@ class LibraryItemsViewModel @Inject constructor(
             initialValue = null
         )
 
-    val movieItems: StateFlow<List<LibraryItem>> = libraryItemTypeString
-        .flatMapLatest { itemTypeString ->
-            if (itemTypeString.isEmpty()) {
-                flow { }
-            } else {
-                val itemType = enumValueOf<LibraryItemType>(itemTypeString)
-                when (itemType) {
+    val movieItems: StateFlow<List<LibraryItem>> = libraryItemType
+        .flatMapLatest { itemType ->
+            itemType?.let {
+                when (it) {
                     LibraryItemType.FAVORITE -> libraryRepository.favoriteMovies
                     LibraryItemType.WATCHLIST -> libraryRepository.moviesWatchlist
                 }
-            }
+            } ?: flow {}
         }
         .stateIn(
             scope = viewModelScope,
@@ -68,17 +65,14 @@ class LibraryItemsViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    val tvItems: StateFlow<List<LibraryItem>> = libraryItemTypeString
-        .flatMapLatest { itemTypeString ->
-            if (itemTypeString.isEmpty()) {
-                flow { }
-            } else {
-                val itemType = enumValueOf<LibraryItemType>(itemTypeString)
-                when (itemType) {
+    val tvItems: StateFlow<List<LibraryItem>> = libraryItemType
+        .flatMapLatest { itemType ->
+            itemType?.let {
+                when (it) {
                     LibraryItemType.FAVORITE -> libraryRepository.favoriteTvShows
                     LibraryItemType.WATCHLIST -> libraryRepository.tvShowsWatchlist
                 }
-            }
+            } ?: flow {}
         }
         .stateIn(
             scope = viewModelScope,
@@ -89,7 +83,17 @@ class LibraryItemsViewModel @Inject constructor(
     fun deleteItem(libraryItem: LibraryItem) {
         viewModelScope.launch {
             try {
-                libraryRepository.addOrRemoveFromWatchlist(libraryItem)
+                when (libraryItemType.value) {
+                    LibraryItemType.FAVORITE -> {
+                        libraryRepository.addOrRemoveFavorite(libraryItem)
+                    }
+
+                    LibraryItemType.WATCHLIST -> {
+                        libraryRepository.addOrRemoveFromWatchlist(libraryItem)
+                    }
+
+                    else -> Unit
+                }
             } catch (e: IOException) {
                 _errorMessage.update { "An error occurred" }
             }

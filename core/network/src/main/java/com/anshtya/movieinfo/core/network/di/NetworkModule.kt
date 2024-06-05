@@ -20,7 +20,11 @@ internal object NetworkModule {
     @Provides
     fun provideTmdbApi(): TmdbApi {
         val logging = HttpLoggingInterceptor()
-            .setLevel(HttpLoggingInterceptor.Level.BODY)
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    setLevel(HttpLoggingInterceptor.Level.BODY)
+                }
+            }
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
             .addInterceptor(Interceptor { chain ->

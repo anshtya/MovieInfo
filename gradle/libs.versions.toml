@@ -49,8 +49,8 @@ androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidx-work"}
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-coil-kt = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 coil-kt-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+coil-kt-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
 converter-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "converter-moshi" }

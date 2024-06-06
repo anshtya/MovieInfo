@@ -12,8 +12,8 @@ android {
 }
 
 dependencies {
-    api(libs.coil.kt.compose)
     api(libs.compose.material.iconsExtended)
+    implementation(libs.coil.kt.compose)
 
     androidTestImplementation(projects.core.testing)
 }

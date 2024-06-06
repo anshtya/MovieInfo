@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,7 +20,8 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,6 +36,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -47,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +60,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.anshtya.movieinfo.core.model.SelectedDarkMode
 import com.anshtya.movieinfo.core.model.SelectedDarkMode.DARK
 import com.anshtya.movieinfo.core.model.SelectedDarkMode.LIGHT
@@ -117,9 +124,53 @@ internal fun YouScreen(
         onErrorShown()
     }
 
+    var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
+    if (showSettingsDialog) {
+        SettingsDialog(
+            userSettings = userSettings,
+            onChangeTheme = onChangeTheme,
+            onChangeDarkMode = onChangeDarkMode,
+            onChangeIncludeAdult = onChangeIncludeAdult,
+            onDismissRequest = { showSettingsDialog = !showSettingsDialog }
+        )
+    }
+
+    var showAttributionInfoDialog by rememberSaveable { mutableStateOf(false) }
+    if (showAttributionInfoDialog) {
+        AttributionInfoDialog(
+            onDismissRequest = { showAttributionInfoDialog = !showAttributionInfoDialog }
+        )
+    }
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
+        },
+        topBar = {
+            TopAppBar(
+                title = {},
+                actions = {
+                    IconButton(
+                        onClick = { showAttributionInfoDialog = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Info,
+                            contentDescription = stringResource(id = R.string.attribution_info)
+                        )
+                    }
+
+                    userSettings?.let {
+                        IconButton(
+                            onClick = { showSettingsDialog = true }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Settings,
+                                contentDescription = stringResource(id = R.string.settings_dialog_title)
+                            )
+                        }
+                    }
+                }
+            )
         }
     ) { paddingValues ->
         Box(
@@ -128,34 +179,6 @@ internal fun YouScreen(
                 .nestedScroll(pullToRefreshState.nestedScrollConnection)
         ) {
             Column(Modifier.fillMaxSize()) {
-                var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
-
-                userSettings?.let {
-                    Row(
-                        horizontalArrangement = Arrangement.End,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        IconButton(
-                            onClick = { showSettingsDialog = true }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Settings,
-                                contentDescription = stringResource(id = R.string.settings_dialog_title)
-                            )
-                        }
-                    }
-
-                    if (showSettingsDialog) {
-                        SettingsDialog(
-                            userSettings = userSettings,
-                            onChangeTheme = onChangeTheme,
-                            onChangeDarkMode = onChangeDarkMode,
-                            onChangeIncludeAdult = onChangeIncludeAdult,
-                            onDismissRequest = { showSettingsDialog = !showSettingsDialog }
-                        )
-                    }
-                }
-
                 if (isSignedIn) {
                     accountDetails?.let {
                         LoggedInView(
@@ -318,35 +341,11 @@ private fun LibraryItemOption(
 }
 
 @Composable
-private fun SettingsDialog(
-    userSettings: UserSettings,
-    onChangeTheme: (Boolean) -> Unit,
-    onChangeDarkMode: (SelectedDarkMode) -> Unit,
-    onChangeIncludeAdult: (Boolean) -> Unit,
+private fun AttributionInfoDialog(
     onDismissRequest: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = {
-            Text(
-                text = stringResource(R.string.settings_dialog_title),
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        text = {
-            HorizontalDivider()
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.verticalScroll(rememberScrollState())
-            ) {
-                SettingsPanel(
-                    settings = userSettings,
-                    onChangeTheme = onChangeTheme,
-                    onChangeDarkMode = onChangeDarkMode,
-                    onChangeIncludeAdult = onChangeIncludeAdult
-                )
-            }
-        },
         confirmButton = {
             Text(
                 text = stringResource(R.string.settings_dialog_dismiss_text),
@@ -357,7 +356,72 @@ private fun SettingsDialog(
                     .clickable { onDismissRequest() },
             )
         },
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .decoderFactory(SvgDecoder.Factory())
+                        .data(R.drawable.tmdb_logo)
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp)
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = stringResource(id = R.string.attribution_text),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
     )
+}
+
+@Composable
+private fun SettingsDialog(
+    userSettings: UserSettings?,
+    onChangeTheme: (Boolean) -> Unit,
+    onChangeDarkMode: (SelectedDarkMode) -> Unit,
+    onChangeIncludeAdult: (Boolean) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    userSettings?.let {
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            title = {
+                Text(
+                    text = stringResource(R.string.settings_dialog_title),
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            },
+            text = {
+                HorizontalDivider()
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.verticalScroll(rememberScrollState())
+                ) {
+                    SettingsPanel(
+                        settings = userSettings,
+                        onChangeTheme = onChangeTheme,
+                        onChangeDarkMode = onChangeDarkMode,
+                        onChangeIncludeAdult = onChangeIncludeAdult
+                    )
+                }
+            },
+            confirmButton = {
+                Text(
+                    text = stringResource(R.string.settings_dialog_dismiss_text),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .clickable { onDismissRequest() },
+                )
+            },
+        )
+    }
 }
 
 @Composable

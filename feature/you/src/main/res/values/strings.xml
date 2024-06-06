@@ -20,4 +20,6 @@
     <string name="tv_shows">Tv Shows</string>
     <string name="no_items">No Items</string>
     <string name="delete">Delete</string>
+    <string name="attribution_info">Attribution Info</string>
+    <string name="attribution_text">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
 </resources>

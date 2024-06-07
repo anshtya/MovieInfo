@@ -31,3 +31,7 @@ BASE_URL=https://api.themoviedb.org/3/
 ```
 
 and rebuild the project.
+
+## ℹ️Disclaimer
+<img src = "./images/tmdb-logo.svg" width = 200>
+This product uses the TMDB API but is not endorsed or certified by TMDB.

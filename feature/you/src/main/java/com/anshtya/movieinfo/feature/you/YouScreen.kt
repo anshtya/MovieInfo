@@ -69,7 +69,7 @@ import com.anshtya.movieinfo.core.model.SelectedDarkMode.LIGHT
 import com.anshtya.movieinfo.core.model.SelectedDarkMode.SYSTEM
 import com.anshtya.movieinfo.core.model.library.LibraryItemType
 import com.anshtya.movieinfo.core.model.user.AccountDetails
-import com.anshtya.movieinfo.core.ui.UserImage
+import com.anshtya.movieinfo.core.ui.PersonImage
 import kotlinx.coroutines.launch
 
 @Composable
@@ -235,7 +235,7 @@ private fun LoggedInView(
         AnimatedVisibility(visible = isLoading) {
             CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
         }
-        UserImage(
+        PersonImage(
             imageUrl = accountDetails.avatar ?: "",
             modifier = Modifier.size(64.dp)
         )

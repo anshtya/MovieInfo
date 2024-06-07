@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -64,11 +63,7 @@ fun LazyRowContentSection(
     ) {
         sectionHeaderContent()
 
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(160.dp)
-        ) {
+        Box(modifier.fillMaxWidth()) {
             if (itemsEmpty && isLoading) {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             } else {

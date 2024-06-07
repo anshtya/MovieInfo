@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
@@ -213,10 +214,7 @@ private fun ContentSection(
                     posterPath = it.imagePath,
                     onItemClick = {
                         onItemClick("${it.id},${MediaType.TV}")
-                    },
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(110.dp)
+                    }
                 )
             }
 
@@ -231,6 +229,7 @@ private fun ContentSection(
                     }
                 }
             }
-        }
+        },
+        modifier = Modifier.height(160.dp)
     )
 }

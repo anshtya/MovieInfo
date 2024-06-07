@@ -1,6 +1,6 @@
 package com.anshtya.movieinfo.core.ui
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -19,7 +19,9 @@ fun MediaItemCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 10.dp
         ),
-        modifier = modifier.clickable { onItemClick() }
+        modifier = modifier
+            .size(width = 120.dp, height = 160.dp)
+            .noRippleClickable { onItemClick() }
     ) {
         TmdbImage(
             width = 500,

@@ -1,6 +1,5 @@
 package com.anshtya.movieinfo.feature.details
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,10 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.library.LibraryItem
-import com.anshtya.movieinfo.core.ui.BackdropImage
 import com.anshtya.movieinfo.core.ui.LibraryActionButton
-import com.anshtya.movieinfo.core.ui.MediaItemCard
 import com.anshtya.movieinfo.core.ui.Rating
+import com.anshtya.movieinfo.core.ui.TmdbImage
+import com.anshtya.movieinfo.core.ui.noRippleClickable
 import com.anshtya.movieinfo.feature.details.content.MovieDetailsContent
 import com.anshtya.movieinfo.feature.details.content.PersonDetailsContent
 import com.anshtya.movieinfo.feature.details.content.TvShowDetailsContent
@@ -247,7 +246,10 @@ internal fun BackdropImageSection(
         color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = modifier
     ) {
-        BackdropImage(imageUrl = path)
+        TmdbImage(
+            width = 1280,
+            imageUrl = path
+        )
     }
 }
 
@@ -327,35 +329,42 @@ internal fun CastItem(
 ) {
     Surface(
         shape = RoundedCornerShape(6.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        shadowElevation = 4.dp,
-        modifier = modifier
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .clickable { onItemClick("${id},${MediaType.PERSON}") }
+                .width(120.dp)
+                .noRippleClickable {
+                    onItemClick("${id},${MediaType.PERSON}")
+                }
         ) {
-            MediaItemCard(
-                posterPath = imagePath,
-                onItemClick = { onItemClick("${id},${MediaType.PERSON}") },
-                modifier = Modifier.height(160.dp)
+            TmdbImage(
+                width = 500,
+                imageUrl = imagePath,
+                modifier = modifier
+                    .height(140.dp)
+                    .noRippleClickable {
+                        onItemClick("${id},${MediaType.PERSON}")
+                    }
             )
             Spacer(Modifier.height(4.dp))
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(vertical = 2.dp, horizontal = 4.dp)
             ) {
                 Text(
                     text = name,
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyLarge
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = characterName,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
             }
         }

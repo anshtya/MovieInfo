@@ -115,10 +115,7 @@ internal fun TvShowDetailsContent(
                             imagePath = it.profilePath,
                             name = it.name,
                             characterName = it.character,
-                            onItemClick = onItemClick,
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(140.dp)
+                            onItemClick = onItemClick
                         )
                     }
 
@@ -140,8 +137,7 @@ internal fun TvShowDetailsContent(
                     }
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(280.dp)
+                    .height(200.dp)
                     .padding(bottom = 2.dp)
             )
 
@@ -177,16 +173,11 @@ internal fun TvShowDetailsContent(
                     ) {
                         MediaItemCard(
                             posterPath = it.imagePath,
-                            onItemClick = { onItemClick("${it.id},${MediaType.TV}") },
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(110.dp)
+                            onItemClick = { onItemClick("${it.id},${MediaType.TV}") }
                         )
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp)
+                modifier = Modifier.padding(bottom = 4.dp)
             )
         }
     }

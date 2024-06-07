@@ -2,9 +2,11 @@ package com.anshtya.movieinfo.core.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -12,45 +14,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import coil.compose.AsyncImage
+import androidx.compose.ui.unit.dp
+import coil.compose.SubcomposeAsyncImage
 
 @Composable
-internal fun TmdbImage(
-    width: Int,
-    imageUrl: String
-) {
-    Box(Modifier.fillMaxSize()) {
-        if (imageUrl.isEmpty()) {
-            Text(
-                text = stringResource(id = R.string.no_image_available),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        } else {
-            AsyncImage(
-                model = "https://image.tmdb.org/t/p/w${width}${imageUrl}",
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds
-            )
-        }
-    }
-}
-
-@Composable
-fun BackdropImage(
-    imageUrl: String
-) {
-    TmdbImage(
-        width = 1280,
-        imageUrl = imageUrl
-    )
-}
-
-@Composable
-fun UserImage(
+fun PersonImage(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {
@@ -66,10 +38,42 @@ fun UserImage(
                 modifier = Modifier.fillMaxSize()
             )
         } else {
-            AsyncImage(
-                model = "https://image.tmdb.org/t/p/w300$imageUrl",
+            TmdbImage(
+                width = 300,
+                imageUrl = imageUrl
+            )
+        }
+    }
+}
+
+@Composable
+fun TmdbImage(
+    width: Int,
+    imageUrl: String,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier) {
+        if (imageUrl.isEmpty()) {
+            Text(
+                text = stringResource(id = R.string.no_image_available),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        } else {
+            SubcomposeAsyncImage(
+                model = "https://image.tmdb.org/t/p/w${width}${imageUrl}",
                 contentDescription = null,
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.FillBounds,
+                loading = {
+                    Box(Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            strokeCap = StrokeCap.Round,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(20.dp)
+                        )
+                    }
+                }
             )
         }
     }

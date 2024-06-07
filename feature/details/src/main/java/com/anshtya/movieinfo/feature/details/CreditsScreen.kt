@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.details.people.Credits
-import com.anshtya.movieinfo.core.ui.UserImage
+import com.anshtya.movieinfo.core.ui.PersonImage
 import com.anshtya.movieinfo.core.ui.noRippleClickable
 
 private val horizontalPadding = 8.dp
@@ -137,7 +137,7 @@ private fun CreditsItem(
             .noRippleClickable { onItemClick() }
             .padding(horizontal = horizontalPadding,vertical = 6.dp)
     ) {
-        CreditImage(
+        PersonImage(
             imageUrl = imagePath,
             modifier = Modifier.size(64.dp)
         )
@@ -169,16 +169,5 @@ private fun CategoryHeader(
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(10.dp)
-    )
-}
-
-@Composable
-private fun CreditImage(
-    imageUrl: String,
-    modifier: Modifier = Modifier
-) {
-    UserImage(
-        imageUrl = imageUrl,
-        modifier = modifier
     )
 }

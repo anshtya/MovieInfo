@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.details.MovieDetails
+import com.anshtya.movieinfo.core.model.library.LibraryItem
 import com.anshtya.movieinfo.core.ui.ContentSectionHeader
 import com.anshtya.movieinfo.core.ui.LazyRowContentSection
 import com.anshtya.movieinfo.core.ui.MediaItemCard
@@ -36,7 +37,6 @@ import com.anshtya.movieinfo.feature.details.DetailItem
 import com.anshtya.movieinfo.feature.details.InfoSection
 import com.anshtya.movieinfo.feature.details.LibraryActions
 import com.anshtya.movieinfo.feature.details.OverviewSection
-import com.anshtya.movieinfo.core.model.library.LibraryItem
 import com.anshtya.movieinfo.feature.details.R
 import com.anshtya.movieinfo.feature.details.backdropHeight
 
@@ -113,10 +113,7 @@ internal fun MovieDetailsContent(
                             imagePath = it.profilePath,
                             name = it.name,
                             characterName = it.character,
-                            onItemClick = onItemClick,
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(140.dp)
+                            onItemClick = onItemClick
                         )
                     }
                     item {
@@ -137,8 +134,7 @@ internal fun MovieDetailsContent(
                     }
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(280.dp)
+                    .height(200.dp)
                     .padding(bottom = 2.dp)
             )
 
@@ -169,16 +165,11 @@ internal fun MovieDetailsContent(
                     ) {
                         MediaItemCard(
                             posterPath = it.imagePath,
-                            onItemClick = { onItemClick("${it.id},${MediaType.MOVIE}") },
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(110.dp)
+                            onItemClick = { onItemClick("${it.id},${MediaType.MOVIE}") }
                         )
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp)
+                modifier = Modifier.padding(bottom = 4.dp)
             )
         }
     }

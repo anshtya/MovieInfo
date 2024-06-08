@@ -4,6 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class AndroidApplicationConventionPlugin: Plugin<Project> {
@@ -30,8 +31,8 @@ class AndroidApplicationConventionPlugin: Plugin<Project> {
                 }
 
                 tasks.withType<KotlinCompile>().configureEach {
-                    kotlinOptions {
-                        jvmTarget = "17"
+                    compilerOptions {
+                        jvmTarget.set(JvmTarget.JVM_17)
                     }
                 }
             }

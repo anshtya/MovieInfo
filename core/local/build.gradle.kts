@@ -1,3 +1,5 @@
+import com.google.protobuf.gradle.GenerateProtoTask
+
 plugins {
     id("movieinfo.android.library")
     id("movieinfo.android.hilt")
@@ -33,6 +35,22 @@ protobuf {
                 create("kotlin") {
                     option("lite")
                 }
+            }
+        }
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        afterEvaluate {
+            val protoTask =
+                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
+
+            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
+                dependsOn(protoTask)
+                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
+                    protoTask.outputBaseDir
+                )
             }
         }
     }

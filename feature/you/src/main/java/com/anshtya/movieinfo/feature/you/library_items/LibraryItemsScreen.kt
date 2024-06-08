@@ -214,10 +214,7 @@ private fun LibraryContent(
                         onItemClick = {
                             onItemClick("${it.id},${it.mediaType.uppercase()}")
                         },
-                        onDeleteClick = { onDeleteClick(it) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(160.dp)
+                        onDeleteClick = { onDeleteClick(it) }
                     )
                 }
             }
@@ -229,14 +226,12 @@ private fun LibraryContent(
 private fun LibraryItem(
     posterPath: String,
     onItemClick: () -> Unit,
-    onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onDeleteClick: () -> Unit
 ) {
-    Box(modifier) {
+    Box {
         MediaItemCard(
             posterPath = posterPath,
-            onItemClick = onItemClick,
-            modifier = Modifier.fillMaxSize()
+            onItemClick = onItemClick
         )
 
         Surface(

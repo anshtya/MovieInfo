@@ -27,7 +27,7 @@ fun ContentSectionHeader(
     ) {
         Text(
             text = sectionName,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold
         )
 

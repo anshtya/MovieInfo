@@ -3,6 +3,8 @@ package com.anshtya.movieinfo.feature.details
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,20 +16,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -37,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -61,7 +69,6 @@ import kotlinx.coroutines.launch
 
 private val horizontalPadding = 8.dp
 private val verticalPadding = 4.dp
-internal val backdropHeight = 200.dp
 
 @Composable
 internal fun DetailsRoute(
@@ -103,6 +110,7 @@ internal fun DetailsScreen(
     onBackClick: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
+
     val snackbarHostState = remember { SnackbarHostState() }
     val bottomSheetState = rememberModalBottomSheetState()
     val scaffoldState = rememberBottomSheetScaffoldState(
@@ -121,7 +129,9 @@ internal fun DetailsScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         sheetContent = {
-            val signInSheetContentDescription = stringResource(id = R.string.details_sign_in_sheet)
+            val signInSheetContentDescription = stringResource(
+                id = R.string.details_sign_in_sheet
+            )
             if (uiState.showSignInSheet) {
                 ModalBottomSheet(
                     onDismissRequest = onHideBottomSheet,
@@ -233,6 +243,31 @@ internal fun DetailsScreen(
                     }
                 }
             }
+
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.Black.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = stringResource(
+                                id = com.anshtya.movieinfo.core.ui.R.string.back
+                            ),
+                            tint = Color.White,
+                            modifier = Modifier
+                                .noRippleClickable { onBackClick() }
+                                .padding(6.dp)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
         }
     }
 }
@@ -244,6 +279,10 @@ internal fun BackdropImageSection(
 ) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(
+            bottomEnd = 10.dp,
+            bottomStart = 10.dp
+        ),
         modifier = modifier
     ) {
         TmdbImage(
@@ -253,32 +292,42 @@ internal fun BackdropImageSection(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun InfoSection(
-    count: Int,
-    genres: String,
+    voteCount: Int,
     name: String,
     rating: Double,
     releaseYear: Int,
     tagline: String,
-    modifier: Modifier = Modifier,
-    runtime: String,
+    runtime: String
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp),
-        modifier = modifier
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "$name ($releaseYear)",
-            style = MaterialTheme.typography.headlineSmall,
+            text = name,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold
         )
 
-        Rating(rating = rating, count = count)
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (runtime.isNotEmpty()) {
+                Text(runtime)
+                if (releaseYear.toString().isNotEmpty()) {
+                    Text("|")
+                    Text("$releaseYear")
+                }
+            } else {
+                Text("$releaseYear")
+            }
+        }
 
-        if (genres.isNotEmpty()) Text(genres)
-
-        if (runtime.isNotEmpty()) Text(runtime)
+        Rating(rating = rating, count = voteCount)
 
         if (tagline.isNotEmpty()) {
             Text(
@@ -402,6 +451,21 @@ internal fun LibraryActions(
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
+        )
+    }
+}
+
+@Composable
+internal fun GenreButton(
+    name: String
+) {
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant
+    ) {
+        Text(
+            text = name,
+            modifier = Modifier.padding(4.dp)
         )
     }
 }

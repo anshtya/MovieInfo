@@ -3,14 +3,13 @@ package com.anshtya.movieinfo.feature.details.content
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -25,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.core.model.MediaType
+import com.anshtya.movieinfo.core.model.details.tv.TvDetails
+import com.anshtya.movieinfo.core.model.library.LibraryItem
 import com.anshtya.movieinfo.core.ui.ContentSectionHeader
 import com.anshtya.movieinfo.core.ui.LazyRowContentSection
 import com.anshtya.movieinfo.core.ui.MediaItemCard
@@ -32,14 +33,13 @@ import com.anshtya.movieinfo.core.ui.noRippleClickable
 import com.anshtya.movieinfo.feature.details.BackdropImageSection
 import com.anshtya.movieinfo.feature.details.CastItem
 import com.anshtya.movieinfo.feature.details.DetailItem
+import com.anshtya.movieinfo.feature.details.GenreButton
 import com.anshtya.movieinfo.feature.details.InfoSection
 import com.anshtya.movieinfo.feature.details.LibraryActions
 import com.anshtya.movieinfo.feature.details.OverviewSection
-import com.anshtya.movieinfo.core.model.details.tv.TvDetails
-import com.anshtya.movieinfo.core.model.library.LibraryItem
 import com.anshtya.movieinfo.feature.details.R
-import com.anshtya.movieinfo.feature.details.backdropHeight
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun TvShowDetailsContent(
     tvDetails: TvDetails,
@@ -58,36 +58,30 @@ internal fun TvShowDetailsContent(
     ) {
         BackdropImageSection(
             path = tvDetails.backdropPath,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(backdropHeight)
+            modifier = Modifier.fillMaxWidth()
         )
 
         Column(
             verticalArrangement = Arrangement.spacedBy(6.dp),
             modifier = modifier.fillMaxWidth()
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp)
-            ) {
-                MediaItemCard(
-                    posterPath = tvDetails.posterPath,
-                    modifier = Modifier.size(height = 200.dp, width = 140.dp)
-                )
+            InfoSection(
+                voteCount = tvDetails.voteCount,
+                name = tvDetails.name,
+                rating = tvDetails.rating,
+                releaseYear = tvDetails.releaseYear,
+                tagline = tvDetails.tagline,
+                runtime = tvDetails.episodeRunTime
+            )
 
-                Spacer(Modifier.width(10.dp))
-
-                InfoSection(
-                    count = tvDetails.voteCount,
-                    genres = tvDetails.genres,
-                    name = tvDetails.name,
-                    rating = tvDetails.rating,
-                    releaseYear = tvDetails.releaseYear,
-                    tagline = tvDetails.tagline,
-                    runtime = tvDetails.episodeRunTime
-                )
+            if (tvDetails.genres.isNotEmpty()) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    tvDetails.genres.forEach {
+                        GenreButton(name = it)
+                    }
+                }
             }
 
             LibraryActions(

@@ -12,7 +12,7 @@ data class TvDetails(
     val credits: Credits,
     val episodeRunTime: String,
     val firstAirDate: String,
-    val genres: String,
+    val genres: List<String>,
     val id: Int,
     val inProduction: String,
     val lastAirDate: String,

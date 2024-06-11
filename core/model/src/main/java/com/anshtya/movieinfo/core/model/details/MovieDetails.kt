@@ -11,7 +11,7 @@ data class MovieDetails(
 //    val belongs_to_collection: Any,
     val budget: String,
     val credits: Credits,
-    val genres: String,
+    val genres: List<String>,
     val id: Int,
     val originalLanguage: String,
     val overview: String,

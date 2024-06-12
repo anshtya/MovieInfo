@@ -38,6 +38,7 @@ import com.anshtya.movieinfo.feature.details.InfoSection
 import com.anshtya.movieinfo.feature.details.LibraryActions
 import com.anshtya.movieinfo.feature.details.OverviewSection
 import com.anshtya.movieinfo.feature.details.R
+import com.anshtya.movieinfo.feature.details.backdropHeight
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -58,7 +59,9 @@ internal fun MovieDetailsContent(
     ) {
         BackdropImageSection(
             path = movieDetails.backdropPath,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(backdropHeight)
         )
 
         Column(
@@ -150,7 +153,7 @@ internal fun MovieDetailsContent(
                 sectionHeaderContent = {
                     Text(
                         text = stringResource(id = R.string.recommendations),
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold
                     )
                 },

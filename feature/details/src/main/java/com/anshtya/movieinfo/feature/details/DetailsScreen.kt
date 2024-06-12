@@ -69,6 +69,7 @@ import kotlinx.coroutines.launch
 
 private val horizontalPadding = 8.dp
 private val verticalPadding = 4.dp
+internal val backdropHeight = 220.dp
 
 @Composable
 internal fun DetailsRoute(
@@ -280,8 +281,8 @@ internal fun BackdropImageSection(
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(
-            bottomEnd = 10.dp,
-            bottomStart = 10.dp
+            bottomEnd = 18.dp,
+            bottomStart = 18.dp
         ),
         modifier = modifier
     ) {

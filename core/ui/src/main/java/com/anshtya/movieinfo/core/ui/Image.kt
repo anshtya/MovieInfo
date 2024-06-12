@@ -52,7 +52,7 @@ fun TmdbImage(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier) {
+    Box(modifier.fillMaxSize()) {
         if (imageUrl.isEmpty()) {
             Text(
                 text = stringResource(id = R.string.no_image_available),
@@ -73,7 +73,8 @@ fun TmdbImage(
                                 .size(20.dp)
                         )
                     }
-                }
+                },
+                modifier = Modifier.fillMaxSize()
             )
         }
     }

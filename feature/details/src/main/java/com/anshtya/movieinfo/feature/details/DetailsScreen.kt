@@ -52,6 +52,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -236,6 +237,7 @@ internal fun DetailsScreen(
                     is ContentDetailUiState.Person -> {
                         PersonDetailsContent(
                             personDetails = contentDetailsUiState.data,
+                            onBackClick = onBackClick,
                             modifier = Modifier.padding(
                                 horizontal = horizontalPadding,
                                 vertical = 6.dp
@@ -245,30 +247,32 @@ internal fun DetailsScreen(
                 }
             }
 
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    Surface(
-                        shape = CircleShape,
-                        color = Color.Black.copy(alpha = 0.5f),
-                        modifier = Modifier.padding(4.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = stringResource(
-                                id = com.anshtya.movieinfo.core.ui.R.string.back
-                            ),
-                            tint = Color.White,
-                            modifier = Modifier
-                                .noRippleClickable { onBackClick() }
-                                .padding(6.dp)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
+            if (contentDetailsUiState !is ContentDetailUiState.Person) {
+                TopAppBar(
+                    title = {},
+                    navigationIcon = {
+                        Surface(
+                            shape = CircleShape,
+                            color = Color.Black.copy(alpha = 0.5f),
+                            modifier = Modifier.padding(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                contentDescription = stringResource(
+                                    id = com.anshtya.movieinfo.core.ui.R.string.back
+                                ),
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .noRippleClickable { onBackClick() }
+                                    .padding(6.dp)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    )
                 )
-            )
+            }
         }
     }
 }
@@ -333,8 +337,26 @@ internal fun InfoSection(
         if (tagline.isNotEmpty()) {
             Text(
                 text = tagline,
+                textAlign = TextAlign.Center,
                 fontStyle = FontStyle.Italic
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun GenreSection(
+    genres: List<String>
+) {
+    if (genres.isNotEmpty()) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            genres.forEach {
+                GenreButton(name = it)
+            }
         }
     }
 }
@@ -457,7 +479,7 @@ internal fun LibraryActions(
 }
 
 @Composable
-internal fun GenreButton(
+private fun GenreButton(
     name: String
 ) {
     Surface(

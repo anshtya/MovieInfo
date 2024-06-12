@@ -3,8 +3,6 @@ package com.anshtya.movieinfo.feature.details.content
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,14 +31,13 @@ import com.anshtya.movieinfo.core.ui.noRippleClickable
 import com.anshtya.movieinfo.feature.details.BackdropImageSection
 import com.anshtya.movieinfo.feature.details.CastItem
 import com.anshtya.movieinfo.feature.details.DetailItem
-import com.anshtya.movieinfo.feature.details.GenreButton
+import com.anshtya.movieinfo.feature.details.GenreSection
 import com.anshtya.movieinfo.feature.details.InfoSection
 import com.anshtya.movieinfo.feature.details.LibraryActions
 import com.anshtya.movieinfo.feature.details.OverviewSection
 import com.anshtya.movieinfo.feature.details.R
 import com.anshtya.movieinfo.feature.details.backdropHeight
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun MovieDetailsContent(
     movieDetails: MovieDetails,
@@ -77,15 +74,7 @@ internal fun MovieDetailsContent(
                 tagline = movieDetails.tagline
             )
 
-            if (movieDetails.genres.isNotEmpty()) {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    movieDetails.genres.forEach {
-                        GenreButton(name = it)
-                    }
-                }
-            }
+            GenreSection(movieDetails.genres)
 
             LibraryActions(
                 isFavorite = isFavorite,

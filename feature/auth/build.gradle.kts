@@ -9,9 +9,6 @@ android {
 dependencies {
     implementation(projects.data)
 
-    implementation(libs.compose.material.iconsExtended)
-    implementation(projects.core.ui)
-
     testImplementation(projects.core.testing)
 
     androidTestImplementation(projects.core.testing)

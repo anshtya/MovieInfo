@@ -1,13 +1,11 @@
 package com.anshtya.movieinfo.feature.auth
 
-import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.test.core.app.ApplicationProvider
 import org.junit.Rule
 import org.junit.Test
 
@@ -15,8 +13,6 @@ class AuthScreenTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-
-    private val testContext = ApplicationProvider.getApplicationContext<Context>()
 
     @Test
     fun snackBar_whenError_appears() {
@@ -44,11 +40,11 @@ class AuthScreenTest {
 
     @Test
     fun circularProgressIndicator_whenLoading_appears() {
-        val authIndicatorDescription = testContext.resources.getText(
-            R.string.auth_circular_progress_indicator
-        ).toString()
+        val authIndicatorDescription = composeTestRule.activity
+            .getString(R.string.auth_circular_progress_indicator)
 
-        val signInText = testContext.resources.getText(R.string.sign_in).toString()
+        val signInText = composeTestRule.activity
+            .getString(R.string.sign_in)
 
         composeTestRule.setContent {
             AuthScreen(
@@ -77,9 +73,8 @@ class AuthScreenTest {
 
     @Test
     fun continueWithoutSignIn_whenPreviouslyOnboarded_hidden() {
-        val continueText = testContext.resources.getText(
-            R.string.continue_without_sign_in
-        ).toString()
+        val continueText = composeTestRule.activity
+            .getString(R.string.continue_without_sign_in)
 
         composeTestRule.setContent {
             AuthScreen(
@@ -102,9 +97,8 @@ class AuthScreenTest {
 
     @Test
     fun continueWithoutSignIn_whenNotOnboarded_shown() {
-        val continueText = testContext.resources.getText(
-            R.string.continue_without_sign_in
-        ).toString()
+        val continueText = composeTestRule.activity
+            .getString(R.string.continue_without_sign_in)
 
         composeTestRule.setContent {
             AuthScreen(

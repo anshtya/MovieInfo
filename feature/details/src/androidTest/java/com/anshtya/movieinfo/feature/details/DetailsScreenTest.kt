@@ -4,31 +4,23 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import org.junit.Before
+import com.anshtya.movieinfo.core.testing.util.testMovieDetail
 import org.junit.Rule
 import org.junit.Test
 
 class DetailsScreenTest {
-    private lateinit var loadingContentDescription: String
-    private lateinit var signInSheetContentDescription: String
-
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    @Before
-    fun setUp() {
-        with(composeTestRule.activity) {
-            loadingContentDescription = getString(R.string.details_loading)
-            signInSheetContentDescription = getString(R.string.details_sign_in_sheet)
-        }
-    }
-
     @Test
     fun circularProgressIndicator_whenLoading_displayed() {
+        val loadingContentDescription = composeTestRule.activity
+            .getString(R.string.details_loading)
+
         composeTestRule.setContent {
             DetailsScreen(
-                uiState = DetailsUiState(isLoading = true),
-                contentDetailsUiState = ContentDetailUiState.Empty,
+                uiState = DetailsUiState(),
+                contentDetailsUiState = ContentDetailUiState.Loading,
                 onHideBottomSheet = {},
                 onErrorShown = {},
                 onFavoriteClick = {},
@@ -47,10 +39,13 @@ class DetailsScreenTest {
 
     @Test
     fun signInSheet_whenStateIsTrue_exists() {
+        val signInSheetContentDescription = composeTestRule.activity
+            .getString(R.string.details_sign_in_sheet)
+
         composeTestRule.setContent {
             DetailsScreen(
                 uiState = DetailsUiState(showSignInSheet = true),
-                contentDetailsUiState = ContentDetailUiState.Empty,
+                contentDetailsUiState = ContentDetailUiState.Movie(testMovieDetail),
                 onHideBottomSheet = {},
                 onErrorShown = {},
                 onFavoriteClick = {},

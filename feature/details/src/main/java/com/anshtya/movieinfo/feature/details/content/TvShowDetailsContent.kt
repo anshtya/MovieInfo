@@ -36,7 +36,6 @@ import com.anshtya.movieinfo.feature.details.InfoSection
 import com.anshtya.movieinfo.feature.details.LibraryActions
 import com.anshtya.movieinfo.feature.details.OverviewSection
 import com.anshtya.movieinfo.feature.details.R
-import com.anshtya.movieinfo.feature.details.backdropHeight
 
 @Composable
 internal fun TvShowDetailsContent(
@@ -54,12 +53,7 @@ internal fun TvShowDetailsContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        BackdropImageSection(
-            path = tvDetails.backdropPath,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(backdropHeight)
-        )
+        BackdropImageSection(path = tvDetails.backdropPath)
 
         Column(
             verticalArrangement = Arrangement.spacedBy(6.dp),

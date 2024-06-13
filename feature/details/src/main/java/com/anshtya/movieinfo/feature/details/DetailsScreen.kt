@@ -70,7 +70,7 @@ import kotlinx.coroutines.launch
 
 private val horizontalPadding = 8.dp
 private val verticalPadding = 4.dp
-internal val backdropHeight = 220.dp
+private val backdropHeight = 220.dp
 
 @Composable
 internal fun DetailsRoute(
@@ -147,7 +147,7 @@ internal fun DetailsScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = horizontalPadding, vertical = 4.dp)
+                            .padding(horizontal = horizontalPadding, vertical = verticalPadding)
                     ) {
                         Text(
                             text = stringResource(id = R.string.sign_in_sheet_text),
@@ -182,9 +182,11 @@ internal fun DetailsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (uiState.isLoading) {
-                val loadingContentDescription = stringResource(id = R.string.details_loading)
-                Box(Modifier.fillMaxSize()) {
+            when (contentDetailsUiState) {
+                ContentDetailUiState.Loading -> {
+                    val loadingContentDescription = stringResource(
+                        id = R.string.details_loading
+                    )
                     CircularProgressIndicator(
                         modifier = Modifier
                             .align(Alignment.Center)
@@ -193,57 +195,55 @@ internal fun DetailsScreen(
                             }
                     )
                 }
-            } else {
-                when (contentDetailsUiState) {
-                    ContentDetailUiState.Empty -> {
-                        uiState.errorMessage?.let {
-                            scope.launch { snackbarHostState.showSnackbar(it) }
-                            onErrorShown()
-                        }
-                    }
 
-                    is ContentDetailUiState.Movie -> {
-                        MovieDetailsContent(
-                            movieDetails = contentDetailsUiState.data,
-                            isFavorite = uiState.markedFavorite,
-                            isAddedToWatchList = uiState.savedInWatchlist,
-                            onFavoriteClick = onFavoriteClick,
-                            onWatchlistClick = onWatchlistClick,
-                            onSeeAllCastClick = onSeeAllCastClick,
-                            onItemClick = onItemClick,
-                            modifier = Modifier.padding(
-                                horizontal = horizontalPadding,
-                                vertical = verticalPadding
-                            )
-                        )
+                ContentDetailUiState.Empty -> {
+                    uiState.errorMessage?.let {
+                        scope.launch { snackbarHostState.showSnackbar(it) }
+                        onErrorShown()
                     }
+                }
 
-                    is ContentDetailUiState.TV -> {
-                        TvShowDetailsContent(
-                            tvDetails = contentDetailsUiState.data,
-                            isFavorite = uiState.markedFavorite,
-                            isAddedToWatchList = uiState.savedInWatchlist,
-                            onFavoriteClick = onFavoriteClick,
-                            onWatchlistClick = onWatchlistClick,
-                            onSeeAllCastClick = onSeeAllCastClick,
-                            onItemClick = onItemClick,
-                            modifier = Modifier.padding(
-                                horizontal = horizontalPadding,
-                                vertical = verticalPadding
-                            )
+                is ContentDetailUiState.Movie -> {
+                    MovieDetailsContent(
+                        movieDetails = contentDetailsUiState.data,
+                        isFavorite = uiState.markedFavorite,
+                        isAddedToWatchList = uiState.savedInWatchlist,
+                        onFavoriteClick = onFavoriteClick,
+                        onWatchlistClick = onWatchlistClick,
+                        onSeeAllCastClick = onSeeAllCastClick,
+                        onItemClick = onItemClick,
+                        modifier = Modifier.padding(
+                            horizontal = horizontalPadding,
+                            vertical = verticalPadding
                         )
-                    }
+                    )
+                }
 
-                    is ContentDetailUiState.Person -> {
-                        PersonDetailsContent(
-                            personDetails = contentDetailsUiState.data,
-                            onBackClick = onBackClick,
-                            modifier = Modifier.padding(
-                                horizontal = horizontalPadding,
-                                vertical = 6.dp
-                            )
+                is ContentDetailUiState.TV -> {
+                    TvShowDetailsContent(
+                        tvDetails = contentDetailsUiState.data,
+                        isFavorite = uiState.markedFavorite,
+                        isAddedToWatchList = uiState.savedInWatchlist,
+                        onFavoriteClick = onFavoriteClick,
+                        onWatchlistClick = onWatchlistClick,
+                        onSeeAllCastClick = onSeeAllCastClick,
+                        onItemClick = onItemClick,
+                        modifier = Modifier.padding(
+                            horizontal = horizontalPadding,
+                            vertical = verticalPadding
                         )
-                    }
+                    )
+                }
+
+                is ContentDetailUiState.Person -> {
+                    PersonDetailsContent(
+                        personDetails = contentDetailsUiState.data,
+                        onBackClick = onBackClick,
+                        modifier = Modifier.padding(
+                            horizontal = horizontalPadding,
+                            vertical = 6.dp
+                        )
+                    )
                 }
             }
 
@@ -279,8 +279,7 @@ internal fun DetailsScreen(
 
 @Composable
 internal fun BackdropImageSection(
-    path: String,
-    modifier: Modifier = Modifier
+    path: String
 ) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -288,7 +287,9 @@ internal fun BackdropImageSection(
             bottomEnd = 18.dp,
             bottomStart = 18.dp
         ),
-        modifier = modifier
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(backdropHeight)
     ) {
         TmdbImage(
             width = 1280,

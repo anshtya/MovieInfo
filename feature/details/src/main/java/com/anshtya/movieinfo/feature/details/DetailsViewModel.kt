@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,7 +42,6 @@ class DetailsViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     val contentDetailsUiState: StateFlow<ContentDetailUiState> = idDetailsString
-        .onStart { _uiState.update { it.copy(isLoading = true) } }
         .mapLatest { detailsString ->
             detailsString.takeIf { it.isNotEmpty() }?.let {
                 val idDetails = getIdAndMediaType(detailsString)
@@ -70,11 +67,10 @@ class DetailsViewModel @Inject constructor(
                 }
             } ?: ContentDetailUiState.Empty
         }
-        .onEach { _uiState.update { it.copy(isLoading = false) } }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = ContentDetailUiState.Empty
+            initialValue = ContentDetailUiState.Loading
         )
 
     fun addOrRemoveFavorite(libraryItem: LibraryItem) {
@@ -195,7 +191,6 @@ class DetailsViewModel @Inject constructor(
 }
 
 data class DetailsUiState(
-    val isLoading: Boolean = false,
     val markedFavorite: Boolean = false,
     val savedInWatchlist: Boolean = false,
     val showSignInSheet: Boolean = false,
@@ -203,6 +198,7 @@ data class DetailsUiState(
 )
 
 sealed interface ContentDetailUiState {
+    data object Loading: ContentDetailUiState
     data object Empty : ContentDetailUiState
     data class Movie(val data: MovieDetails) : ContentDetailUiState
     data class TV(val data: TvDetails) : ContentDetailUiState

@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.core.ui.MediaItemCard
@@ -15,22 +17,22 @@ import com.anshtya.movieinfo.core.ui.noRippleClickable
 internal fun SearchSuggestionItem(
     name: String,
     imagePath: String,
-    onItemClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onItemClick: () -> Unit
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.noRippleClickable { onItemClick() }
     ) {
         MediaItemCard(
             posterPath = imagePath,
-            onItemClick = onItemClick,
-            modifier = modifier
+            onItemClick = onItemClick
         )
         Text(
             text = name,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
             modifier = Modifier.padding(vertical = 8.dp)
         )
     }

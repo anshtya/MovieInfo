@@ -88,8 +88,8 @@ internal fun SearchScreen(
                 }
 
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(140.dp),
-                    contentPadding = PaddingValues(horizontal = 10.dp),
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(horizontal = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -103,8 +103,7 @@ internal fun SearchScreen(
                             onItemClick = {
                                 // Converting type to uppercase for [MediaType]
                                 onSearchResultClick("${it.id},${it.mediaType.uppercase()}")
-                            },
-                            modifier = Modifier.fillMaxSize()
+                            }
                         )
                     }
                 }

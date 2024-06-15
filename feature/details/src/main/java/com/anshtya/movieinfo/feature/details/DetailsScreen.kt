@@ -1,27 +1,17 @@
 package com.anshtya.movieinfo.feature.details
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Bookmark
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -48,29 +38,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.library.LibraryItem
-import com.anshtya.movieinfo.core.ui.LibraryActionButton
-import com.anshtya.movieinfo.core.ui.Rating
-import com.anshtya.movieinfo.core.ui.TmdbImage
 import com.anshtya.movieinfo.core.ui.noRippleClickable
 import com.anshtya.movieinfo.feature.details.content.MovieDetailsContent
 import com.anshtya.movieinfo.feature.details.content.PersonDetailsContent
 import com.anshtya.movieinfo.feature.details.content.TvShowDetailsContent
 import kotlinx.coroutines.launch
 
-private val horizontalPadding = 8.dp
-private val verticalPadding = 4.dp
-private val backdropHeight = 220.dp
+internal val horizontalPadding = 8.dp
+internal val verticalPadding = 4.dp
 
 @Composable
 internal fun DetailsRoute(
@@ -121,7 +99,7 @@ internal fun DetailsScreen(
 
     LaunchedEffect(uiState.showSignInSheet) {
         if (uiState.showSignInSheet) {
-            bottomSheetState.show()
+            scaffoldState.bottomSheetState.expand()
         }
     }
 
@@ -159,7 +137,7 @@ internal fun DetailsScreen(
                         Button(
                             onClick = {
                                 scope.launch {
-                                    bottomSheetState.hide()
+                                    scaffoldState.bottomSheetState.hide()
                                 }.invokeOnCompletion {
                                     onHideBottomSheet()
                                 }
@@ -211,11 +189,8 @@ internal fun DetailsScreen(
                         onFavoriteClick = onFavoriteClick,
                         onWatchlistClick = onWatchlistClick,
                         onSeeAllCastClick = onSeeAllCastClick,
-                        onItemClick = onItemClick,
-                        modifier = Modifier.padding(
-                            horizontal = horizontalPadding,
-                            vertical = verticalPadding
-                        )
+                        onCastClick = onItemClick,
+                        onRecommendationClick = onItemClick
                     )
                 }
 
@@ -227,11 +202,8 @@ internal fun DetailsScreen(
                         onFavoriteClick = onFavoriteClick,
                         onWatchlistClick = onWatchlistClick,
                         onSeeAllCastClick = onSeeAllCastClick,
-                        onItemClick = onItemClick,
-                        modifier = Modifier.padding(
-                            horizontal = horizontalPadding,
-                            vertical = verticalPadding
-                        )
+                        onCastClick = onItemClick,
+                        onRecommendationClick = onItemClick
                     )
                 }
 
@@ -248,248 +220,43 @@ internal fun DetailsScreen(
             }
 
             if (contentDetailsUiState !is ContentDetailUiState.Person) {
-                TopAppBar(
-                    title = {},
-                    navigationIcon = {
-                        Surface(
-                            shape = CircleShape,
-                            color = Color.Black.copy(alpha = 0.5f),
-                            modifier = Modifier.padding(4.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = stringResource(
-                                    id = com.anshtya.movieinfo.core.ui.R.string.back
-                                ),
-                                tint = Color.White,
-                                modifier = Modifier
-                                    .noRippleClickable { onBackClick() }
-                                    .padding(6.dp)
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent
-                    )
-                )
+                DetailsTopAppBar(onBackClick = onBackClick)
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun BackdropImageSection(
-    path: String
+private fun DetailsTopAppBar(
+    onBackClick: () -> Unit,
+    showTitle: Boolean = false,
+    title: String = ""
 ) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        shape = RoundedCornerShape(
-            bottomEnd = 18.dp,
-            bottomStart = 18.dp
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(backdropHeight)
-    ) {
-        TmdbImage(
-            width = 1280,
-            imageUrl = path
-        )
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-internal fun InfoSection(
-    voteCount: Int,
-    name: String,
-    rating: Double,
-    releaseYear: Int,
-    tagline: String,
-    runtime: String
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            if (runtime.isNotEmpty()) {
-                Text(runtime)
-                if (releaseYear.toString().isNotEmpty()) {
-                    Text("|")
-                    Text("$releaseYear")
-                }
-            } else {
-                Text("$releaseYear")
-            }
-        }
-
-        Rating(rating = rating, count = voteCount)
-
-        if (tagline.isNotEmpty()) {
-            Text(
-                text = tagline,
-                textAlign = TextAlign.Center,
-                fontStyle = FontStyle.Italic
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-internal fun GenreSection(
-    genres: List<String>
-) {
-    if (genres.isNotEmpty()) {
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            genres.forEach {
-                GenreButton(name = it)
-            }
-        }
-    }
-}
-
-@Composable
-internal fun OverviewSection(
-    overview: String
-) {
-    Column {
-        Text(
-            text = stringResource(id = R.string.overview),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold
-        )
-        Spacer(Modifier.height(2.dp))
-        Text(overview)
-    }
-}
-
-@Composable
-internal fun DetailItem(
-    fieldName: String,
-    value: String
-) {
-    val text = buildAnnotatedString {
-        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-            append(fieldName)
-        }
-        append(value)
-    }
-    Text(text)
-}
-
-@Composable
-internal fun CastItem(
-    id: Int,
-    imagePath: String,
-    name: String,
-    characterName: String,
-    onItemClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        shape = RoundedCornerShape(6.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-    ) {
-        Column(
-            modifier = Modifier
-                .width(120.dp)
-                .noRippleClickable {
-                    onItemClick("${id},${MediaType.PERSON}")
-                }
-        ) {
-            TmdbImage(
-                width = 500,
-                imageUrl = imagePath,
-                modifier = modifier
-                    .height(140.dp)
-                    .noRippleClickable {
-                        onItemClick("${id},${MediaType.PERSON}")
-                    }
-            )
-            Spacer(Modifier.height(4.dp))
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 2.dp, horizontal = 4.dp)
+    TopAppBar(
+        title = {
+            if (showTitle) Text(title)
+        },
+        navigationIcon = {
+            Surface(
+                shape = CircleShape,
+                color = Color.Black.copy(alpha = 0.5f),
+                modifier = Modifier.padding(start = 2.dp)
             ) {
-                Text(
-                    text = name,
-                    fontWeight = FontWeight.Bold,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1
-                )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    text = characterName,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = stringResource(
+                        id = com.anshtya.movieinfo.core.ui.R.string.back
+                    ),
+                    tint = Color.White,
+                    modifier = Modifier
+                        .noRippleClickable { onBackClick() }
+                        .padding(6.dp)
                 )
             }
-        }
-    }
-}
-
-@Composable
-internal fun LibraryActions(
-    isFavorite: Boolean,
-    isAddedToWatchList: Boolean,
-    onFavoriteClick: () -> Unit,
-    onWatchlistClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Max)
-            .padding(top = 6.dp, bottom = 4.dp)
-    ) {
-        LibraryActionButton(
-            active = isFavorite,
-            name = stringResource(id = R.string.mark_favorite),
-            icon = Icons.Rounded.Favorite,
-            onClick = onFavoriteClick,
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f)
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent
         )
-        Spacer(Modifier.width(8.dp))
-        LibraryActionButton(
-            active = isAddedToWatchList,
-            name = stringResource(id = R.string.add_to_watchlist),
-            icon = Icons.Rounded.Bookmark,
-            onClick = onWatchlistClick,
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f)
-        )
-    }
-}
-
-@Composable
-private fun GenreButton(
-    name: String
-) {
-    Surface(
-        shape = RoundedCornerShape(10.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant
-    ) {
-        Text(
-            text = name,
-            modifier = Modifier.padding(4.dp)
-        )
-    }
+    )
 }

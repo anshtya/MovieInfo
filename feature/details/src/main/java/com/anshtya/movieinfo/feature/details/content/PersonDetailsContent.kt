@@ -27,8 +27,6 @@ import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.core.model.details.people.PersonDetails
 import com.anshtya.movieinfo.core.ui.MediaItemCard
 import com.anshtya.movieinfo.core.ui.noRippleClickable
-import com.anshtya.movieinfo.feature.details.DetailItem
-import com.anshtya.movieinfo.feature.details.OverviewSection
 import com.anshtya.movieinfo.feature.details.R
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,40 +1,15 @@
 package com.anshtya.movieinfo.feature.details.content
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.details.tv.TvDetails
 import com.anshtya.movieinfo.core.model.library.LibraryItem
-import com.anshtya.movieinfo.core.ui.ContentSectionHeader
-import com.anshtya.movieinfo.core.ui.LazyRowContentSection
-import com.anshtya.movieinfo.core.ui.MediaItemCard
-import com.anshtya.movieinfo.core.ui.noRippleClickable
-import com.anshtya.movieinfo.feature.details.BackdropImageSection
-import com.anshtya.movieinfo.feature.details.CastItem
-import com.anshtya.movieinfo.feature.details.DetailItem
-import com.anshtya.movieinfo.feature.details.GenreSection
-import com.anshtya.movieinfo.feature.details.InfoSection
-import com.anshtya.movieinfo.feature.details.LibraryActions
-import com.anshtya.movieinfo.feature.details.OverviewSection
 import com.anshtya.movieinfo.feature.details.R
 
 @Composable
@@ -44,122 +19,43 @@ internal fun TvShowDetailsContent(
     isAddedToWatchList: Boolean,
     onFavoriteClick: (LibraryItem) -> Unit,
     onWatchlistClick: (LibraryItem) -> Unit,
-    onItemClick: (String) -> Unit,
     onSeeAllCastClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onCastClick: (String) -> Unit,
+    onRecommendationClick: (String) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+    MediaDetailsContent(
+        backdropPath = tvDetails.backdropPath,
+        voteCount = tvDetails.voteCount,
+        name = tvDetails.name,
+        rating = tvDetails.rating,
+        releaseYear = tvDetails.releaseYear,
+        runtime = tvDetails.episodeRunTime,
+        tagline = tvDetails.tagline,
+        genres = tvDetails.genres,
+        overview = tvDetails.overview,
+        cast = tvDetails.credits.cast.take(10),
+        recommendations = tvDetails.recommendations,
+        isFavorite = isFavorite,
+        isAddedToWatchList = isAddedToWatchList,
+        onFavoriteClick = { onFavoriteClick(tvDetails.asLibraryItem()) },
+        onWatchlistClick = { onWatchlistClick(tvDetails.asLibraryItem()) },
+        onSeeAllCastClick = onSeeAllCastClick,
+        onCastClick = onCastClick,
+        onRecommendationClick = { id -> onRecommendationClick("${id},${MediaType.TV}") }
     ) {
-        BackdropImageSection(path = tvDetails.backdropPath)
-
-        Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = modifier.fillMaxWidth()
-        ) {
-            InfoSection(
-                voteCount = tvDetails.voteCount,
-                name = tvDetails.name,
-                rating = tvDetails.rating,
-                releaseYear = tvDetails.releaseYear,
-                tagline = tvDetails.tagline,
-                runtime = tvDetails.episodeRunTime
-            )
-
-            GenreSection(tvDetails.genres)
-
-            LibraryActions(
-                isFavorite = isFavorite,
-                isAddedToWatchList = isAddedToWatchList,
-                onFavoriteClick = { onFavoriteClick(tvDetails.asLibraryItem()) },
-                onWatchlistClick = { onWatchlistClick(tvDetails.asLibraryItem() )}
-            )
-
-            LazyRowContentSection(
-                pagingEnabled = false,
-                sectionHeaderContent = {
-                    ContentSectionHeader(
-                        sectionName = stringResource(id = R.string.top_billed_cast),
-                        onSeeAllClick = onSeeAllCastClick
-                    )
-                },
-                rowContent = {
-                    items(
-                        items = tvDetails.credits.cast.take(10),
-                        key = { it.id }
-                    ) {
-                        CastItem(
-                            id = it.id,
-                            imagePath = it.profilePath,
-                            name = it.name,
-                            characterName = it.character,
-                            onItemClick = onItemClick
-                        )
-                    }
-
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .width(140.dp)
-                                .noRippleClickable { onSeeAllCastClick() }
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.view_all),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .noRippleClickable { onSeeAllCastClick() }
-                            )
-                        }
-                    }
-                },
-                modifier = Modifier
-                    .height(200.dp)
-                    .padding(bottom = 2.dp)
-            )
-
-            OverviewSection(tvDetails.overview)
-
-            TvDetailsSection(
-                originalLanguage = tvDetails.originalLanguage,
-                firstAirDate = tvDetails.firstAirDate,
-                lastAirDate = tvDetails.lastAirDate,
-                inProduction = tvDetails.inProduction,
-                status = tvDetails.status,
-                nextAirDate = tvDetails.nextEpisodeToAir?.airDate,
-                numberOfEpisodes = tvDetails.numberOfEpisodes,
-                numberOfSeasons = tvDetails.numberOfSeasons,
-                networks = tvDetails.networks,
-                productionCompanies = tvDetails.productionCompanies,
-                productionCountries = tvDetails.productionCountries
-            )
-
-            LazyRowContentSection(
-                pagingEnabled = false,
-                sectionHeaderContent = {
-                    Text(
-                        text = stringResource(id = R.string.recommendations),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                rowContent = {
-                    items(
-                        items = tvDetails.recommendations,
-                        key = { it.id }
-                    ) {
-                        MediaItemCard(
-                            posterPath = it.imagePath,
-                            onItemClick = { onItemClick("${it.id},${MediaType.TV}") }
-                        )
-                    }
-                },
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
-        }
+        TvDetailsSection(
+            originalLanguage = tvDetails.originalLanguage,
+            firstAirDate = tvDetails.firstAirDate,
+            lastAirDate = tvDetails.lastAirDate,
+            inProduction = tvDetails.inProduction,
+            status = tvDetails.status,
+            nextAirDate = tvDetails.nextEpisodeToAir?.airDate,
+            numberOfEpisodes = tvDetails.numberOfEpisodes,
+            numberOfSeasons = tvDetails.numberOfSeasons,
+            networks = tvDetails.networks,
+            productionCompanies = tvDetails.productionCompanies,
+            productionCountries = tvDetails.productionCountries
+        )
     }
 }
 

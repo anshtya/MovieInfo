@@ -27,8 +27,6 @@ import com.anshtya.movieinfo.core.model.details.people.Credits
 import com.anshtya.movieinfo.core.ui.PersonImage
 import com.anshtya.movieinfo.core.ui.noRippleClickable
 
-private val horizontalPadding = 8.dp
-
 @Composable
 internal fun CreditsRoute(
     onItemClick: (String) -> Unit,

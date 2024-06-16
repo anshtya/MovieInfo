@@ -228,6 +228,7 @@ internal fun InfoSection(
         Text(
             text = name,
             style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center,
             fontWeight = FontWeight.SemiBold
         )
 

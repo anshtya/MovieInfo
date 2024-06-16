@@ -7,13 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.content.MovieListCategory
-import com.anshtya.movieinfo.core.ui.MediaItemCard
 import com.anshtya.movieinfo.core.ui.LazyVerticalContentGrid
-import com.anshtya.movieinfo.core.ui.noRippleClickable
+import com.anshtya.movieinfo.core.ui.MediaItemCard
+import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
 
 private val horizontalPadding = 8.dp
 
@@ -70,55 +67,53 @@ internal fun ItemsScreen(
     onItemClick: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
-    Column {
-        TopAppBar(
-            title = {
-                Text(
-                    text = categoryDisplayName,
-                    fontWeight = FontWeight.SemiBold
-                )
-            },
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = stringResource(
-                        id = com.anshtya.movieinfo.core.ui.R.string.back
-                    ),
-                    modifier = Modifier
-                        .padding(start = 2.dp, end = 4.dp)
-                        .noRippleClickable { onBackClick() }
-                )
-            }
-        )
-
-        LazyVerticalContentGrid(
-            pagingEnabled = true,
-            itemsEmpty = content.items.isEmpty(),
-            isLoading = content.isLoading,
-            endReached = content.endReached,
-            contentPadding = PaddingValues(horizontal = horizontalPadding),
-            appendItems = { appendItems(content.category) }
+    Scaffold(
+        topBar = {
+            TopAppBarWithBackButton(
+                title = {
+                    Text(
+                        text = categoryDisplayName,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                onBackClick = onBackClick
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingValues)
         ) {
-            items(
-                items = content.items,
-                key = { it.id }
+            LazyVerticalContentGrid(
+                pagingEnabled = true,
+                itemsEmpty = content.items.isEmpty(),
+                isLoading = content.isLoading,
+                endReached = content.endReached,
+                contentPadding = PaddingValues(horizontal = horizontalPadding),
+                appendItems = { appendItems(content.category) }
             ) {
-                MediaItemCard(
-                    posterPath = it.imagePath,
-                    onItemClick = { onItemClick("${it.id},${MediaType.MOVIE}") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp)
-                )
-            }
-            if (content.isLoading) {
-                item {
-                    Box(
+                items(
+                    items = content.items,
+                    key = { it.id }
+                ) {
+                    MediaItemCard(
+                        posterPath = it.imagePath,
+                        onItemClick = { onItemClick("${it.id},${MediaType.MOVIE}") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(160.dp)
-                    ) {
-                        CircularProgressIndicator(Modifier.align(Alignment.Center))
+                    )
+                }
+                if (content.isLoading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(160.dp)
+                        ) {
+                            CircularProgressIndicator(Modifier.align(Alignment.Center))
+                        }
                     }
                 }
             }

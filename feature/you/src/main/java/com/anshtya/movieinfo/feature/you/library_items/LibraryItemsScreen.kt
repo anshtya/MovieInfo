@@ -16,11 +16,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -29,7 +27,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,10 +41,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.movieinfo.core.ui.MediaItemCard
-import com.anshtya.movieinfo.core.ui.LazyVerticalContentGrid
 import com.anshtya.movieinfo.core.model.library.LibraryItem
 import com.anshtya.movieinfo.core.model.library.LibraryItemType
+import com.anshtya.movieinfo.core.ui.LazyVerticalContentGrid
+import com.anshtya.movieinfo.core.ui.MediaItemCard
+import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
 import com.anshtya.movieinfo.feature.you.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -104,6 +102,14 @@ internal fun LibraryItemsScreen(
     }
 
     Scaffold(
+        topBar = {
+            TopAppBarWithBackButton(
+                title = {
+                    libraryItemTitle?.let { Text(text = it) }
+                },
+                onBackClick = onBackClick
+            )
+        },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Column(
@@ -111,22 +117,6 @@ internal fun LibraryItemsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            TopAppBar(
-                title = {
-                    libraryItemTitle?.let { Text(text = it) }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(
-                                id = com.anshtya.movieinfo.core.ui.R.string.back
-                            )
-                        )
-                    }
-                }
-            )
-
             val libraryMediaTabs = LibraryMediaType.entries
             val pagerState = rememberPagerState(pageCount = { libraryMediaTabs.size })
 

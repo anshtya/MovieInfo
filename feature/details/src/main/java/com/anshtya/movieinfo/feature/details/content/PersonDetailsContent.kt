@@ -11,14 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.core.model.details.people.PersonDetails
 import com.anshtya.movieinfo.core.ui.MediaItemCard
-import com.anshtya.movieinfo.core.ui.noRippleClickable
+import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
 import com.anshtya.movieinfo.feature.details.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,18 +34,7 @@ internal fun PersonDetailsContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = stringResource(
-                            id = com.anshtya.movieinfo.core.ui.R.string.back
-                        ),
-                        modifier = Modifier.noRippleClickable { onBackClick() }
-                    )
-                }
-            )
+            TopAppBarWithBackButton(onBackClick = onBackClick)
         }
     ) { paddingValues ->
         Column(

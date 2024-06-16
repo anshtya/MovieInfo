@@ -9,21 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -41,7 +36,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.movieinfo.core.model.library.LibraryItem
-import com.anshtya.movieinfo.core.ui.noRippleClickable
+import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
 import com.anshtya.movieinfo.feature.details.content.MovieDetailsContent
 import com.anshtya.movieinfo.feature.details.content.PersonDetailsContent
 import com.anshtya.movieinfo.feature.details.content.TvShowDetailsContent
@@ -233,30 +228,19 @@ private fun DetailsTopAppBar(
     showTitle: Boolean = false,
     title: String = ""
 ) {
-    TopAppBar(
+    TopAppBarWithBackButton(
         title = {
-            if (showTitle) Text(title)
-        },
-        navigationIcon = {
-            Surface(
-                shape = CircleShape,
-                color = Color.Black.copy(alpha = 0.5f),
-                modifier = Modifier.padding(start = 2.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = stringResource(
-                        id = com.anshtya.movieinfo.core.ui.R.string.back
-                    ),
-                    tint = Color.White,
-                    modifier = Modifier
-                        .noRippleClickable { onBackClick() }
-                        .padding(6.dp)
-                )
+            if (showTitle) {
+                Text(title)
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
+        topAppBarColors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent
-        )
+        ),
+        iconButtonColors = IconButtonDefaults.iconButtonColors(
+            containerColor = Color.Black.copy(alpha = 0.5f),
+            contentColor = Color.White
+        ),
+        onBackClick = onBackClick
     )
 }

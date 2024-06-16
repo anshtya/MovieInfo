@@ -13,7 +13,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -28,8 +27,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,7 +36,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -59,7 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.movieinfo.core.ui.AnnotatedClickableText
-import com.anshtya.movieinfo.core.ui.noRippleClickable
+import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
 import kotlinx.coroutines.launch
 
 @Composable
@@ -113,6 +109,9 @@ internal fun AuthScreen(
     }
 
     Scaffold(
+        topBar = {
+            TopAppBarWithBackButton(onBackClick = onBackClick)
+        },
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         }
@@ -125,24 +124,6 @@ internal fun AuthScreen(
                 .padding(horizontal = 12.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = stringResource(
-                            id = com.anshtya.movieinfo.core.ui.R.string.back
-                        ),
-                        modifier = Modifier.noRippleClickable { onBackClick() }
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
-            )
-
-            Spacer(Modifier.height(80.dp))
-
             val focusManager = LocalFocusManager.current
             var passwordVisible by remember { mutableStateOf(false) }
 

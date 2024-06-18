@@ -28,6 +28,8 @@ import com.anshtya.movieinfo.core.model.SearchItem
 import com.anshtya.movieinfo.core.ui.MovieInfoSearchBar
 import kotlinx.coroutines.launch
 
+private val horizontalPadding = 8.dp
+
 @Composable
 internal fun SearchRoute(
     navigateToDetail: (String) -> Unit,
@@ -89,8 +91,9 @@ internal fun SearchScreen(
 
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(horizontal = 4.dp),
+                    contentPadding = PaddingValues(horizontal = horizontalPadding),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(

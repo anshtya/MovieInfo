@@ -2,16 +2,14 @@ package com.anshtya.movieinfo.feature.tv
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -71,7 +69,6 @@ internal fun FeedScreen(
     onSeeAllClick: (String) -> Unit,
     onErrorShown: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
     val snackbarState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -83,104 +80,51 @@ internal fun FeedScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarState) }
     ) { paddingValues ->
-        Column(
+        LazyColumn(
+            contentPadding = PaddingValues(top = 4.dp, bottom = 8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(paddingValues)
-                .padding(top = 4.dp, bottom = 8.dp)
-                .verticalScroll(state = scrollState),
+                .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            AiringTodayTvShows(
-                content = airingTodayTvShows,
-                onItemClick = onItemClick,
-                appendItems = appendItems,
-                onSeeAllClick = onSeeAllClick
-            )
-            OnAirTvShows(
-                content = onAirTvShows,
-                onItemClick = onItemClick,
-                appendItems = appendItems,
-                onSeeAllClick = onSeeAllClick
-            )
-            TopRatedTvShows(
-                content = topRatedTvShows,
-                onItemClick = onItemClick,
-                appendItems = appendItems,
-                onSeeAllClick = onSeeAllClick
-            )
-            PopularTvShows(
-                content = popularTvShows,
-                onItemClick = onItemClick,
-                appendItems = appendItems,
-                onSeeAllClick = onSeeAllClick
-            )
+            item {
+                ContentSection(
+                    content = airingTodayTvShows,
+                    sectionName = stringResource(id = R.string.airing_today),
+                    appendItems = appendItems,
+                    onItemClick = onItemClick,
+                    onSeeAllClick = onSeeAllClick
+                )
+            }
+            item {
+                ContentSection(
+                    content = onAirTvShows,
+                    sectionName = stringResource(id = R.string.on_air),
+                    appendItems = appendItems,
+                    onItemClick = onItemClick,
+                    onSeeAllClick = onSeeAllClick
+                )
+            }
+            item {
+                ContentSection(
+                    content = topRatedTvShows,
+                    sectionName = stringResource(id = R.string.top_rated),
+                    appendItems = appendItems,
+                    onItemClick = onItemClick,
+                    onSeeAllClick = onSeeAllClick
+                )
+            }
+            item {
+                ContentSection(
+                    content = popularTvShows,
+                    sectionName = stringResource(id = R.string.popular),
+                    appendItems = appendItems,
+                    onItemClick = onItemClick,
+                    onSeeAllClick = onSeeAllClick
+                )
+            }
         }
     }
-}
-
-@Composable
-private fun AiringTodayTvShows(
-    content: ContentUiState,
-    appendItems: (TvShowListCategory) -> Unit,
-    onItemClick: (String) -> Unit,
-    onSeeAllClick: (String) -> Unit
-) {
-    ContentSection(
-        content = content,
-        sectionName = stringResource(id = R.string.airing_today),
-        appendItems = appendItems,
-        onItemClick = onItemClick,
-        onSeeAllClick = onSeeAllClick
-    )
-}
-
-@Composable
-private fun OnAirTvShows(
-    content: ContentUiState,
-    appendItems: (TvShowListCategory) -> Unit,
-    onItemClick: (String) -> Unit,
-    onSeeAllClick: (String) -> Unit
-) {
-    ContentSection(
-        content = content,
-        sectionName = stringResource(id = R.string.on_air),
-        appendItems = appendItems,
-        onItemClick = onItemClick,
-        onSeeAllClick = onSeeAllClick
-    )
-}
-
-@Composable
-private fun TopRatedTvShows(
-    content: ContentUiState,
-    appendItems: (TvShowListCategory) -> Unit,
-    onItemClick: (String) -> Unit,
-    onSeeAllClick: (String) -> Unit
-) {
-    ContentSection(
-        content = content,
-        sectionName = stringResource(id = R.string.top_rated),
-        appendItems = appendItems,
-        onItemClick = onItemClick,
-        onSeeAllClick = onSeeAllClick
-    )
-}
-
-@Composable
-private fun PopularTvShows(
-    content: ContentUiState,
-    appendItems: (TvShowListCategory) -> Unit,
-    onItemClick: (String) -> Unit,
-    onSeeAllClick: (String) -> Unit
-) {
-    ContentSection(
-        content = content,
-        sectionName = stringResource(id = R.string.popular),
-        appendItems = appendItems,
-        onItemClick = onItemClick,
-        onSeeAllClick = onSeeAllClick
-    )
 }
 
 @Composable

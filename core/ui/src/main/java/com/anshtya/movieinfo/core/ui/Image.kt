@@ -48,9 +48,11 @@ fun PersonImage(
 
 @Composable
 fun TmdbImage(
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.FillBounds,
+    alpha: Float = 1f,
     width: Int,
-    imageUrl: String,
-    modifier: Modifier = Modifier
+    imageUrl: String
 ) {
     Box(modifier.fillMaxSize()) {
         if (imageUrl.isEmpty()) {
@@ -63,7 +65,8 @@ fun TmdbImage(
             SubcomposeAsyncImage(
                 model = "https://image.tmdb.org/t/p/w${width}${imageUrl}",
                 contentDescription = null,
-                contentScale = ContentScale.FillBounds,
+                contentScale = contentScale,
+                alpha = alpha,
                 loading = {
                     Box(Modifier.fillMaxSize()) {
                         CircularProgressIndicator(

@@ -21,7 +21,8 @@ internal fun TvShowDetailsContent(
     onWatchlistClick: (LibraryItem) -> Unit,
     onSeeAllCastClick: () -> Unit,
     onCastClick: (String) -> Unit,
-    onRecommendationClick: (String) -> Unit
+    onRecommendationClick: (String) -> Unit,
+    onBackdropCollapse: (Boolean) -> Unit,
 ) {
     MediaDetailsContent(
         backdropPath = tvDetails.backdropPath,
@@ -41,7 +42,10 @@ internal fun TvShowDetailsContent(
         onWatchlistClick = { onWatchlistClick(tvDetails.asLibraryItem()) },
         onSeeAllCastClick = onSeeAllCastClick,
         onCastClick = onCastClick,
-        onRecommendationClick = { id -> onRecommendationClick("${id},${MediaType.TV}") }
+        onRecommendationClick = { id ->
+            onRecommendationClick("${id},${MediaType.TV}")
+        },
+        onBackdropCollapse = onBackdropCollapse
     ) {
         TvDetailsSection(
             originalLanguage = tvDetails.originalLanguage,

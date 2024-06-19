@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,10 +17,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.Favorite
@@ -27,8 +28,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -47,11 +60,14 @@ import com.anshtya.movieinfo.core.ui.MediaItemCard
 import com.anshtya.movieinfo.core.ui.Rating
 import com.anshtya.movieinfo.core.ui.TmdbImage
 import com.anshtya.movieinfo.core.ui.noRippleClickable
+import com.anshtya.movieinfo.feature.details.OverviewSection
 import com.anshtya.movieinfo.feature.details.R
 import com.anshtya.movieinfo.feature.details.horizontalPadding
 import com.anshtya.movieinfo.feature.details.verticalPadding
 
-private val backdropHeight = 220.dp
+private val backdropExpandedHeight = 220.dp
+private val collapsedHeight = 64.dp
+private val collapseHeight = backdropExpandedHeight - collapsedHeight
 
 @Composable
 internal fun MediaDetailsContent(
@@ -73,130 +89,147 @@ internal fun MediaDetailsContent(
     onSeeAllCastClick: () -> Unit,
     onCastClick: (String) -> Unit,
     onRecommendationClick: (String) -> Unit,
+    onBackdropCollapse: (Boolean) -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val collapseHeightPx = with(LocalDensity.current) { collapseHeight.toPx() }
+    val nestedScrollConnection = remember(collapseHeightPx) {
+        ExitOnlyCollapseNestedConnection(collapseHeightPx)
+    }
+    val backdropHeight = with(LocalDensity.current) {
+        (backdropExpandedHeight.toPx() + nestedScrollConnection.collapseOffsetHeightPx).toDp()
+    }
+
+    val isBackdropCollapsed by remember(backdropHeight) {
+        derivedStateOf { backdropHeight == collapsedHeight }
+    }
+    LaunchedEffect(isBackdropCollapsed) {
+        onBackdropCollapse(isBackdropCollapsed)
+    }
+
+    val scrollValue = 1 - ((backdropExpandedHeight - backdropHeight) / collapseHeight)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
+            .nestedScroll(nestedScrollConnection)
     ) {
         BackdropImageSection(
             path = backdropPath,
+            scrollValue = scrollValue,
             modifier = Modifier.height(backdropHeight)
         )
-        Column(
+        LazyColumn(
+            contentPadding = PaddingValues(
+                horizontal = horizontalPadding,
+                vertical = verticalPadding
+            ),
             verticalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = horizontalPadding,
-                    vertical = verticalPadding
-                )
+            modifier = Modifier.fillMaxWidth()
         ) {
-            InfoSection(
-                voteCount = voteCount,
-                name = name,
-                rating = rating,
-                releaseYear = releaseYear,
-                runtime = runtime,
-                tagline = tagline
-            )
-
-            GenreSection(genres)
-
-            LibraryActions(
-                isFavorite = isFavorite,
-                isAddedToWatchList = isAddedToWatchList,
-                onFavoriteClick = onFavoriteClick,
-                onWatchlistClick = onWatchlistClick
-            )
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ContentSectionHeader(
-                    sectionName = stringResource(id = R.string.top_billed_cast),
-                    onSeeAllClick = onSeeAllCastClick
+            item {
+                InfoSection(
+                    voteCount = voteCount,
+                    name = name,
+                    rating = rating,
+                    releaseYear = releaseYear,
+                    runtime = runtime,
+                    tagline = tagline
                 )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState())
-                        .height(IntrinsicSize.Max)
-                        .padding(bottom = 2.dp)
-                ) {
-                    cast.forEach {
-                        CastItem(
-                            id = it.id,
-                            imagePath = it.profilePath,
-                            name = it.name,
-                            characterName = it.character,
-                            onItemClick = onCastClick
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(130.dp)
-                            .noRippleClickable { onSeeAllCastClick() }
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.view_all),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .noRippleClickable { onSeeAllCastClick() }
-                        )
-                    }
-                }
             }
 
-            OverviewSection(overview)
+            item { GenreSection(genres) }
 
-            content()
+            item {
+                LibraryActions(
+                    isFavorite = isFavorite,
+                    isAddedToWatchList = isAddedToWatchList,
+                    onFavoriteClick = onFavoriteClick,
+                    onWatchlistClick = onWatchlistClick
+                )
+            }
 
-            LazyRowContentSection(
-                pagingEnabled = false,
-                sectionHeaderContent = {
-                    Text(
-                        text = stringResource(id = R.string.recommendations),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                rowContent = {
-                    if (recommendations.isEmpty()) {
-                        item {
-                            Box(Modifier.fillMaxSize()) {
-                                Text(
-                                    text = stringResource(id = R.string.not_available),
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
-                            }
-                        }
-                    } else {
-                        items(
-                            items = recommendations,
-                            key = { it.id }
-                        ) {
-                            MediaItemCard(
-                                posterPath = it.imagePath,
-                                onItemClick = { onRecommendationClick("${it.id}") }
-                            )
-                        }
-                    }
-                },
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
+            item {
+                TopBilledCast(
+                    cast = cast,
+                    onCastClick = onCastClick,
+                    onSeeAllCastClick = onSeeAllCastClick
+                )
+            }
+
+            item { OverviewSection(overview) }
+
+            item { content() }
+
+            item {
+                Recommendations(
+                    recommendations = recommendations,
+                    onRecommendationClick = onRecommendationClick
+                )
+            }
         }
     }
 }
 
+private class ExitOnlyCollapseNestedConnection(
+    val collapseHeightPx: Float
+) : NestedScrollConnection {
+    var collapseOffsetHeightPx by mutableFloatStateOf(0f)
+        private set
+
+    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+        val delta = available.y
+
+        // if scrolling down, don't consume anything
+        if (delta > 0f) return Offset.Zero
+
+        val previousOffset = collapseOffsetHeightPx
+        val newOffset = collapseOffsetHeightPx + delta
+        collapseOffsetHeightPx = newOffset.coerceIn(-collapseHeightPx, 0f)
+        return if (previousOffset != collapseOffsetHeightPx) {
+            // We are in the middle of top app bar collapse
+            available
+        } else {
+            Offset.Zero
+        }
+    }
+
+    override fun onPostScroll(
+        consumed: Offset,
+        available: Offset,
+        source: NestedScrollSource
+    ): Offset {
+        // change height of top app bar when scrolling all the way down and
+        // child has finished scrolling
+        if (consumed.y >= 0f && available.y > 0f) {
+            val prevOffset = collapseOffsetHeightPx
+            val newOffset = collapseOffsetHeightPx + available.y
+            collapseOffsetHeightPx = newOffset.coerceIn(-collapseHeightPx, 0f)
+            return Offset(x = 0f, y = (collapseOffsetHeightPx - prevOffset))
+        }
+
+        return Offset.Zero
+    }
+}
+
 @Composable
-internal fun BackdropImageSection(
+internal fun DetailItem(
+    fieldName: String,
+    value: String
+) {
+    val text = buildAnnotatedString {
+        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+            append(fieldName)
+        }
+        append(value)
+    }
+    Text(text)
+}
+
+@Composable
+private fun BackdropImageSection(
     path: String,
+    scrollValue: Float,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -205,14 +238,16 @@ internal fun BackdropImageSection(
     ) {
         TmdbImage(
             width = 1280,
-            imageUrl = path
+            imageUrl = path,
+            contentScale = ContentScale.Crop,
+            alpha = scrollValue
         )
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun InfoSection(
+private fun InfoSection(
     voteCount: Int,
     name: String,
     rating: Double,
@@ -260,7 +295,7 @@ internal fun InfoSection(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun GenreSection(
+private fun GenreSection(
     genres: List<String>
 ) {
     if (genres.isNotEmpty()) {
@@ -276,40 +311,96 @@ internal fun GenreSection(
 }
 
 @Composable
-internal fun OverviewSection(
-    overview: String
+private fun TopBilledCast(
+    cast: List<Cast>,
+    onCastClick: (String) -> Unit,
+    onSeeAllCastClick: () -> Unit,
 ) {
-    Column {
-        Text(
-            text = stringResource(id = R.string.overview),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        ContentSectionHeader(
+            sectionName = stringResource(id = R.string.top_billed_cast),
+            onSeeAllClick = onSeeAllCastClick
         )
-        Spacer(Modifier.height(2.dp))
-        if (overview.isEmpty()) {
-            Text(text = stringResource(id = R.string.not_available))
-        } else {
-            Text(overview)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+                .height(IntrinsicSize.Max)
+                .padding(bottom = 2.dp)
+        ) {
+            cast.forEach {
+                CastItem(
+                    id = it.id,
+                    imagePath = it.profilePath,
+                    name = it.name,
+                    characterName = it.character,
+                    onItemClick = onCastClick
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(130.dp)
+                    .noRippleClickable { onSeeAllCastClick() }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.view_all),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .noRippleClickable { onSeeAllCastClick() }
+                )
+            }
         }
     }
 }
 
 @Composable
-internal fun DetailItem(
-    fieldName: String,
-    value: String
+private fun Recommendations(
+    recommendations: List<ContentItem>,
+    onRecommendationClick: (String) -> Unit
 ) {
-    val text = buildAnnotatedString {
-        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-            append(fieldName)
-        }
-        append(value)
-    }
-    Text(text)
+    LazyRowContentSection(
+        pagingEnabled = false,
+        sectionHeaderContent = {
+            Text(
+                text = stringResource(id = R.string.recommendations),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+        },
+        rowContent = {
+            if (recommendations.isEmpty()) {
+                item {
+                    Box(Modifier.fillMaxSize()) {
+                        Text(
+                            text = stringResource(id = R.string.not_available),
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
+            } else {
+                items(
+                    items = recommendations,
+                    key = { it.id }
+                ) {
+                    MediaItemCard(
+                        posterPath = it.imagePath,
+                        onItemClick = { onRecommendationClick("${it.id}") }
+                    )
+                }
+            }
+        },
+        modifier = Modifier.padding(bottom = 4.dp)
+    )
 }
 
 @Composable
-internal fun CastItem(
+private fun CastItem(
     id: Int,
     imagePath: String,
     name: String,
@@ -357,7 +448,7 @@ internal fun CastItem(
 }
 
 @Composable
-internal fun LibraryActions(
+private fun LibraryActions(
     isFavorite: Boolean,
     isAddedToWatchList: Boolean,
     onFavoriteClick: () -> Unit,

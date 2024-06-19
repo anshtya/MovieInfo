@@ -47,7 +47,8 @@ fun NavGraphBuilder.detailsScreen(
 
             CreditsRoute(
                 viewModel = viewModel,
-                onItemClick = navController::navigateToDetails
+                onItemClick = navController::navigateToDetails,
+                onBackClick = navController::popBackStack
             )
         }
     }

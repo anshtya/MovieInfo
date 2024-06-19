@@ -2,6 +2,7 @@ package com.anshtya.movieinfo.feature.details
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,42 +28,63 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.details.people.Credits
 import com.anshtya.movieinfo.core.ui.PersonImage
+import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
 import com.anshtya.movieinfo.core.ui.noRippleClickable
 
 @Composable
 internal fun CreditsRoute(
     onItemClick: (String) -> Unit,
+    onBackClick: () -> Unit,
     viewModel: DetailsViewModel
 ) {
     val details by viewModel.contentDetailsUiState.collectAsStateWithLifecycle()
 
     CreditsScreen(
         details = details,
-        onItemClick = onItemClick
+        onItemClick = onItemClick,
+        onBackClick = onBackClick
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CreditsScreen(
     details: ContentDetailUiState,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    onBackClick: () -> Unit
 ) {
-    when (details) {
-        is ContentDetailUiState.Movie -> {
-            CreditsLazyColumn(
-                credits = details.data.credits,
-                onItemClick = onItemClick
+    Scaffold(
+        topBar = {
+            TopAppBarWithBackButton(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.credits),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                onBackClick = onBackClick
             )
         }
+    ) { paddingValues ->
+        Box(Modifier.padding(paddingValues)) {
+            when (details) {
+                is ContentDetailUiState.Movie -> {
+                    CreditsLazyColumn(
+                        credits = details.data.credits,
+                        onItemClick = onItemClick
+                    )
+                }
 
-        is ContentDetailUiState.TV -> {
-            CreditsLazyColumn(
-                credits = details.data.credits,
-                onItemClick = onItemClick
-            )
+                is ContentDetailUiState.TV -> {
+                    CreditsLazyColumn(
+                        credits = details.data.credits,
+                        onItemClick = onItemClick
+                    )
+                }
+
+                else -> Unit
+            }
         }
-
-        else -> Unit
     }
 }
 
@@ -133,7 +157,7 @@ private fun CreditsItem(
         modifier = modifier
             .fillMaxWidth()
             .noRippleClickable { onItemClick() }
-            .padding(horizontal = horizontalPadding,vertical = 6.dp)
+            .padding(horizontal = horizontalPadding, vertical = 6.dp)
     ) {
         PersonImage(
             imageUrl = imagePath,

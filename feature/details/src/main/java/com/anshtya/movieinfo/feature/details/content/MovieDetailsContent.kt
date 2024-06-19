@@ -21,7 +21,8 @@ internal fun MovieDetailsContent(
     onWatchlistClick: (LibraryItem) -> Unit,
     onCastClick: (String) -> Unit,
     onRecommendationClick: (String) -> Unit,
-    onSeeAllCastClick: () -> Unit
+    onSeeAllCastClick: () -> Unit,
+    onBackdropCollapse: (Boolean) -> Unit,
 ) {
     MediaDetailsContent(
         backdropPath = movieDetails.backdropPath,
@@ -41,7 +42,10 @@ internal fun MovieDetailsContent(
         onWatchlistClick = { onWatchlistClick(movieDetails.asLibraryItem()) },
         onSeeAllCastClick = onSeeAllCastClick,
         onCastClick = onCastClick,
-        onRecommendationClick = { id -> onRecommendationClick("${id},${MediaType.MOVIE}") }
+        onRecommendationClick = { id ->
+            onRecommendationClick("${id},${MediaType.MOVIE}")
+        },
+        onBackdropCollapse = onBackdropCollapse
     ) {
         MovieDetailsSection(
             releaseDate = movieDetails.releaseDate,

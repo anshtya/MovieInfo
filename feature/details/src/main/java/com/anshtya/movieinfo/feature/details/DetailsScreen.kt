@@ -25,17 +25,22 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.movieinfo.core.model.library.LibraryItem
+import com.anshtya.movieinfo.core.ui.AnimatedText
 import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
 import com.anshtya.movieinfo.feature.details.content.MovieDetailsContent
 import com.anshtya.movieinfo.feature.details.content.PersonDetailsContent
@@ -97,6 +102,8 @@ internal fun DetailsScreen(
             scaffoldState.bottomSheetState.expand()
         }
     }
+
+    var isBackdropImageCollapsed by rememberSaveable { mutableStateOf(false) }
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -185,7 +192,10 @@ internal fun DetailsScreen(
                         onWatchlistClick = onWatchlistClick,
                         onSeeAllCastClick = onSeeAllCastClick,
                         onCastClick = onItemClick,
-                        onRecommendationClick = onItemClick
+                        onRecommendationClick = onItemClick,
+                        onBackdropCollapse = {
+                            isBackdropImageCollapsed = it
+                        }
                     )
                 }
 
@@ -198,7 +208,10 @@ internal fun DetailsScreen(
                         onWatchlistClick = onWatchlistClick,
                         onSeeAllCastClick = onSeeAllCastClick,
                         onCastClick = onItemClick,
-                        onRecommendationClick = onItemClick
+                        onRecommendationClick = onItemClick,
+                        onBackdropCollapse = {
+                            isBackdropImageCollapsed = it
+                        }
                     )
                 }
 
@@ -215,7 +228,15 @@ internal fun DetailsScreen(
             }
 
             if (contentDetailsUiState !is ContentDetailUiState.Person) {
-                DetailsTopAppBar(onBackClick = onBackClick)
+                DetailsTopAppBar(
+                    showTitle = isBackdropImageCollapsed,
+                    title = when (contentDetailsUiState) {
+                        is ContentDetailUiState.Movie -> contentDetailsUiState.data.title
+                        is ContentDetailUiState.TV -> contentDetailsUiState.data.name
+                        else -> ""
+                    },
+                    onBackClick = onBackClick
+                )
             }
         }
     }
@@ -224,15 +245,16 @@ internal fun DetailsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DetailsTopAppBar(
-    onBackClick: () -> Unit,
-    showTitle: Boolean = false,
-    title: String = ""
+    showTitle: Boolean,
+    title: String,
+    onBackClick: () -> Unit
 ) {
     TopAppBarWithBackButton(
         title = {
-            if (showTitle) {
-                Text(title)
-            }
+            AnimatedText(
+                text = title,
+                visible = showTitle
+            )
         },
         topAppBarColors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent
@@ -243,4 +265,25 @@ private fun DetailsTopAppBar(
         ),
         onBackClick = onBackClick
     )
+}
+
+
+
+@Composable
+internal fun OverviewSection(
+    overview: String
+) {
+    Column {
+        Text(
+            text = stringResource(id = R.string.overview),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(Modifier.height(2.dp))
+        if (overview.isEmpty()) {
+            Text(text = stringResource(id = R.string.not_available))
+        } else {
+            Text(overview)
+        }
+    }
 }

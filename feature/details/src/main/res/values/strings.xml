@@ -34,4 +34,5 @@
     <string name="details_loading">details loading</string>
     <string name="details_sign_in_sheet">details sign in sheet</string>
     <string name="not_available">Not available</string>
+    <string name="credits">Credits</string>
 </resources>

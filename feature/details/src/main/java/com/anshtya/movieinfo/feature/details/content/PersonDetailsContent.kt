@@ -4,25 +4,26 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.core.model.details.people.PersonDetails
 import com.anshtya.movieinfo.core.ui.MediaItemCard
 import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
+import com.anshtya.movieinfo.feature.details.OverviewSection
 import com.anshtya.movieinfo.feature.details.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,41 +33,55 @@ internal fun PersonDetailsContent(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val pinnedScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
     Scaffold(
         topBar = {
-            TopAppBarWithBackButton(onBackClick = onBackClick)
-        }
+            TopAppBarWithBackButton(
+                title = {
+                    Text(
+                        text = personDetails.name,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                onBackClick = onBackClick
+            )
+        },
+        modifier = Modifier.nestedScroll(pinnedScrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             verticalArrangement = Arrangement.spacedBy(6.dp),
             modifier = modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
         ) {
-            Row(Modifier.fillMaxWidth()) {
-                MediaItemCard(
-                    personDetails.profilePath,
-                    modifier = Modifier.size(height = 200.dp, width = 140.dp)
-                )
+            item {
+                Row(Modifier.fillMaxWidth()) {
+                    MediaItemCard(
+                        personDetails.profilePath,
+                        modifier = Modifier.size(height = 200.dp, width = 140.dp)
+                    )
 
-                Spacer(Modifier.width(10.dp))
+                    Spacer(Modifier.width(10.dp))
 
-                PersonInfoSection(
-                    name = personDetails.name,
-                    gender = personDetails.gender,
-                    birthday = personDetails.birthday,
-                    deathday = personDetails.deathday,
-                    department = personDetails.knownForDepartment
+                    PersonInfoSection(
+                        name = personDetails.name,
+                        gender = personDetails.gender,
+                        birthday = personDetails.birthday,
+                        deathday = personDetails.deathday,
+                        department = personDetails.knownForDepartment
+                    )
+                }
+            }
+
+            item {
+                PersonDetailsSection(
+                    alsoKnownAs = personDetails.alsoKnownAs,
+                    placeOfBirth = personDetails.placeOfBirth
                 )
             }
 
-            PersonDetailsSection(
-                alsoKnownAs = personDetails.alsoKnownAs,
-                placeOfBirth = personDetails.placeOfBirth
-            )
-
-            OverviewSection(personDetails.biography)
+            item { OverviewSection(personDetails.biography) }
         }
     }
 }

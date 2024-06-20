@@ -27,7 +27,7 @@
     <string name="view_all"><![CDATA[View Full Cast & Crew]]></string>
     <string name="cast">Cast</string>
     <string name="crew">Crew</string>
-    <string name="mark_favorite">Mark as favorite</string>
+    <string name="add_to_favorites">Add to favorites</string>
     <string name="add_to_watchlist">Add to watchlist</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_in_sheet_text">Sign in to your TMDB account to mark item as favorite or add item to watchlist</string>
@@ -35,4 +35,6 @@
     <string name="details_sign_in_sheet">details sign in sheet</string>
     <string name="not_available">Not available</string>
     <string name="credits">Credits</string>
+    <string name="remove_from_watchlist">Remove from watchlist</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
 </resources>

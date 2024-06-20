@@ -1,5 +1,6 @@
 package com.anshtya.movieinfo.feature.details.content
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,8 +23,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -232,10 +237,7 @@ private fun BackdropImageSection(
     scrollValue: Float,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = modifier.fillMaxWidth()
-    ) {
+    Surface(modifier.fillMaxWidth()) {
         TmdbImage(
             width = 1280,
             imageUrl = path,
@@ -408,9 +410,8 @@ private fun CastItem(
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        shape = RoundedCornerShape(6.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+    Card(
+        shape = RoundedCornerShape(6.dp)
     ) {
         Column(
             modifier = Modifier
@@ -461,9 +462,17 @@ private fun LibraryActions(
             .padding(top = 6.dp, bottom = 4.dp)
     ) {
         LibraryActionButton(
-            active = isFavorite,
-            name = stringResource(id = R.string.mark_favorite),
+            name = if (isFavorite) {
+                stringResource(id = R.string.remove_from_favorites)
+            } else {
+                stringResource(id = R.string.add_to_favorites)
+            },
             icon = Icons.Rounded.Favorite,
+            iconTint = if (isFavorite) {
+                Color.Red
+            } else {
+                MaterialTheme.colorScheme.onPrimary
+            },
             onClick = onFavoriteClick,
             modifier = Modifier
                 .fillMaxHeight()
@@ -471,9 +480,21 @@ private fun LibraryActions(
         )
         Spacer(Modifier.width(8.dp))
         LibraryActionButton(
-            active = isAddedToWatchList,
-            name = stringResource(id = R.string.add_to_watchlist),
-            icon = Icons.Rounded.Bookmark,
+            name = if (isAddedToWatchList) {
+                stringResource(id = R.string.remove_from_watchlist)
+            } else {
+                stringResource(id = R.string.add_to_watchlist)
+            },
+            icon = if (isAddedToWatchList) {
+                Icons.Rounded.Bookmark
+            } else {
+                Icons.Outlined.BookmarkBorder
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ),
+            border = BorderStroke(1.dp, Color.Black),
             onClick = onWatchlistClick,
             modifier = Modifier
                 .fillMaxHeight()
@@ -488,7 +509,7 @@ private fun GenreButton(
 ) {
     Surface(
         shape = RoundedCornerShape(10.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant
+        color = MaterialTheme.colorScheme.secondaryContainer
     ) {
         Text(
             text = name,

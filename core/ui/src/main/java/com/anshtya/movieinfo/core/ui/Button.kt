@@ -1,20 +1,22 @@
 package com.anshtya.movieinfo.core.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -23,38 +25,33 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LibraryActionButton(
+    modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    iconTint: Color = LocalContentColor.current,
+    border: BorderStroke? = null,
     name: String,
     icon: ImageVector,
-    active: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
-    Surface(
+    Button(
+        onClick = onClick,
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        modifier = modifier.noRippleClickable { onClick() }
+        colors = colors,
+        border = border,
+        interactionSource = remember { MutableInteractionSource() },
+        modifier = modifier
     ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(8.dp)
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = name,
-                tint = if (active) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
-            )
-            Spacer(Modifier.width(4.dp))
-            Text(
-                text = name,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center
-            )
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = name,
+            tint = iconTint
+        )
+        Spacer(Modifier.width(4.dp))
+        Text(
+            text = name,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -64,7 +61,6 @@ private fun LibraryActionButtonPreview() {
     LibraryActionButton(
         name = "Favorite",
         icon = Icons.Rounded.Favorite,
-        active = false,
         onClick = {}
     )
 }

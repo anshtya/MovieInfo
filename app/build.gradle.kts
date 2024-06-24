@@ -36,6 +36,7 @@ android {
             initWith(buildTypes.getByName("release"))
             applicationIdSuffix = ".demoRelease"
             signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
         }
         create("benchmark") {
             initWith(buildTypes.getByName("release"))

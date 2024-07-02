@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -80,8 +79,8 @@ fun OnboardingScreen(
 
         Row(
             modifier = Modifier
-                .padding(vertical = 4.dp)
                 .align(Alignment.BottomCenter)
+                .padding(horizontal = 10.dp)
         ) {
             AnimatedVisibility(
                 visible = contentVisible,
@@ -90,24 +89,18 @@ fun OnboardingScreen(
                     initialOffsetY = { it }
                 )
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(horizontal = 10.dp)
+                Button(
+                    onClick = navigateToAuth,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(bottom = 8.dp)
                 ) {
-                    Button(
-                        onClick = navigateToAuth,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .padding(bottom = 8.dp)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.get_started),
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
+                    Text(
+                        text = stringResource(id = R.string.get_started),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }

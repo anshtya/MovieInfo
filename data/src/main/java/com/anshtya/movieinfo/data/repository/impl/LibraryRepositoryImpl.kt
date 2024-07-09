@@ -20,9 +20,11 @@ import com.anshtya.movieinfo.data.model.asWatchlistContentEntity
 import com.anshtya.movieinfo.data.repository.LibraryRepository
 import com.anshtya.movieinfo.data.util.SyncManager
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
@@ -172,32 +174,39 @@ internal class LibraryRepositoryImpl @Inject constructor(
     override suspend fun syncFavorites(): Boolean {
         return try {
             val accountId = accountDetailsDao.getAccountDetails().first()?.id ?: return false
-            var page = 1
 
+            var movieFavoritesPage = 1
+            var tvFavoritesPage = 1
             val favoriteMovies = mutableListOf<NetworkContentItem>()
-            do {
-                val result = tmdbApi.getLibraryItems(
-                    accountId = accountId,
-                    itemType = LibraryItemType.FAVORITE.name.lowercase(),
-                    mediaType = "${MediaType.MOVIE.name.lowercase()}s",
-                    page = page++
-                ).results
-
-                favoriteMovies.addAll(result)
-            } while (result.isNotEmpty())
-
-            page = 1
             val favoriteTvShows = mutableListOf<NetworkContentItem>()
-            do {
-                val result = tmdbApi.getLibraryItems(
-                    accountId = accountId,
-                    itemType = LibraryItemType.FAVORITE.name.lowercase(),
-                    mediaType = MediaType.TV.name.lowercase(),
-                    page = page++
-                ).results
 
-                favoriteTvShows.addAll(result)
-            } while (result.isNotEmpty())
+            coroutineScope {
+                launch {
+                    do {
+                        val result = tmdbApi.getLibraryItems(
+                            accountId = accountId,
+                            itemType = LibraryItemType.FAVORITE.name.lowercase(),
+                            mediaType = "${MediaType.MOVIE.name.lowercase()}s",
+                            page = movieFavoritesPage++
+                        ).results
+
+                        favoriteMovies.addAll(result)
+                    } while (result.isNotEmpty())
+                }
+
+                launch {
+                    do {
+                        val result = tmdbApi.getLibraryItems(
+                            accountId = accountId,
+                            itemType = LibraryItemType.FAVORITE.name.lowercase(),
+                            mediaType = MediaType.TV.name.lowercase(),
+                            page = tvFavoritesPage++
+                        ).results
+
+                        favoriteTvShows.addAll(result)
+                    } while (result.isNotEmpty())
+                }
+            }
 
             val favoriteItems = (favoriteMovies + favoriteTvShows).filter {
                 syncManager.isWorkNotScheduled(id = it.id, itemType = LibraryItemType.FAVORITE)
@@ -233,32 +242,38 @@ internal class LibraryRepositoryImpl @Inject constructor(
     override suspend fun syncWatchlist(): Boolean {
         return try {
             val accountId = accountDetailsDao.getAccountDetails().first()?.id ?: return false
-            var page = 1
 
+            var movieWatchlistPage = 1
+            var tvWatchlistPage = 1
             val moviesWatchlist = mutableListOf<NetworkContentItem>()
-            do {
-                val result = tmdbApi.getLibraryItems(
-                    accountId = accountId,
-                    itemType = LibraryItemType.WATCHLIST.name.lowercase(),
-                    mediaType = "${MediaType.MOVIE.name.lowercase()}s",
-                    page = page++
-                ).results
-
-                moviesWatchlist.addAll(result)
-            } while (result.isNotEmpty())
-
-            page = 1
             val tvShowsWatchlist = mutableListOf<NetworkContentItem>()
-            do {
-                val result = tmdbApi.getLibraryItems(
-                    accountId = accountId,
-                    itemType = LibraryItemType.WATCHLIST.name.lowercase(),
-                    mediaType = MediaType.TV.name.lowercase(),
-                    page = page++
-                ).results
 
-                tvShowsWatchlist.addAll(result)
-            } while (result.isNotEmpty())
+            coroutineScope {
+                launch {
+                    do {
+                        val result = tmdbApi.getLibraryItems(
+                            accountId = accountId,
+                            itemType = LibraryItemType.WATCHLIST.name.lowercase(),
+                            mediaType = "${MediaType.MOVIE.name.lowercase()}s",
+                            page = movieWatchlistPage++
+                        ).results
+
+                        moviesWatchlist.addAll(result)
+                    } while (result.isNotEmpty())
+                }
+                launch {
+                    do {
+                        val result = tmdbApi.getLibraryItems(
+                            accountId = accountId,
+                            itemType = LibraryItemType.WATCHLIST.name.lowercase(),
+                            mediaType = MediaType.TV.name.lowercase(),
+                            page = tvWatchlistPage++
+                        ).results
+
+                        tvShowsWatchlist.addAll(result)
+                    } while (result.isNotEmpty())
+                }
+            }
 
             val watchlistItems = (moviesWatchlist + tvShowsWatchlist).filter {
                 syncManager.isWorkNotScheduled(id = it.id, itemType = LibraryItemType.WATCHLIST)

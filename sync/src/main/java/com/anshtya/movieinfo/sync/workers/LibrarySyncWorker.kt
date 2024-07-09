@@ -7,21 +7,18 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.anshtya.movieinfo.data.repository.LibraryRepository
 import com.anshtya.movieinfo.data.repository.UserRepository
-import com.anshtya.movieinfo.sync.di.IoDispatcher
 import com.anshtya.movieinfo.sync.util.SYNC_NOTIFICATION_ID
 import com.anshtya.movieinfo.sync.util.workNotification
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.coroutineScope
 
 @HiltWorker
 class LibrarySyncWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val libraryRepository: LibraryRepository,
     private val userRepository: UserRepository
 ) : CoroutineWorker(appContext, workerParams) {
@@ -29,11 +26,11 @@ class LibrarySyncWorker @AssistedInject constructor(
         return ForegroundInfo(SYNC_NOTIFICATION_ID, appContext.workNotification())
     }
 
-    override suspend fun doWork(): Result = withContext(ioDispatcher) {
+    override suspend fun doWork(): Result = coroutineScope {
 
         val userLoggedIn = userRepository.isSignedIn()
 
-        return@withContext if (userLoggedIn) {
+        return@coroutineScope if (userLoggedIn) {
             val syncFavorites = async { libraryRepository.syncFavorites() }
             val syncWatchList = async { libraryRepository.syncWatchlist() }
             val syncSuccessful = awaitAll(syncFavorites, syncWatchList).all { it }

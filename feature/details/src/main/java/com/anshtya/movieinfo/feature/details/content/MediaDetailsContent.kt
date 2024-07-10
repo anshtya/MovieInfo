@@ -37,7 +37,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -69,11 +71,14 @@ import com.anshtya.movieinfo.feature.details.OverviewSection
 import com.anshtya.movieinfo.feature.details.R
 import com.anshtya.movieinfo.feature.details.horizontalPadding
 import com.anshtya.movieinfo.feature.details.verticalPadding
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 
 private val backdropExpandedHeight = 220.dp
 private val collapsedHeight = 64.dp
-private val collapseHeight = backdropExpandedHeight - collapsedHeight
+private val heightToCollapse = backdropExpandedHeight - collapsedHeight
 
+@OptIn(FlowPreview::class)
 @Composable
 internal fun MediaDetailsContent(
     backdropPath: String,
@@ -97,14 +102,30 @@ internal fun MediaDetailsContent(
     onBackdropCollapse: (Boolean) -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val collapseHeightPx = with(LocalDensity.current) { collapseHeight.toPx() }
-    val nestedScrollConnection = remember(collapseHeightPx) {
-        ExitOnlyCollapseNestedConnection(collapseHeightPx)
-    }
-    val backdropHeight = with(LocalDensity.current) {
-        (backdropExpandedHeight.toPx() + nestedScrollConnection.collapseOffsetHeightPx).toDp()
+    val heightToCollapsePx = with(LocalDensity.current) { heightToCollapse.toPx() }
+
+    // persist collapse offset between different Details screen
+    var savedCollapseOffsetPx by rememberSaveable { mutableFloatStateOf(0f) }
+
+    val nestedScrollConnection = remember(heightToCollapsePx) {
+        ExitOnlyCollapseNestedConnection(heightToCollapsePx)
     }
 
+    LaunchedEffect(Unit) {
+        // set value of savedCollapseOffsetPx when returning from different Details screen
+        nestedScrollConnection.collapseOffsetPx = savedCollapseOffsetPx
+
+        // whenever backdrop collapses or expands, save collapse offset
+        snapshotFlow { nestedScrollConnection.collapseOffsetPx }
+            .debounce(500L)
+            .collect { offset ->
+                savedCollapseOffsetPx = offset
+            }
+    }
+
+    val backdropHeight = with(LocalDensity.current) {
+        (backdropExpandedHeight.toPx() + nestedScrollConnection.collapseOffsetPx).toDp()
+    }
     val isBackdropCollapsed by remember(backdropHeight) {
         derivedStateOf { backdropHeight == collapsedHeight }
     }
@@ -112,7 +133,7 @@ internal fun MediaDetailsContent(
         onBackdropCollapse(isBackdropCollapsed)
     }
 
-    val scrollValue = 1 - ((backdropExpandedHeight - backdropHeight) / collapseHeight)
+    val scrollValue = 1 - ((backdropExpandedHeight - backdropHeight) / heightToCollapse)
 
     Column(
         modifier = Modifier
@@ -177,10 +198,9 @@ internal fun MediaDetailsContent(
 }
 
 private class ExitOnlyCollapseNestedConnection(
-    val collapseHeightPx: Float
+    private val heightToCollapse: Float
 ) : NestedScrollConnection {
-    var collapseOffsetHeightPx by mutableFloatStateOf(0f)
-        private set
+    var collapseOffsetPx by mutableFloatStateOf(0f)
 
     override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
         val delta = available.y
@@ -188,10 +208,10 @@ private class ExitOnlyCollapseNestedConnection(
         // if scrolling down, don't consume anything
         if (delta > 0f) return Offset.Zero
 
-        val previousOffset = collapseOffsetHeightPx
-        val newOffset = collapseOffsetHeightPx + delta
-        collapseOffsetHeightPx = newOffset.coerceIn(-collapseHeightPx, 0f)
-        return if (previousOffset != collapseOffsetHeightPx) {
+        val previousOffset = collapseOffsetPx
+        val newOffset = collapseOffsetPx + delta
+        collapseOffsetPx = newOffset.coerceIn(-heightToCollapse, 0f)
+        return if (previousOffset != collapseOffsetPx) {
             // We are in the middle of top app bar collapse
             available
         } else {
@@ -207,10 +227,10 @@ private class ExitOnlyCollapseNestedConnection(
         // change height of top app bar when scrolling all the way down and
         // child has finished scrolling
         if (consumed.y >= 0f && available.y > 0f) {
-            val prevOffset = collapseOffsetHeightPx
-            val newOffset = collapseOffsetHeightPx + available.y
-            collapseOffsetHeightPx = newOffset.coerceIn(-collapseHeightPx, 0f)
-            return Offset(x = 0f, y = (collapseOffsetHeightPx - prevOffset))
+            val prevOffset = collapseOffsetPx
+            val newOffset = collapseOffsetPx + available.y
+            collapseOffsetPx = newOffset.coerceIn(-heightToCollapse, 0f)
+            return Offset(x = 0f, y = (collapseOffsetPx - prevOffset))
         }
 
         return Offset.Zero

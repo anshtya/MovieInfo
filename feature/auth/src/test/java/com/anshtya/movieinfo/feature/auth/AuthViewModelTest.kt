@@ -4,27 +4,24 @@ import com.anshtya.movieinfo.core.model.NetworkResponse
 import com.anshtya.movieinfo.core.testing.MainDispatcherRule
 import com.anshtya.movieinfo.core.testing.repository.TestAuthRepository
 import com.anshtya.movieinfo.core.testing.repository.TestUserRepository
-import com.anshtya.movieinfo.data.repository.AuthRepository
-import com.anshtya.movieinfo.data.repository.UserRepository
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class AuthViewModelTest {
+    private val authRepository = TestAuthRepository()
+    private val userRepository = TestUserRepository()
     private lateinit var viewModel: AuthViewModel
-    private lateinit var authRepository: AuthRepository
-    private lateinit var userRepository: UserRepository
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @Before
     fun setup() {
-        authRepository = TestAuthRepository()
-        userRepository = TestUserRepository()
         viewModel = AuthViewModel(
             authRepository = authRepository,
             userRepository = userRepository
@@ -32,15 +29,15 @@ class AuthViewModelTest {
     }
 
     @Test
-    fun `test initial state`() = runTest {
+    fun `test initial state`() {
         assertEquals(
+            AuthUiState(),
             viewModel.uiState.value,
-            AuthUiState()
         )
     }
 
     @Test
-    fun `test login success`() = runTest {
+    fun `test login success`() {
         val username = "name"
         val password = "1234"
 
@@ -48,17 +45,15 @@ class AuthViewModelTest {
         viewModel.onPasswordChange(password)
         viewModel.logIn()
 
-
-        assertEquals(
-            viewModel.uiState.value.isLoggedIn,
-            true
-        )
+        assertTrue(viewModel.uiState.value.isLoggedIn!!)
     }
 
     @Test
     fun `test login failure`() = runTest {
         val username = "error"
         val password = "1234"
+
+        authRepository.generateError(true)
         val errorResponse = authRepository.login(
             username = username,
             password = password
@@ -69,34 +64,40 @@ class AuthViewModelTest {
         viewModel.logIn()
 
         assertEquals(
-            viewModel.uiState.value.errorMessage,
-            errorResponse.errorMessage
+            errorResponse.errorMessage,
+            viewModel.uiState.value.errorMessage
         )
         assertNull(viewModel.uiState.value.isLoggedIn)
     }
 
     @Test
-    fun `test error message reset`() = runTest {
+    fun `test error message reset`() {
         viewModel.onErrorShown()
 
         assertNull(viewModel.uiState.value.errorMessage)
     }
 
     @Test
-    fun `test username change`() = runTest {
+    fun `test username change`() {
         val username = "testuser"
 
         viewModel.onUsernameChange(username)
 
-        assertEquals(viewModel.uiState.value.username, username)
+        assertEquals(
+            username,
+            viewModel.uiState.value.username
+        )
     }
 
     @Test
-    fun `test password change`() = runTest {
+    fun `test password change`() {
         val password = "testpassword"
 
         viewModel.onPasswordChange(password)
 
-        assertEquals(viewModel.uiState.value.password, password)
+        assertEquals(
+            password,
+            viewModel.uiState.value.password
+        )
     }
 }

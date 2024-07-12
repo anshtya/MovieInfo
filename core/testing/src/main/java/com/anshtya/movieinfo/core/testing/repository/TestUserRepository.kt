@@ -5,19 +5,18 @@ import com.anshtya.movieinfo.core.model.SelectedDarkMode
 import com.anshtya.movieinfo.core.model.user.AccountDetails
 import com.anshtya.movieinfo.core.model.user.UserData
 import com.anshtya.movieinfo.data.repository.UserRepository
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
-val emptyUserData = UserData(
+val testUserData = UserData(
     useDynamicColor = false,
     includeAdultResults = false,
     darkMode = SelectedDarkMode.SYSTEM,
     hideOnboarding = false
 )
 
-val accountDetails = AccountDetails(
+val testAccountDetails = AccountDetails(
     avatar = "avatar",
     gravatar = "gravatar",
     id = 0,
@@ -29,65 +28,48 @@ val accountDetails = AccountDetails(
 )
 
 class TestUserRepository: UserRepository {
-    private val _userData = MutableSharedFlow<UserData>(
-        replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-    override val userData: Flow<UserData> = _userData.asSharedFlow()
+    private var generateError = false
 
-    private fun getCurrentUserData() = _userData.replayCache.firstOrNull() ?: emptyUserData
+    private val _userData = MutableStateFlow(testUserData)
 
-    private val _accountDetails = MutableSharedFlow<AccountDetails?>(
-        replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-    override val accountDetails: Flow<AccountDetails?> = _accountDetails.asSharedFlow()
 
-    private var userSessionId: String? = "id"
+    override val userData = _userData.asStateFlow()
 
-    override fun isSignedIn(): Boolean = userSessionId != null
+    override suspend fun getAccountDetails(): AccountDetails = testAccountDetails
 
     override suspend fun setDynamicColorPreference(useDynamicColor: Boolean) {
-        _userData.tryEmit(
-            getCurrentUserData().copy(useDynamicColor = useDynamicColor)
-        )
+        _userData.update {
+            it.copy(useDynamicColor = useDynamicColor)
+        }
     }
 
     override suspend fun setAdultResultPreference(includeAdultResults: Boolean) {
-        _userData.tryEmit(
-            getCurrentUserData().copy(includeAdultResults = includeAdultResults)
-        )
+        _userData.update {
+            it.copy(includeAdultResults = includeAdultResults)
+        }
     }
 
     override suspend fun setDarkModePreference(selectedDarkMode: SelectedDarkMode) {
-        _userData.tryEmit(
-            getCurrentUserData().copy(darkMode = selectedDarkMode)
-        )
+        _userData.update {
+            it.copy(darkMode = selectedDarkMode)
+        }
     }
 
     override suspend fun updateAccountDetails(accountId: Int): NetworkResponse<Unit> {
-        return if (accountId == 0) {
-            NetworkResponse.Error("error")
+        return if (generateError) {
+            NetworkResponse.Error()
         } else {
             NetworkResponse.Success(Unit)
         }
     }
 
     override suspend fun setHideOnboarding(hideOnboarding: Boolean) {
-        _userData.tryEmit(
-            getCurrentUserData().copy(hideOnboarding = hideOnboarding)
-        )
+        _userData.update {
+            it.copy(hideOnboarding = hideOnboarding)
+        }
     }
 
-    fun setUserData(userData: UserData) {
-        _userData.tryEmit(userData)
-    }
-
-    fun setAccountDetails(accountDetails: AccountDetails) {
-        _accountDetails.tryEmit(accountDetails)
-    }
-
-    fun setUserSessionId(id: String?) {
-        userSessionId = id
+    fun generateError(value: Boolean) {
+        generateError = value
     }
 }

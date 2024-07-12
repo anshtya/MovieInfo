@@ -2,10 +2,11 @@ package com.anshtya.movieinfo.feature.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.anshtya.movieinfo.core.model.MediaType
+import com.anshtya.movieinfo.core.model.NetworkResponse
 import com.anshtya.movieinfo.core.testing.MainDispatcherRule
+import com.anshtya.movieinfo.core.testing.repository.TestAuthRepository
 import com.anshtya.movieinfo.core.testing.repository.TestDetailsRepository
 import com.anshtya.movieinfo.core.testing.repository.TestLibraryRepository
-import com.anshtya.movieinfo.core.testing.repository.TestUserRepository
 import com.anshtya.movieinfo.core.testing.util.testLibraryItems
 import com.anshtya.movieinfo.core.testing.util.testMovieDetail
 import com.anshtya.movieinfo.core.testing.util.testPersonDetails
@@ -13,6 +14,7 @@ import com.anshtya.movieinfo.core.testing.util.testTvShowDetails
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -26,7 +28,7 @@ import org.junit.Test
 class DetailsViewModelTest {
     private val detailsRepository = TestDetailsRepository()
     private val libraryRepository = TestLibraryRepository()
-    private val userRepository = TestUserRepository()
+    private val authRepository = TestAuthRepository()
     private lateinit var viewModel: DetailsViewModel
 
     @get:Rule
@@ -122,6 +124,8 @@ class DetailsViewModelTest {
     @Test
     fun `test error in movie details content state`() = runTest {
         detailsRepository.generateError(true)
+        val errorResponse = detailsRepository.getMovieDetails(0) as NetworkResponse.Error
+
         viewModel = createViewModel(
             savedStateHandle = SavedStateHandle(
                 mapOf(idNavigationArgument to "100,${MediaType.MOVIE}")
@@ -138,7 +142,7 @@ class DetailsViewModelTest {
         )
 
         assertEquals(
-            "error",
+            errorResponse.errorMessage,
             viewModel.uiState.value.errorMessage
         )
 
@@ -148,6 +152,7 @@ class DetailsViewModelTest {
     @Test
     fun `test error in tv show details content state`() = runTest {
         detailsRepository.generateError(true)
+        val errorResponse = detailsRepository.getTvShowDetails(0) as NetworkResponse.Error
         viewModel = createViewModel(
             savedStateHandle = SavedStateHandle(
                 mapOf(idNavigationArgument to "101,${MediaType.TV}")
@@ -164,7 +169,7 @@ class DetailsViewModelTest {
         )
 
         assertEquals(
-            "error",
+            errorResponse.errorMessage,
             viewModel.uiState.value.errorMessage
         )
 
@@ -174,6 +179,7 @@ class DetailsViewModelTest {
     @Test
     fun `test error in person details content state`() = runTest {
         detailsRepository.generateError(true)
+        val errorResponse = detailsRepository.getPersonDetails(0) as NetworkResponse.Error
         viewModel = createViewModel(
             savedStateHandle = SavedStateHandle(
                 mapOf(idNavigationArgument to "102,${MediaType.PERSON}")
@@ -190,7 +196,7 @@ class DetailsViewModelTest {
         )
 
         assertEquals(
-            "error",
+            errorResponse.errorMessage,
             viewModel.uiState.value.errorMessage
         )
 
@@ -200,22 +206,17 @@ class DetailsViewModelTest {
     @Test
     fun `test favorite`() = runTest {
         val libraryItem = testLibraryItems[0]
+        authRepository.setAuthStatus(true)
         viewModel.addOrRemoveFavorite(libraryItem)
 
-        assertEquals(
-            true,
-            viewModel.uiState.value.markedFavorite
-        )
+        assertTrue(viewModel.uiState.value.markedFavorite)
 
-        userRepository.setUserSessionId(null)
+        authRepository.setAuthStatus(false)
         viewModel.addOrRemoveFavorite(libraryItem)
 
-        assertEquals(
-            true,
-            viewModel.uiState.value.showSignInSheet
-        )
+        assertTrue(viewModel.uiState.value.showSignInSheet)
 
-        userRepository.setUserSessionId("id")
+        authRepository.setAuthStatus(true)
         libraryRepository.generateError(true)
         viewModel.addOrRemoveFavorite(libraryItem)
 
@@ -228,22 +229,17 @@ class DetailsViewModelTest {
     @Test
     fun `test watchlist`() = runTest {
         val libraryItem = testLibraryItems[0]
+        authRepository.setAuthStatus(true)
         viewModel.addOrRemoveFromWatchlist(libraryItem)
 
-        assertEquals(
-            true,
-            viewModel.uiState.value.savedInWatchlist
-        )
+        assertTrue(viewModel.uiState.value.savedInWatchlist)
 
-        userRepository.setUserSessionId(null)
+        authRepository.setAuthStatus(false)
         viewModel.addOrRemoveFromWatchlist(libraryItem)
 
-        assertEquals(
-            true,
-            viewModel.uiState.value.showSignInSheet
-        )
+        assertTrue(viewModel.uiState.value.showSignInSheet)
 
-        userRepository.setUserSessionId("id")
+        authRepository.setAuthStatus(true)
         libraryRepository.generateError(true)
         viewModel.addOrRemoveFromWatchlist(libraryItem)
 
@@ -254,14 +250,14 @@ class DetailsViewModelTest {
     }
 
     @Test
-    fun `test error message reset`() = runTest {
+    fun `test error message reset`() {
         viewModel.onErrorShown()
 
         assertNull(viewModel.uiState.value.errorMessage)
     }
 
     @Test
-    fun `test bottom sheet reset`() = runTest {
+    fun `test bottom sheet reset`() {
         viewModel.onHideBottomSheet()
 
         assertFalse(viewModel.uiState.value.showSignInSheet)
@@ -273,6 +269,6 @@ class DetailsViewModelTest {
         savedStateHandle = savedStateHandle,
         detailsRepository = detailsRepository,
         libraryRepository = libraryRepository,
-        userRepository = userRepository
+        authRepository = authRepository
     )
 }

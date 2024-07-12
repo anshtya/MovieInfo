@@ -16,7 +16,7 @@ class TestDetailsRepository : DetailsRepository {
         return if (!generateError) {
             NetworkResponse.Success(data = testMovieDetail)
         } else {
-            NetworkResponse.Error("error")
+            NetworkResponse.Error()
         }
     }
 
@@ -24,7 +24,7 @@ class TestDetailsRepository : DetailsRepository {
         return if (!generateError) {
             NetworkResponse.Success(data = testTvShowDetails)
         } else {
-            NetworkResponse.Error("error")
+            NetworkResponse.Error()
         }
     }
 
@@ -32,7 +32,7 @@ class TestDetailsRepository : DetailsRepository {
         return if (!generateError) {
             NetworkResponse.Success(data = testPersonDetails)
         } else {
-            NetworkResponse.Error("error")
+            NetworkResponse.Error()
         }
     }
 

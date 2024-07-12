@@ -2,7 +2,6 @@ package com.anshtya.movieinfo.feature.you
 
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -79,19 +78,18 @@ internal fun YouRoute(
     viewModel: YouViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val accountDetails by viewModel.accountDetails.collectAsStateWithLifecycle()
     val userSettings by viewModel.userSettings.collectAsStateWithLifecycle()
-
+    val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle()
     YouScreen(
         uiState = uiState,
-        isSignedIn = viewModel.isSignedIn,
-        accountDetails = accountDetails,
+        isLoggedIn = isLoggedIn,
         userSettings = userSettings,
         onChangeTheme = viewModel::setDynamicColorPreference,
         onChangeDarkMode = viewModel::setDarkModePreference,
         onChangeIncludeAdult = viewModel::setAdultResultPreference,
         onNavigateToAuth = navigateToAuth,
         onLibraryItemClick = navigateToLibraryItem,
+        onReloadAccountDetailsClick = viewModel::getAccountDetails,
         onRefresh = viewModel::onRefresh,
         onLogOutClick = viewModel::logOut,
         onErrorShown = viewModel::onErrorShown
@@ -102,19 +100,19 @@ internal fun YouRoute(
 @Composable
 internal fun YouScreen(
     uiState: YouUiState,
-    isSignedIn: Boolean,
-    accountDetails: AccountDetails?,
+    isLoggedIn: Boolean?,
     userSettings: UserSettings?,
     onChangeTheme: (Boolean) -> Unit,
     onChangeDarkMode: (SelectedDarkMode) -> Unit,
     onChangeIncludeAdult: (Boolean) -> Unit,
     onNavigateToAuth: () -> Unit,
     onLibraryItemClick: (String) -> Unit,
+    onReloadAccountDetailsClick: () -> Unit,
     onLogOutClick: () -> Unit,
     onRefresh: () -> Unit,
     onErrorShown: () -> Unit
 ) {
-    val pullToRefreshState = rememberPullToRefreshState(enabled = { isSignedIn })
+    val pullToRefreshState = rememberPullToRefreshState(enabled = { isLoggedIn == true })
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -179,20 +177,24 @@ internal fun YouScreen(
                 .nestedScroll(pullToRefreshState.nestedScrollConnection)
         ) {
             Column(Modifier.fillMaxSize()) {
-                if (isSignedIn) {
-                    accountDetails?.let {
-                        LoggedInView(
-                            accountDetails = accountDetails,
+                isLoggedIn?.let {
+                    if (isLoggedIn) {
+                        uiState.accountDetails?.let {
+                            LoggedInView(
+                                accountDetails = it,
+                                isLoggingOut = uiState.isLoggingOut,
+                                onLibraryItemClick = onLibraryItemClick,
+                                onLogOutClick = onLogOutClick
+                            )
+                        } ?: LoadAccountDetails(
                             isLoading = uiState.isLoading,
-                            isLoggingOut = uiState.isLoggingOut,
-                            onLibraryItemClick = onLibraryItemClick,
-                            onLogOutClick = onLogOutClick
+                            onReloadAccountDetailsClick = onReloadAccountDetailsClick
+                        )
+                    } else {
+                        LoggedOutView(
+                            onNavigateToAuth = onNavigateToAuth
                         )
                     }
-                } else {
-                    LoggedOutView(
-                        onNavigateToAuth = onNavigateToAuth
-                    )
                 }
             }
 
@@ -219,7 +221,6 @@ internal fun YouScreen(
 @Composable
 private fun LoggedInView(
     accountDetails: AccountDetails,
-    isLoading: Boolean,
     isLoggingOut: Boolean,
     onLibraryItemClick: (String) -> Unit,
     onLogOutClick: () -> Unit
@@ -232,9 +233,6 @@ private fun LoggedInView(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 10.dp, vertical = 4.dp)
     ) {
-        AnimatedVisibility(visible = isLoading) {
-            CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
-        }
         PersonImage(
             imageUrl = accountDetails.avatar ?: "",
             modifier = Modifier.size(64.dp)
@@ -292,6 +290,28 @@ private fun LoggedOutView(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(id = R.string.log_in))
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoadAccountDetails(
+    isLoading: Boolean,
+    onReloadAccountDetailsClick: () -> Unit
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator()
+        } else {
+            Button(
+                onClick = onReloadAccountDetailsClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(id = R.string.reload_account_details))
             }
         }
     }

@@ -22,4 +22,5 @@
     <string name="delete">Delete</string>
     <string name="attribution_info">Attribution Info</string>
     <string name="attribution_text">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
+    <string name="reload_account_details">Reload Account Details</string>
 </resources>

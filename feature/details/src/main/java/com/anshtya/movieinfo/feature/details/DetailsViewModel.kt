@@ -9,15 +9,16 @@ import com.anshtya.movieinfo.core.model.details.MovieDetails
 import com.anshtya.movieinfo.core.model.details.people.PersonDetails
 import com.anshtya.movieinfo.core.model.details.tv.TvDetails
 import com.anshtya.movieinfo.core.model.library.LibraryItem
+import com.anshtya.movieinfo.data.repository.AuthRepository
 import com.anshtya.movieinfo.data.repository.DetailsRepository
 import com.anshtya.movieinfo.data.repository.LibraryRepository
-import com.anshtya.movieinfo.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -31,7 +32,7 @@ class DetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val detailsRepository: DetailsRepository,
     private val libraryRepository: LibraryRepository,
-    private val userRepository: UserRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     private val idDetailsString = savedStateHandle.getStateFlow(
         key = idNavigationArgument,
@@ -76,8 +77,8 @@ class DetailsViewModel @Inject constructor(
     fun addOrRemoveFavorite(libraryItem: LibraryItem) {
         viewModelScope.launch {
             try {
-                val isSignedIn = userRepository.isSignedIn()
-                if (isSignedIn) {
+                val isLoggedIn = authRepository.isLoggedIn.first()
+                if (isLoggedIn) {
                     _uiState.update { it.copy(markedFavorite = !(it.markedFavorite)) }
                     libraryRepository.addOrRemoveFavorite(libraryItem)
                 } else {
@@ -97,8 +98,8 @@ class DetailsViewModel @Inject constructor(
     fun addOrRemoveFromWatchlist(libraryItem: LibraryItem) {
         viewModelScope.launch {
             try {
-                val isSignedIn = userRepository.isSignedIn()
-                if (isSignedIn) {
+                val isLoggedIn = authRepository.isLoggedIn.first()
+                if (isLoggedIn) {
                     _uiState.update { it.copy(savedInWatchlist = !(it.savedInWatchlist)) }
                     libraryRepository.addOrRemoveFromWatchlist(libraryItem)
                 } else {

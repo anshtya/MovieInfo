@@ -1,8 +1,11 @@
 package com.anshtya.movieinfo.data.repository
 
 import com.anshtya.movieinfo.core.model.NetworkResponse
+import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
+    val isLoggedIn: Flow<Boolean>
+
     suspend fun login(
         username: String,
         password: String

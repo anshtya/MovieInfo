@@ -22,7 +22,6 @@ import com.anshtya.movieinfo.data.util.SyncManager
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -73,7 +72,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
             }
 
             withContext(NonCancellable) {
-                val accountId = accountDetailsDao.getAccountDetails().first()!!.id
+                val accountId = accountDetailsDao.getAccountDetails()!!.id
                 val favoriteRequest = FavoriteRequest(
                     mediaType = libraryItem.mediaType,
                     mediaId = libraryItem.id,
@@ -109,7 +108,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
             }
 
             withContext(NonCancellable) {
-                val accountId = accountDetailsDao.getAccountDetails().first()!!.id
+                val accountId = accountDetailsDao.getAccountDetails()!!.id
                 val watchlistRequest = WatchlistRequest(
                     mediaType = libraryItem.mediaType,
                     mediaId = libraryItem.id,
@@ -137,8 +136,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
         libraryItemType: LibraryItemType,
         itemExistsLocally: Boolean
     ): Boolean {
-        val accountId = accountDetailsDao.getAccountDetails().first()?.id ?: return false
-
+        val accountId = accountDetailsDao.getAccountDetails()?.id ?: return false
         return try {
             when (libraryItemType) {
                 LibraryItemType.FAVORITE -> {
@@ -173,7 +171,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
      */
     override suspend fun syncFavorites(): Boolean {
         return try {
-            val accountId = accountDetailsDao.getAccountDetails().first()?.id ?: return false
+            val accountId = accountDetailsDao.getAccountDetails()?.id ?: return false
 
             var movieFavoritesPage = 1
             var tvFavoritesPage = 1
@@ -241,7 +239,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
      */
     override suspend fun syncWatchlist(): Boolean {
         return try {
-            val accountId = accountDetailsDao.getAccountDetails().first()?.id ?: return false
+            val accountId = accountDetailsDao.getAccountDetails()?.id ?: return false
 
             var movieWatchlistPage = 1
             var tvWatchlistPage = 1

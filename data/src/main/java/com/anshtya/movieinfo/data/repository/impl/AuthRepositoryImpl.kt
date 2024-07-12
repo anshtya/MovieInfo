@@ -4,7 +4,7 @@ import com.anshtya.movieinfo.core.local.database.dao.AccountDetailsDao
 import com.anshtya.movieinfo.core.local.database.dao.FavoriteContentDao
 import com.anshtya.movieinfo.core.local.database.dao.WatchlistContentDao
 import com.anshtya.movieinfo.core.local.datastore.UserPreferencesDataStore
-import com.anshtya.movieinfo.core.local.shared_preferences.UserEncryptedSharedPreferences
+import com.anshtya.movieinfo.core.local.session.SessionManager
 import com.anshtya.movieinfo.core.model.NetworkResponse
 import com.anshtya.movieinfo.core.network.model.auth.DeleteSessionRequest
 import com.anshtya.movieinfo.core.network.model.auth.LoginRequest
@@ -24,9 +24,11 @@ internal class AuthRepositoryImpl @Inject constructor(
     private val watchlistContentDao: WatchlistContentDao,
     private val accountDetailsDao: AccountDetailsDao,
     private val userPreferencesDataStore: UserPreferencesDataStore,
-    private val encryptedSharedPreferences: UserEncryptedSharedPreferences,
+    private val sessionManager: SessionManager,
     private val syncManager: SyncManager
 ) : AuthRepository {
+    override val isLoggedIn = sessionManager.isLoggedIn
+
     override suspend fun login(
         username: String,
         password: String
@@ -46,7 +48,7 @@ internal class AuthRepositoryImpl @Inject constructor(
             val accountDetails =
                 tmdbApi.getAccountDetails(sessionResponse.sessionId).asEntity()
 
-            encryptedSharedPreferences.storeSessionId(sessionResponse.sessionId)
+            sessionManager.storeSessionId(sessionResponse.sessionId)
             accountDetailsDao.addAccountDetails(accountDetails)
             userPreferencesDataStore.setAdultResultPreference(accountDetails.includeAdult)
 
@@ -63,11 +65,11 @@ internal class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun logout(accountId: Int): NetworkResponse<Unit> {
         return try {
-            val sessionId = encryptedSharedPreferences.getSessionId()!!
+            val sessionId = sessionManager.getSessionId()!!
             val deleteSessionRequest = DeleteSessionRequest(sessionId)
 
             tmdbApi.deleteSession(deleteSessionRequest)
-            encryptedSharedPreferences.deleteSessionId()
+            sessionManager.deleteSessionId()
             accountDetailsDao.deleteAccountDetails(accountId)
 
             favoriteContentDao.deleteAllItems()

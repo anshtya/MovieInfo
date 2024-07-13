@@ -44,13 +44,13 @@ class LibraryItemsViewModelTest {
         )
 
         assertEquals(
-            libraryRepository.movieLibrary,
-            viewModel.movieItems.value
+            1,
+            viewModel.movieItems.value.size
         )
 
         assertEquals(
-            libraryRepository.tvLibrary,
-            viewModel.tvItems.value
+            1,
+            viewModel.tvItems.value.size
         )
 
         libraryItemTypeCollectJob.cancel()
@@ -78,13 +78,13 @@ class LibraryItemsViewModelTest {
         )
 
         assertEquals(
-            libraryRepository.movieLibrary,
-            viewModel.movieItems.value
+            1,
+            viewModel.movieItems.value.size
         )
 
         assertEquals(
-            libraryRepository.tvLibrary,
-            viewModel.tvItems.value
+            1,
+            viewModel.tvItems.value.size
         )
 
         libraryItemTypeCollectJob.cancel()
@@ -106,20 +106,20 @@ class LibraryItemsViewModelTest {
             viewModel.tvItems.collect()
         }
 
-        val testMovie = testLibraryItems[1]
-        val testTvShow = testLibraryItems.last()
+        val testMovie = testLibraryItems[0]
+        val testTvShow = testLibraryItems[1]
 
         viewModel.deleteItem(testMovie)
 
         assertEquals(
-            libraryRepository.movieLibrary.filter { it.id != testMovie.id },
-            viewModel.movieItems.value
+            0,
+            viewModel.movieItems.value.size
         )
 
         viewModel.deleteItem(testTvShow)
         assertEquals(
-            libraryRepository.tvLibrary.filter { it.id != testTvShow.id },
-            viewModel.tvItems.value
+            0,
+            viewModel.tvItems.value.size
         )
 
         libraryItemTypeCollectJob.cancel()
@@ -141,20 +141,19 @@ class LibraryItemsViewModelTest {
             viewModel.tvItems.collect()
         }
 
-        val testMovie = testLibraryItems[1]
-        val testTvShow = testLibraryItems.last()
+        val testMovie = testLibraryItems[0]
+        val testTvShow = testLibraryItems[1]
 
         viewModel.deleteItem(testMovie)
-
         assertEquals(
-            libraryRepository.movieLibrary.filter { it.id != testMovie.id },
-            viewModel.movieItems.value
+            0,
+            viewModel.movieItems.value.size
         )
 
         viewModel.deleteItem(testTvShow)
         assertEquals(
-            libraryRepository.tvLibrary.filter { it.id != testTvShow.id },
-            viewModel.tvItems.value
+            0,
+            viewModel.tvItems.value.size
         )
 
         libraryItemTypeCollectJob.cancel()

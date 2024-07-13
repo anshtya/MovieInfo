@@ -180,7 +180,7 @@ class DetailsViewModelTest {
 
     @Test
     fun `test favorite`() = runTest {
-        val libraryItem = testLibraryItems[0]
+        val libraryItem = testLibraryItems[0].copy(id = 0)
         authRepository.setAuthStatus(true)
         viewModel.addOrRemoveFavorite(libraryItem)
 
@@ -203,7 +203,7 @@ class DetailsViewModelTest {
 
     @Test
     fun `test watchlist`() = runTest {
-        val libraryItem = testLibraryItems[0]
+        val libraryItem = testLibraryItems[0].copy(id = 0)
         authRepository.setAuthStatus(true)
         viewModel.addOrRemoveFromWatchlist(libraryItem)
 

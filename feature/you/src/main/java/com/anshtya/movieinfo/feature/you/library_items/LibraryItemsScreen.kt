@@ -28,12 +28,10 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,7 +45,6 @@ import com.anshtya.movieinfo.core.ui.LazyVerticalContentGrid
 import com.anshtya.movieinfo.core.ui.MediaItemCard
 import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
 import com.anshtya.movieinfo.feature.you.R
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
@@ -67,7 +64,6 @@ internal fun LibraryItemsRoute(
         libraryItemType = libraryItemType,
         errorMessage = errorMessage,
         onDeleteItem = viewModel::deleteItem,
-        onMediaTypeChange = viewModel::onMediaTypeChange,
         onBackClick = onBackClick,
         onItemClick = navigateToDetails,
         onErrorShown = viewModel::onErrorShown
@@ -82,7 +78,6 @@ internal fun LibraryItemsScreen(
     libraryItemType: LibraryItemType?,
     errorMessage: String?,
     onDeleteItem: (LibraryItem) -> Unit,
-    onMediaTypeChange: (LibraryMediaType) -> Unit,
     onItemClick: (String) -> Unit,
     onBackClick: () -> Unit,
     onErrorShown: () -> Unit
@@ -122,12 +117,6 @@ internal fun LibraryItemsScreen(
 
             val selectedTabIndex by remember(pagerState.currentPage) {
                 mutableIntStateOf(pagerState.currentPage)
-            }
-
-            LaunchedEffect(pagerState) {
-                snapshotFlow { pagerState.currentPage }
-                    .distinctUntilChanged()
-                    .collect { onMediaTypeChange(libraryMediaTabs[it]) }
             }
 
             TabRow(

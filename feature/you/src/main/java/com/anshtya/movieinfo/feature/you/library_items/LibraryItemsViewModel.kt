@@ -32,8 +32,6 @@ class LibraryItemsViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
 
-    private val _mediaType = MutableStateFlow(LibraryMediaType.MOVIE)
-
     private val libraryItemTypeString = savedStateHandle.getStateFlow(
         key = libraryItemTypeNavigationArgument,
         initialValue = ""
@@ -98,10 +96,6 @@ class LibraryItemsViewModel @Inject constructor(
                 _errorMessage.update { "An error occurred" }
             }
         }
-    }
-
-    fun onMediaTypeChange(mediaType: LibraryMediaType) {
-        _mediaType.update { mediaType }
     }
 
     fun onErrorShown() {

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -41,22 +42,19 @@ class SearchViewModel @Inject constructor(
     val errorMessage = _errorMessage.asStateFlow()
 
     val searchSuggestions: StateFlow<List<SearchItem>> = _searchQuery
+        .filter { it.isNotEmpty() }
         .mapLatest { query ->
             delay(200)
-            if (query.isEmpty()) {
-                emptyList()
-            } else {
-                val response = searchRepository.getSearchSuggestions(
-                    query = query,
-                    includeAdult = includeAdult
-                )
-                when (response) {
-                    is NetworkResponse.Success -> response.data
+            val response = searchRepository.getSearchSuggestions(
+                query = query,
+                includeAdult = includeAdult
+            )
+            when (response) {
+                is NetworkResponse.Success -> response.data
 
-                    is NetworkResponse.Error -> {
-                        _errorMessage.update { response.errorMessage }
-                        emptyList()
-                    }
+                is NetworkResponse.Error -> {
+                    _errorMessage.update { response.errorMessage }
+                    emptyList()
                 }
             }
         }

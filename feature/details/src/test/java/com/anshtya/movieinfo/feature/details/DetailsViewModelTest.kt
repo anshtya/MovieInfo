@@ -63,11 +63,7 @@ class DetailsViewModelTest {
 
     @Test
     fun `test movie details content state`() = runTest {
-        viewModel = createViewModel(
-            savedStateHandle = SavedStateHandle(
-                mapOf(idNavigationArgument to "100,${MediaType.MOVIE}")
-            )
-        )
+        viewModel = createViewModel(navigationArgument = "100,${MediaType.MOVIE}")
 
         val collectJob = launch(UnconfinedTestDispatcher()) {
             viewModel.contentDetailsUiState.collect()
@@ -83,11 +79,7 @@ class DetailsViewModelTest {
 
     @Test
     fun `test tv show details content state`() = runTest {
-        viewModel = createViewModel(
-            savedStateHandle = SavedStateHandle(
-                mapOf(idNavigationArgument to "101,${MediaType.TV}")
-            )
-        )
+        viewModel = createViewModel(navigationArgument = "101,${MediaType.TV}")
 
         val collectJob = launch(UnconfinedTestDispatcher()) {
             viewModel.contentDetailsUiState.collect()
@@ -103,11 +95,7 @@ class DetailsViewModelTest {
 
     @Test
     fun `test person details content state`() = runTest {
-        viewModel = createViewModel(
-            savedStateHandle = SavedStateHandle(
-                mapOf(idNavigationArgument to "102,${MediaType.PERSON}")
-            )
-        )
+        viewModel = createViewModel(navigationArgument = "102,${MediaType.PERSON}")
 
         val collectJob = launch(UnconfinedTestDispatcher()) {
             viewModel.contentDetailsUiState.collect()
@@ -125,12 +113,7 @@ class DetailsViewModelTest {
     fun `test error in movie details content state`() = runTest {
         detailsRepository.generateError(true)
         val errorResponse = detailsRepository.getMovieDetails(0) as NetworkResponse.Error
-
-        viewModel = createViewModel(
-            savedStateHandle = SavedStateHandle(
-                mapOf(idNavigationArgument to "100,${MediaType.MOVIE}")
-            )
-        )
+        viewModel = createViewModel(navigationArgument = "100,${MediaType.MOVIE}")
 
         val collectJob = launch(UnconfinedTestDispatcher()) {
             viewModel.contentDetailsUiState.collect()
@@ -153,11 +136,7 @@ class DetailsViewModelTest {
     fun `test error in tv show details content state`() = runTest {
         detailsRepository.generateError(true)
         val errorResponse = detailsRepository.getTvShowDetails(0) as NetworkResponse.Error
-        viewModel = createViewModel(
-            savedStateHandle = SavedStateHandle(
-                mapOf(idNavigationArgument to "101,${MediaType.TV}")
-            )
-        )
+        viewModel = createViewModel(navigationArgument = "101,${MediaType.TV}")
 
         val collectJob = launch(UnconfinedTestDispatcher()) {
             viewModel.contentDetailsUiState.collect()
@@ -180,11 +159,7 @@ class DetailsViewModelTest {
     fun `test error in person details content state`() = runTest {
         detailsRepository.generateError(true)
         val errorResponse = detailsRepository.getPersonDetails(0) as NetworkResponse.Error
-        viewModel = createViewModel(
-            savedStateHandle = SavedStateHandle(
-                mapOf(idNavigationArgument to "102,${MediaType.PERSON}")
-            )
-        )
+        viewModel = createViewModel(navigationArgument = "102,${MediaType.PERSON}")
 
         val collectJob = launch(UnconfinedTestDispatcher()) {
             viewModel.contentDetailsUiState.collect()
@@ -264,9 +239,11 @@ class DetailsViewModelTest {
     }
 
     private fun createViewModel(
-        savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf(idNavigationArgument to ""))
+        navigationArgument: String = ""
     ) = DetailsViewModel(
-        savedStateHandle = savedStateHandle,
+        savedStateHandle = SavedStateHandle(
+            mapOf(idNavigationArgument to navigationArgument)
+        ),
         detailsRepository = detailsRepository,
         libraryRepository = libraryRepository,
         authRepository = authRepository

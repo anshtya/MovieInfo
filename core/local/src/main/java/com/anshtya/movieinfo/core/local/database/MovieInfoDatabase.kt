@@ -20,7 +20,7 @@ import com.anshtya.movieinfo.core.local.database.entity.WatchlistContentEntity
         WatchlistContentEntity::class,
         AccountDetailsEntity::class
     ],
-    version = 11,
+    version = 12,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = MovieInfoDatabase.Companion.Migration5to6::class)
     ],
@@ -243,6 +243,62 @@ abstract class MovieInfoDatabase : RoomDatabase() {
                 )
                 db.execSQL("DROP TABLE watchlist_content")
                 db.execSQL("ALTER TABLE wc RENAME TO watchlist_content")
+            }
+        }
+
+        val MIGRATION_11_12 = object : Migration(11, 12) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE favorite_content_temp (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    media_id INTEGER NOT NULL,
+                    media_type TEXT NOT NULL,
+                    image_path TEXT NOT NULL, 
+                    name TEXT NOT NULL
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    INSERT INTO favorite_content_temp (media_id, media_type, image_path, name)
+                    SELECT id, media_type, image_path, name FROM favorite_content
+                    """.trimIndent()
+                )
+                db.execSQL("DROP TABLE favorite_content")
+                db.execSQL("ALTER TABLE favorite_content_temp RENAME TO favorite_content")
+                db.execSQL(
+                    """
+                    CREATE UNIQUE INDEX IF NOT EXISTS index_favorite_content_media_id_media_type 
+                    ON favorite_content (media_id, media_type)
+                    """.trimIndent()
+                )
+
+                db.execSQL(
+                    """
+                    CREATE TABLE watchlist_content_temp (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    media_id INTEGER NOT NULL,
+                    media_type TEXT NOT NULL,
+                    image_path TEXT NOT NULL, 
+                    name TEXT NOT NULL
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    INSERT INTO watchlist_content_temp (media_id, media_type, image_path, name)
+                    SELECT id, media_type, image_path, name FROM watchlist_content
+                    """.trimIndent()
+                )
+                db.execSQL("DROP TABLE watchlist_content")
+                db.execSQL("ALTER TABLE watchlist_content_temp RENAME TO watchlist_content")
+                db.execSQL(
+                    """
+                    CREATE UNIQUE INDEX IF NOT EXISTS index_watchlist_content_media_id_media_type 
+                    ON watchlist_content (media_id, media_type)
+                    """.trimIndent()
+                )
             }
         }
     }

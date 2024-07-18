@@ -1,5 +1,6 @@
 package com.anshtya.movieinfo.data.repository
 
+import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.library.LibraryItem
 import com.anshtya.movieinfo.data.util.Synchronizer
 import kotlinx.coroutines.flow.Flow
@@ -10,9 +11,15 @@ interface LibraryRepository: Synchronizer {
     val moviesWatchlist: Flow<List<LibraryItem>>
     val tvShowsWatchlist: Flow<List<LibraryItem>>
 
-    suspend fun favoriteItemExists(mediaId: Int): Boolean
+    suspend fun itemInFavoritesExists(
+        mediaId: Int,
+        mediaType: MediaType
+    ): Boolean
 
-    suspend fun itemInWatchlistExists(mediaId: Int): Boolean
+    suspend fun itemInWatchlistExists(
+        mediaId: Int,
+        mediaType: MediaType
+    ): Boolean
 
     suspend fun addOrRemoveFavorite(libraryItem: LibraryItem): Boolean
 

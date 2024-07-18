@@ -1,7 +1,6 @@
 package com.anshtya.movieinfo.core.local.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -13,39 +12,38 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FavoriteContentDao {
 
-    @Query("SELECT * FROM favorite_content WHERE media_type = 'movie' ORDER BY created_at")
+    @Query("SELECT * FROM favorite_content WHERE media_type = 'movie' ORDER BY id DESC")
     fun getFavoriteMovies(): Flow<List<FavoriteContentEntity>>
 
-    @Query("SELECT * FROM favorite_content WHERE media_type = 'tv' ORDER BY created_at")
+    @Query("SELECT * FROM favorite_content WHERE media_type = 'tv' ORDER BY id DESC")
     fun getFavoriteTvShows(): Flow<List<FavoriteContentEntity>>
 
-    @Query("SELECT * FROM favorite_content")
-    suspend fun getFavoriteItems(): List<FavoriteContentEntity>
+    @Query("SELECT * FROM favorite_content WHERE media_id = :mediaId AND media_type = :mediaType")
+    suspend fun getFavoriteItem(mediaId: Int, mediaType: String): FavoriteContentEntity?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFavoriteItem(favoriteContentEntity: FavoriteContentEntity)
 
-    @Query("SELECT EXISTS(SELECT 1 FROM favorite_content WHERE id = :mediaId)")
-    suspend fun checkFavoriteItemExists(mediaId: Int): Boolean
+    @Query("SELECT EXISTS(SELECT 1 FROM favorite_content WHERE media_id = :mediaId AND media_type = :mediaType)")
+    suspend fun checkFavoriteItemExists(mediaId: Int, mediaType: String): Boolean
 
-    @Delete
-    suspend fun deleteFavoriteItem(favoriteContentEntity: FavoriteContentEntity)
-
-    @Query("DELETE FROM favorite_content WHERE id in (:ids)")
-    suspend fun deleteItems(ids: List<Int>)
+    @Query("DELETE FROM favorite_content WHERE media_id = :mediaId AND media_type = :mediaType ")
+    suspend fun deleteFavoriteItem(mediaId: Int, mediaType: String)
 
     @Query("DELETE FROM favorite_content")
-    suspend fun deleteAllItems()
+    suspend fun deleteAllFavoriteItems()
 
     @Upsert
     suspend fun upsertFavoriteItems(items: List<FavoriteContentEntity>)
 
     @Transaction
-    suspend fun syncItems(
+    suspend fun syncFavoriteItems(
         upsertItems: List<FavoriteContentEntity>,
-        deleteItems: List<Int>
+        deleteItems: List<Pair<Int, String>>
     ) {
         upsertFavoriteItems(upsertItems)
-        deleteItems(deleteItems)
+        deleteItems.forEach {
+            deleteFavoriteItem(mediaId = it.first, mediaType = it.second)
+        }
     }
 }

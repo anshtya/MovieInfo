@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.library.LibraryItemType
 import com.anshtya.movieinfo.data.repository.LibraryRepository
 import com.anshtya.movieinfo.sync.util.getEnum
@@ -18,7 +19,7 @@ class LibraryTaskWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
         val itemId = inputData.getInt(TASK_KEY, 0)
-        val mediaType = inputData.getString(MEDIA_TYPE_KEY)!!
+        val mediaType = inputData.getEnum<MediaType>(MEDIA_TYPE_KEY)
         val taskType = inputData.getEnum<LibraryItemType>(ITEM_TYPE_KEY)
         val itemExists = inputData.getBoolean(ITEM_EXISTS_KEY, false)
 
@@ -38,7 +39,7 @@ class LibraryTaskWorker @AssistedInject constructor(
 
     companion object {
         const val TASK_KEY = "task_key"
-        const val MEDIA_TYPE_KEY = "media_key"
+        const val MEDIA_TYPE_KEY = "media_type_key"
         const val ITEM_TYPE_KEY = "item_type_key"
         const val ITEM_EXISTS_KEY = "item_exists_key"
     }

@@ -9,6 +9,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.library.LibraryItemType
 import com.anshtya.movieinfo.core.model.library.LibraryTask
 import com.anshtya.movieinfo.data.util.SyncManager
@@ -39,7 +40,11 @@ internal class SyncManagerImpl @Inject constructor(
             .build()
 
         workManager.enqueueUniqueWork(
-            generateWorkerName(libraryTask),
+            generateWorkerName(
+                mediaId = libraryTask.mediaId,
+                mediaType = libraryTask.mediaType,
+                itemType = libraryTask.itemType
+            ),
             ExistingWorkPolicy.REPLACE,
             libraryTaskWorkRequest
         )
@@ -58,54 +63,43 @@ internal class SyncManagerImpl @Inject constructor(
         )
     }
 
-    override fun isWorkNotScheduled(id: Int, itemType: LibraryItemType): Boolean {
-        var workInfoFound = false
-        val workTag = getWorkTag(itemType)
-        val shouldUpsert = workManager.getWorkInfosForUniqueWork("${workTag}_${id}")
-            .get()
+    override fun isWorkNotScheduled(
+        mediaId: Int,
+        mediaType: MediaType,
+        itemType: LibraryItemType
+    ): Boolean {
+        return workManager.getWorkInfosForUniqueWork(
+            generateWorkerName(
+                mediaId = mediaId,
+                mediaType = mediaType,
+                itemType = itemType
+            )
+        ).get()
             .any {
-                when (it.state) {
-                    WorkInfo.State.ENQUEUED,
-                    WorkInfo.State.RUNNING,
-                    WorkInfo.State.BLOCKED -> {
-                        workInfoFound = true
-                        false
-                    }
-
-                    else -> {
-                        workInfoFound = true
-                        true
-                    }
-                }
+                it.state == WorkInfo.State.ENQUEUED
+                        || it.state == WorkInfo.State.RUNNING
+                        || it.state == WorkInfo.State.BLOCKED
             }
-
-        return if (workInfoFound) {
-            shouldUpsert
-        } else {
-            true
-        }
+            .not()
     }
 
-    private fun generateWorkerName(libraryTask: LibraryTask): String {
-        return when (libraryTask.itemType) {
-            LibraryItemType.FAVORITE -> "${FAVORITES_TAG}_${libraryTask.mediaId}"
-            LibraryItemType.WATCHLIST -> "${WATCHLIST_TAG}_${libraryTask.mediaId}"
+    private fun generateWorkerName(
+        mediaId: Int,
+        mediaType: MediaType,
+        itemType: LibraryItemType
+    ): String {
+        return when (itemType) {
+            LibraryItemType.FAVORITE -> "${FAVORITES_TAG}-${mediaId}-${mediaType.name}"
+            LibraryItemType.WATCHLIST -> "${WATCHLIST_TAG}-${mediaId}-${mediaType.name}"
         }
     }
 
     private fun generateInputData(libraryTask: LibraryTask) = Data.Builder()
         .putInt(TASK_KEY, libraryTask.mediaId)
-        .putString(MEDIA_TYPE_KEY, libraryTask.mediaType)
+        .putEnum(MEDIA_TYPE_KEY, libraryTask.mediaType)
         .putEnum(ITEM_TYPE_KEY, libraryTask.itemType)
         .putBoolean(ITEM_EXISTS_KEY, libraryTask.itemExistLocally)
         .build()
-
-    private fun getWorkTag(libraryItemType: LibraryItemType): String {
-        return when (libraryItemType) {
-            LibraryItemType.FAVORITE -> FAVORITES_TAG
-            LibraryItemType.WATCHLIST -> WATCHLIST_TAG
-        }
-    }
 
     private fun getWorkConstraints() = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)

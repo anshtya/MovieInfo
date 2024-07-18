@@ -30,11 +30,17 @@ class TestLibraryRepository : LibraryRepository {
 
     override val tvShowsWatchlist: Flow<List<LibraryItem>> = _tvShows.asStateFlow()
 
-    override suspend fun favoriteItemExists(mediaId: Int): Boolean {
+    override suspend fun itemInFavoritesExists(
+        mediaId: Int,
+        mediaType: MediaType
+    ): Boolean {
         return testLibraryItems.find { it.id == mediaId } != null
     }
 
-    override suspend fun itemInWatchlistExists(mediaId: Int): Boolean {
+    override suspend fun itemInWatchlistExists(
+        mediaId: Int,
+        mediaType: MediaType
+    ): Boolean {
         return testLibraryItems.find { it.id == mediaId } != null
     }
 
@@ -82,7 +88,7 @@ class TestLibraryRepository : LibraryRepository {
 
     override suspend fun addOrRemoveItemSync(
         id: Int,
-        mediaType: String,
+        mediaType: MediaType,
         libraryItemType: LibraryItemType,
         itemExistsLocally: Boolean
     ): Boolean = true

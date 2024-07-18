@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.anshtya.movieinfo.core.local.database.MovieInfoDatabase
 import com.anshtya.movieinfo.core.local.database.MovieInfoDatabase.Companion.MIGRATION_10_11
+import com.anshtya.movieinfo.core.local.database.MovieInfoDatabase.Companion.MIGRATION_11_12
 import com.anshtya.movieinfo.core.local.database.MovieInfoDatabase.Companion.MIGRATION_1_2
 import com.anshtya.movieinfo.core.local.database.MovieInfoDatabase.Companion.MIGRATION_2_3
 import com.anshtya.movieinfo.core.local.database.MovieInfoDatabase.Companion.MIGRATION_3_4
@@ -41,7 +42,8 @@ internal object DatabaseModule {
                 MIGRATION_7_8,
                 MIGRATION_8_9,
                 MIGRATION_9_10,
-                MIGRATION_10_11
+                MIGRATION_10_11,
+                MIGRATION_11_12
             )
             .build()
     }

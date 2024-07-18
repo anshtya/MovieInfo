@@ -139,8 +139,14 @@ class DetailsViewModel @Inject constructor(
                 val data = response.data
                 _uiState.update {
                     it.copy(
-                        markedFavorite = libraryRepository.favoriteItemExists(data.id),
-                        savedInWatchlist = libraryRepository.itemInWatchlistExists(data.id)
+                        markedFavorite = libraryRepository.itemInFavoritesExists(
+                            mediaId = data.id,
+                            mediaType = MediaType.MOVIE
+                        ),
+                        savedInWatchlist = libraryRepository.itemInWatchlistExists(
+                            mediaId = data.id,
+                            mediaType = MediaType.MOVIE
+                        )
                     )
                 }
                 ContentDetailUiState.Movie(data = data)
@@ -161,8 +167,14 @@ class DetailsViewModel @Inject constructor(
                 val data = response.data
                 _uiState.update {
                     it.copy(
-                        markedFavorite = libraryRepository.favoriteItemExists(data.id),
-                        savedInWatchlist = libraryRepository.itemInWatchlistExists(data.id)
+                        markedFavorite = libraryRepository.itemInFavoritesExists(
+                            mediaId = data.id,
+                            mediaType = MediaType.TV
+                        ),
+                        savedInWatchlist = libraryRepository.itemInWatchlistExists(
+                            mediaId = data.id,
+                            mediaType = MediaType.TV
+                        )
                     )
                 }
                 ContentDetailUiState.TV(data = data)

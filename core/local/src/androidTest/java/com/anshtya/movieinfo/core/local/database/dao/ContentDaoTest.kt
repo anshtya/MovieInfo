@@ -7,6 +7,7 @@ import com.anshtya.movieinfo.core.local.database.MovieInfoDatabase
 import com.anshtya.movieinfo.core.local.database.entity.FavoriteContentEntity
 import com.anshtya.movieinfo.core.local.database.entity.WatchlistContentEntity
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -32,23 +33,29 @@ class ContentDaoTest {
         val favoriteItems = listOf(
             FavoriteContentEntity(
                 id = 1,
+                mediaId = 1,
                 mediaType = "movie",
                 name = "",
-                imagePath = "",
-                createdAt = 0L
+                imagePath = ""
             ),
             FavoriteContentEntity(
-                id = 1,
+                id = 2,
+                mediaId = 1,
                 mediaType = "tv",
                 name = "",
-                imagePath = "",
-                createdAt = 0L
-            ),
+                imagePath = ""
+            )
         )
         favoriteContentDao.upsertFavoriteItems(favoriteItems)
+
         assertEquals(
-            favoriteItems,
-            favoriteContentDao.getFavoriteItems()
+            listOf(favoriteItems[0]),
+            favoriteContentDao.getFavoriteMovies().first()
+        )
+
+        assertEquals(
+            listOf(favoriteItems[1]),
+            favoriteContentDao.getFavoriteTvShows().first()
         )
     }
 
@@ -57,23 +64,29 @@ class ContentDaoTest {
         val watchlistItems = listOf(
             WatchlistContentEntity(
                 id = 1,
+                mediaId = 1,
                 mediaType = "movie",
                 name = "",
-                imagePath = "",
-                createdAt = 0L
+                imagePath = ""
             ),
             WatchlistContentEntity(
-                id = 1,
+                id = 2,
+                mediaId = 1,
                 mediaType = "tv",
                 name = "",
-                imagePath = "",
-                createdAt = 0L
-            ),
+                imagePath = ""
+            )
         )
         watchlistContentDao.upsertWatchlistItems(watchlistItems)
+
         assertEquals(
-            watchlistItems,
-            watchlistContentDao.getWatchlistItems()
+            listOf(watchlistItems[0]),
+            watchlistContentDao.getMoviesWatchlist().first()
+        )
+
+        assertEquals(
+            listOf(watchlistItems[1]),
+            watchlistContentDao.getTvShowsWatchlist().first()
         )
     }
 

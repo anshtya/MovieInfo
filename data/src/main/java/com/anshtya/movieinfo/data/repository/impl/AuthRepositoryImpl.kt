@@ -72,8 +72,8 @@ internal class AuthRepositoryImpl @Inject constructor(
             sessionManager.deleteSessionId()
             accountDetailsDao.deleteAccountDetails(accountId)
 
-            favoriteContentDao.deleteAllItems()
-            watchlistContentDao.deleteAllItems()
+            favoriteContentDao.deleteAllFavoriteItems()
+            watchlistContentDao.deleteAllWatchlistItems()
 
             NetworkResponse.Success(Unit)
         } catch (e: IOException) {

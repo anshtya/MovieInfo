@@ -86,7 +86,7 @@ class TestLibraryRepository : LibraryRepository {
         }
     }
 
-    override suspend fun addOrRemoveItemSync(
+    override suspend fun executeLibraryTask(
         id: Int,
         mediaType: MediaType,
         libraryItemType: LibraryItemType,

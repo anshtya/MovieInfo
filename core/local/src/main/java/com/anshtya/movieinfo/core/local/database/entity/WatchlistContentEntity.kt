@@ -17,7 +17,7 @@ data class WatchlistContentEntity(
     @ColumnInfo(name = "image_path") val imagePath: String,
     val name: String
 ) {
-    fun asModel() = LibraryItem(
+    fun asLibraryItem() = LibraryItem(
         id = mediaId,
         mediaType = mediaType,
         imagePath = imagePath,

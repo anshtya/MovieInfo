@@ -13,7 +13,7 @@ import com.anshtya.movieinfo.core.network.model.auth.getErrorMessage
 import com.anshtya.movieinfo.core.network.retrofit.TmdbApi
 import com.anshtya.movieinfo.data.model.asEntity
 import com.anshtya.movieinfo.data.repository.AuthRepository
-import com.anshtya.movieinfo.data.util.SyncManager
+import com.anshtya.movieinfo.data.util.SyncScheduler
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -25,7 +25,7 @@ internal class AuthRepositoryImpl @Inject constructor(
     private val accountDetailsDao: AccountDetailsDao,
     private val userPreferencesDataStore: UserPreferencesDataStore,
     private val sessionManager: SessionManager,
-    private val syncManager: SyncManager
+    private val syncScheduler: SyncScheduler
 ) : AuthRepository {
     override val isLoggedIn = sessionManager.isLoggedIn
 
@@ -52,7 +52,7 @@ internal class AuthRepositoryImpl @Inject constructor(
             accountDetailsDao.addAccountDetails(accountDetails)
             userPreferencesDataStore.setAdultResultPreference(accountDetails.includeAdult)
 
-            syncManager.scheduleLibrarySyncWork()
+            syncScheduler.scheduleLibrarySyncWork()
 
             NetworkResponse.Success(Unit)
         } catch (e: IOException) {

@@ -12,7 +12,7 @@ import androidx.work.WorkManager
 import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.library.LibraryItemType
 import com.anshtya.movieinfo.core.model.library.LibraryTask
-import com.anshtya.movieinfo.data.util.SyncManager
+import com.anshtya.movieinfo.data.util.SyncScheduler
 import com.anshtya.movieinfo.sync.util.FAVORITES_TAG
 import com.anshtya.movieinfo.sync.util.WATCHLIST_TAG
 import com.anshtya.movieinfo.sync.util.putEnum
@@ -25,9 +25,9 @@ import com.anshtya.movieinfo.sync.workers.LibraryTaskWorker.Companion.ITEM_TYPE_
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-internal class SyncManagerImpl @Inject constructor(
+internal class SyncSchedulerImpl @Inject constructor(
     private val workManager: WorkManager
-) : SyncManager {
+) : SyncScheduler {
     override fun scheduleLibraryTaskWork(libraryTask: LibraryTask) {
         val libraryTaskWorkRequest = OneTimeWorkRequestBuilder<LibraryTaskWorker>()
             .setConstraints(getWorkConstraints())

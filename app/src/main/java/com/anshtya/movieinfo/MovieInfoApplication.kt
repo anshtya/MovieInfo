@@ -6,7 +6,7 @@ import androidx.work.Configuration
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import com.anshtya.movieinfo.data.repository.UserRepository
-import com.anshtya.movieinfo.data.util.SyncManager
+import com.anshtya.movieinfo.data.util.SyncScheduler
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -20,7 +20,7 @@ class MovieInfoApplication : Application(), ImageLoaderFactory, Configuration.Pr
     lateinit var userRepository: UserRepository
 
     @Inject
-    lateinit var syncManager: SyncManager
+    lateinit var syncScheduler: SyncScheduler
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
@@ -36,6 +36,6 @@ class MovieInfoApplication : Application(), ImageLoaderFactory, Configuration.Pr
 
     override fun onCreate() {
         super.onCreate()
-        syncManager.scheduleLibrarySyncWork()
+        syncScheduler.scheduleLibrarySyncWork()
     }
 }

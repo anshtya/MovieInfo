@@ -23,7 +23,7 @@ class LibraryTaskWorker @AssistedInject constructor(
         val taskType = inputData.getEnum<LibraryItemType>(ITEM_TYPE_KEY)
         val itemExists = inputData.getBoolean(ITEM_EXISTS_KEY, false)
 
-        val syncSuccessful = libraryRepository.addOrRemoveItemSync(
+        val syncSuccessful = libraryRepository.executeLibraryTask(
             id = itemId,
             mediaType = mediaType,
             libraryItemType = taskType,

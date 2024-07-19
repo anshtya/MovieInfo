@@ -16,13 +16,11 @@ import com.anshtya.movieinfo.core.network.model.library.FavoriteRequest
 import com.anshtya.movieinfo.core.network.model.library.WatchlistRequest
 import com.anshtya.movieinfo.core.network.retrofit.TmdbApi
 import com.anshtya.movieinfo.data.repository.LibraryRepository
-import com.anshtya.movieinfo.data.util.SyncManager
+import com.anshtya.movieinfo.data.util.SyncScheduler
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
@@ -33,26 +31,23 @@ internal class LibraryRepositoryImpl @Inject constructor(
     private val favoriteContentDao: FavoriteContentDao,
     private val watchlistContentDao: WatchlistContentDao,
     private val accountDetailsDao: AccountDetailsDao,
-    private val syncManager: SyncManager
+    private val syncScheduler: SyncScheduler
 ) : LibraryRepository {
-    private val movieMediaTypeString = MediaType.MOVIE.name.lowercase()
-    private val tvMediaTypeString = MediaType.TV.name.lowercase()
-
     override val favoriteMovies: Flow<List<LibraryItem>> =
         favoriteContentDao.getFavoriteMovies()
-            .map { it.map(FavoriteContentEntity::asModel) }
+            .map { it.map(FavoriteContentEntity::asLibraryItem) }
 
     override val favoriteTvShows: Flow<List<LibraryItem>> =
         favoriteContentDao.getFavoriteTvShows()
-            .map { it.map(FavoriteContentEntity::asModel) }
+            .map { it.map(FavoriteContentEntity::asLibraryItem) }
 
     override val moviesWatchlist: Flow<List<LibraryItem>> =
         watchlistContentDao.getMoviesWatchlist()
-            .map { it.map(WatchlistContentEntity::asModel) }
+            .map { it.map(WatchlistContentEntity::asLibraryItem) }
 
     override val tvShowsWatchlist: Flow<List<LibraryItem>> =
         watchlistContentDao.getTvShowsWatchlist()
-            .map { it.map(WatchlistContentEntity::asModel) }
+            .map { it.map(WatchlistContentEntity::asLibraryItem) }
 
     override suspend fun itemInFavoritesExists(
         mediaId: Int,
@@ -104,7 +99,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
                         mediaType = enumValueOf<MediaType>(libraryItem.mediaType.uppercase()),
                         itemExists = !itemExists
                     )
-                    syncManager.scheduleLibraryTaskWork(libraryTask)
+                    syncScheduler.scheduleLibraryTaskWork(libraryTask)
                 }
             }
 
@@ -143,7 +138,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
                         mediaType = enumValueOf<MediaType>(libraryItem.mediaType.uppercase()),
                         itemExists = !itemExists
                     )
-                    syncManager.scheduleLibraryTaskWork(libraryTask)
+                    syncScheduler.scheduleLibraryTaskWork(libraryTask)
                 }
             }
             return itemExists
@@ -152,7 +147,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addOrRemoveItemSync(
+    override suspend fun executeLibraryTask(
         id: Int,
         mediaType: MediaType,
         libraryItemType: LibraryItemType,
@@ -192,157 +187,80 @@ internal class LibraryRepositoryImpl @Inject constructor(
      * items which are stale (i.e. not present on server) and for which no work is scheduled.
      */
     override suspend fun syncFavorites(): Boolean {
-        return try {
-            val accountId = accountDetailsDao.getAccountDetails()?.id ?: return false
+        val accountId = accountDetailsDao.getAccountDetails()?.id ?: return false
 
-            val favoriteMovies = mutableListOf<FavoriteContentEntity>()
-            val favoriteTvShows = mutableListOf<FavoriteContentEntity>()
-            val staleFavoriteMovies = mutableListOf<Pair<Int, String>>()
-            val staleFavoriteTvShows = mutableListOf<Pair<Int, String>>()
+        val favoriteItemTypeString = LibraryItemType.FAVORITE.name.lowercase()
+        return syncFromLocalAndNetwork(
+            fetchFromNetwork = { mediaTypeString ->
+                val favoriteItemsNetworkResults = mutableListOf<NetworkContentItem>()
 
-            val favoriteItemTypeString = LibraryItemType.FAVORITE.name.lowercase()
+                var favoriteItemsPage = 1
+                do {
+                    val result = tmdbApi.getLibraryItems(
+                        accountId = accountId,
+                        itemType = favoriteItemTypeString,
+                        mediaType = mediaTypeString,
+                        page = favoriteItemsPage++
+                    ).results
 
-            coroutineScope {
-                launch {
-                    val favoriteMoviesResults = mutableListOf<NetworkContentItem>()
+                    favoriteItemsNetworkResults.addAll(result)
+                } while (result.isNotEmpty())
 
-                    var movieFavoritesPage = 1
-                    do {
-                        val result = tmdbApi.getLibraryItems(
-                            accountId = accountId,
-                            itemType = favoriteItemTypeString,
-                            mediaType = "${movieMediaTypeString}s",
-                            page = movieFavoritesPage++
-                        ).results
-
-                        favoriteMoviesResults.addAll(result)
-                    } while (result.isNotEmpty())
-
-                    val favoriteMoviesResultsPair = favoriteMoviesResults
-                        .map {
-                            Pair(it.id, movieMediaTypeString)
-                        }
-
-                    staleFavoriteMovies.addAll(
-                        favoriteContentDao.getFavoriteMovies()
-                            .first()
-                            .filter {
-                                Pair(it.mediaId, it.mediaType) !in favoriteMoviesResultsPair
-                                        && syncManager.isWorkNotScheduled(
-                                    mediaId = it.mediaId,
-                                    mediaType = MediaType.MOVIE,
-                                    itemType = LibraryItemType.FAVORITE
-                                )
-                            }
-                            .map { Pair(it.mediaId, it.mediaType) }
-                    )
-
-                    favoriteMovies.addAll(
-                        favoriteMoviesResults
-                            .filter {
-                                syncManager.isWorkNotScheduled(
-                                    mediaId = it.id,
-                                    mediaType = MediaType.MOVIE,
-                                    itemType = LibraryItemType.FAVORITE
-                                )
-                            }.map {
-                                val contentItem = it.asModel()
-                                val item = favoriteContentDao.getFavoriteItem(
-                                    mediaId = contentItem.id,
-                                    mediaType = movieMediaTypeString
-                                )
-
-                                item?.copy(
-                                    imagePath = contentItem.imagePath,
-                                    name = contentItem.name
-                                ) ?: FavoriteContentEntity(
-                                    mediaId = contentItem.id,
-                                    mediaType = movieMediaTypeString,
-                                    imagePath = contentItem.imagePath,
-                                    name = contentItem.name
-                                )
-                            }
-                    )
+                favoriteItemsNetworkResults
+            },
+            fetchStaleItemsFromLocalSource = { mediaType, networkResultsPair ->
+                val favoriteItems = when (mediaType) {
+                    MediaType.MOVIE -> favoriteContentDao.getFavoriteMovies().first()
+                    MediaType.TV -> favoriteContentDao.getFavoriteTvShows().first()
+                    else -> emptyList() // Unreachable
                 }
 
-                launch {
-                    val favoriteTvShowsResults = mutableListOf<NetworkContentItem>()
+                favoriteItems
+                    .filter {
+                        Pair(it.mediaId, it.mediaType) !in networkResultsPair
+                                && syncScheduler.isWorkNotScheduled(
+                            mediaId = it.mediaId,
+                            mediaType = mediaType,
+                            itemType = LibraryItemType.FAVORITE
+                        )
+                    }
+                    .map { Pair(it.mediaId, it.mediaType) }
+            },
+            fetchFromLocalSource = { mediaType, mediaTypeString, networkResults ->
+                networkResults
+                    .filter {
+                        syncScheduler.isWorkNotScheduled(
+                            mediaId = it.id,
+                            mediaType = mediaType,
+                            itemType = LibraryItemType.FAVORITE
+                        )
+                    }.map {
+                        val contentItem = it.asModel()
+                        val item = favoriteContentDao.getFavoriteItem(
+                            mediaId = contentItem.id,
+                            mediaType = mediaTypeString
+                        )?.asLibraryItem()
 
-                    var tvFavoritesPage = 1
-                    do {
-                        val result = tmdbApi.getLibraryItems(
-                            accountId = accountId,
-                            itemType = favoriteItemTypeString,
-                            mediaType = tvMediaTypeString,
-                            page = tvFavoritesPage++
-                        ).results
-
-                        favoriteTvShowsResults.addAll(result)
-                    } while (result.isNotEmpty())
-
-                    val favoriteTvShowsResultsPair = favoriteTvShowsResults
-                        .map {
-                            Pair(it.id, tvMediaTypeString)
-                        }
-
-                    staleFavoriteTvShows.addAll(
-                        favoriteContentDao.getFavoriteTvShows()
-                            .first()
-                            .filter {
-                                Pair(
-                                    it.mediaId,
-                                    it.mediaType
-                                ) !in favoriteTvShowsResultsPair
-                                        && syncManager.isWorkNotScheduled(
-                                    mediaId = it.mediaId,
-                                    mediaType = MediaType.TV,
-                                    itemType = LibraryItemType.FAVORITE
-                                )
-                            }
-                            .map { Pair(it.mediaId, it.mediaType) }
-                    )
-
-                    favoriteTvShows.addAll(
-                        favoriteTvShowsResults
-                            .filter {
-                                syncManager.isWorkNotScheduled(
-                                    mediaId = it.id,
-                                    mediaType = MediaType.TV,
-                                    itemType = LibraryItemType.FAVORITE
-                                )
-                            }
-                            .map {
-                                val contentItem = it.asModel()
-                                val item = favoriteContentDao.getFavoriteItem(
-                                    mediaId = contentItem.id,
-                                    mediaType = tvMediaTypeString
-                                )
-
-                                item?.copy(
-                                    imagePath = contentItem.imagePath,
-                                    name = contentItem.name
-                                ) ?: FavoriteContentEntity(
-                                    mediaId = contentItem.id,
-                                    mediaType = tvMediaTypeString,
-                                    imagePath = contentItem.imagePath,
-                                    name = contentItem.name
-                                )
-                            }
-                    )
-                }
+                        item?.copy(
+                            imagePath = contentItem.imagePath,
+                            name = contentItem.name
+                        )?: LibraryItem(
+                            id = contentItem.id,
+                            mediaType = mediaTypeString,
+                            imagePath = contentItem.imagePath,
+                            name = contentItem.name
+                        )
+                    }
+            },
+            updateLocalSource = { libraryItems, staleItems ->
+                favoriteContentDao.syncFavoriteItems(
+                    upsertItems = libraryItems.map { item ->
+                        item.asFavoriteContentEntity()
+                    },
+                    deleteItems = staleItems
+                )
             }
-
-            favoriteContentDao.syncFavoriteItems(
-                upsertItems = (favoriteMovies + favoriteTvShows),
-                deleteItems = (staleFavoriteMovies + staleFavoriteTvShows)
-            )
-
-            true
-        } catch (e: IOException) {
-            false
-        } catch (e: HttpException) {
-            false
-        }
+        )
     }
 
     /**
@@ -350,159 +268,79 @@ internal class LibraryRepositoryImpl @Inject constructor(
      * items which are stale (i.e. not present on server) and for which no work is scheduled.
      */
     override suspend fun syncWatchlist(): Boolean {
-        return try {
-            val accountId = accountDetailsDao.getAccountDetails()?.id ?: return false
+        val accountId = accountDetailsDao.getAccountDetails()?.id ?: return false
 
-            val moviesWatchlist = mutableListOf<WatchlistContentEntity>()
-            val tvShowsWatchlist = mutableListOf<WatchlistContentEntity>()
-            val staleMoviesWatchlist = mutableListOf<Pair<Int, String>>()
-            val staleTvShowsWatchlist = mutableListOf<Pair<Int, String>>()
+        val watchlistItemTypeString = LibraryItemType.WATCHLIST.name.lowercase()
+        return syncFromLocalAndNetwork(
+            fetchFromNetwork = { mediaTypeString ->
+                val watchlistItemsNetworkResults = mutableListOf<NetworkContentItem>()
 
-            val watchlistItemTypeString = LibraryItemType.WATCHLIST.name.lowercase()
+                var watchlistItemsPage = 1
+                do {
+                    val result = tmdbApi.getLibraryItems(
+                        accountId = accountId,
+                        itemType = watchlistItemTypeString,
+                        mediaType = mediaTypeString,
+                        page = watchlistItemsPage++
+                    ).results
 
-            coroutineScope {
-                launch {
-                    val moviesWatchlistResults = mutableListOf<NetworkContentItem>()
+                    watchlistItemsNetworkResults.addAll(result)
+                } while (result.isNotEmpty())
 
-                    var movieWatchlistPage = 1
-                    do {
-                        val result = tmdbApi.getLibraryItems(
-                            accountId = accountId,
-                            itemType = watchlistItemTypeString,
-                            mediaType = "${movieMediaTypeString}s",
-                            page = movieWatchlistPage++
-                        ).results
-
-                        moviesWatchlistResults.addAll(result)
-                    } while (result.isNotEmpty())
-
-                    val moviesWatchlistResultsPair = moviesWatchlistResults
-                        .map {
-                            Pair(it.id, movieMediaTypeString)
-                        }
-
-                    staleMoviesWatchlist.addAll(
-                        watchlistContentDao.getMoviesWatchlist()
-                            .first()
-                            .filter {
-                                Pair(
-                                    it.mediaId,
-                                    it.mediaType
-                                ) !in moviesWatchlistResultsPair
-                                        && syncManager.isWorkNotScheduled(
-                                    mediaId = it.mediaId,
-                                    mediaType = MediaType.MOVIE,
-                                    itemType = LibraryItemType.WATCHLIST
-                                )
-                            }.map { Pair(it.mediaId, it.mediaType) }
-                    )
-
-                    moviesWatchlist.addAll(
-                        moviesWatchlistResults
-                            .filter {
-                                syncManager.isWorkNotScheduled(
-                                    mediaId = it.id,
-                                    mediaType = MediaType.MOVIE,
-                                    itemType = LibraryItemType.WATCHLIST
-                                )
-                            }
-                            .map {
-                                val contentItem = it.asModel()
-                                val item = watchlistContentDao.getWatchlistItem(
-                                    mediaId = contentItem.id,
-                                    mediaType = movieMediaTypeString
-                                )
-
-                                item?.copy(
-                                    imagePath = contentItem.imagePath,
-                                    name = contentItem.name
-                                ) ?: WatchlistContentEntity(
-                                    mediaId = contentItem.id,
-                                    mediaType = movieMediaTypeString,
-                                    imagePath = contentItem.imagePath,
-                                    name = contentItem.name
-                                )
-                            }
-                    )
+                watchlistItemsNetworkResults
+            },
+            fetchStaleItemsFromLocalSource = { mediaType, networkResultsPair ->
+                val watchlistItems = when (mediaType) {
+                    MediaType.MOVIE -> watchlistContentDao.getMoviesWatchlist().first()
+                    MediaType.TV -> watchlistContentDao.getTvShowsWatchlist().first()
+                    else -> emptyList() // Unreachable
                 }
 
-                launch {
-                    val tvShowsWatchlistResults = mutableListOf<NetworkContentItem>()
+                watchlistItems
+                    .filter {
+                        Pair(it.mediaId, it.mediaType) !in networkResultsPair
+                                && syncScheduler.isWorkNotScheduled(
+                            mediaId = it.mediaId,
+                            mediaType = mediaType,
+                            itemType = LibraryItemType.WATCHLIST
+                        )
+                    }
+                    .map { Pair(it.mediaId, it.mediaType) }
+            },
+            fetchFromLocalSource = { mediaType, mediaTypeString, networkResults ->
+                networkResults
+                    .filter {
+                        syncScheduler.isWorkNotScheduled(
+                            mediaId = it.id,
+                            mediaType = mediaType,
+                            itemType = LibraryItemType.WATCHLIST
+                        )
+                    }.map {
+                        val contentItem = it.asModel()
+                        val item = watchlistContentDao.getWatchlistItem(
+                            mediaId = contentItem.id,
+                            mediaType = mediaTypeString
+                        )?.asLibraryItem()
 
-                    var tvWatchlistPage = 1
-                    do {
-                        val result = tmdbApi.getLibraryItems(
-                            accountId = accountId,
-                            itemType = watchlistItemTypeString,
-                            mediaType = tvMediaTypeString,
-                            page = tvWatchlistPage++
-                        ).results
-
-                        tvShowsWatchlistResults.addAll(result)
-                    } while (result.isNotEmpty())
-
-                    val tvShowsWatchlistResultsPair = tvShowsWatchlistResults
-                        .map {
-                            Pair(it.id, tvMediaTypeString)
-                        }
-
-                    staleTvShowsWatchlist.addAll(
-                        watchlistContentDao.getTvShowsWatchlist()
-                            .first()
-                            .filter {
-                                Pair(
-                                    it.mediaId,
-                                    it.mediaType
-                                ) !in tvShowsWatchlistResultsPair
-                                        && syncManager.isWorkNotScheduled(
-                                    mediaId = it.mediaId,
-                                    mediaType = MediaType.TV,
-                                    itemType = LibraryItemType.WATCHLIST
-                                )
-                            }
-                            .map { Pair(it.mediaId, it.mediaType) }
-                    )
-
-                    tvShowsWatchlist.addAll(
-                        tvShowsWatchlistResults
-                            .filter {
-                                syncManager.isWorkNotScheduled(
-                                    mediaId = it.id,
-                                    mediaType = MediaType.TV,
-                                    itemType = LibraryItemType.WATCHLIST
-                                )
-                            }
-                            .map {
-                                val contentItem = it.asModel()
-                                val item = watchlistContentDao.getWatchlistItem(
-                                    mediaId = contentItem.id,
-                                    mediaType = tvMediaTypeString
-                                )
-
-                                item?.copy(
-                                    imagePath = contentItem.imagePath,
-                                    name = contentItem.name
-                                ) ?: WatchlistContentEntity(
-                                    mediaId = contentItem.id,
-                                    mediaType = tvMediaTypeString,
-                                    imagePath = contentItem.imagePath,
-                                    name = contentItem.name
-                                )
-                            }
-                    )
-                }
+                        item?.copy(
+                            imagePath = contentItem.imagePath,
+                            name = contentItem.name
+                        )?: LibraryItem(
+                            id = contentItem.id,
+                            mediaType = mediaTypeString,
+                            imagePath = contentItem.imagePath,
+                            name = contentItem.name
+                        )
+                    }
+            },
+            updateLocalSource = { libraryItems, staleItems ->
+                watchlistContentDao.syncWatchlistItems(
+                    upsertItems = libraryItems.map { item ->
+                        item.asWatchlistContentEntity()
+                    },
+                    deleteItems = staleItems
+                )
             }
-
-            watchlistContentDao.syncWatchlistItems(
-                upsertItems = (moviesWatchlist + tvShowsWatchlist),
-                deleteItems = (staleMoviesWatchlist + staleTvShowsWatchlist)
-            )
-
-            true
-        } catch (e: IOException) {
-            false
-        } catch (e: HttpException) {
-            false
-        }
+        )
     }
 }

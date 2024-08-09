@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
@@ -48,13 +49,17 @@ fun PersonImage(
 
 @Composable
 fun TmdbImage(
+    width: Int,
+    imageUrl: String,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.FillBounds,
-    alpha: Float = 1f,
-    width: Int,
-    imageUrl: String
+    alpha: Float = 1f
 ) {
-    Box(modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .alpha(alpha)
+    ) {
         if (imageUrl.isEmpty()) {
             Text(
                 text = stringResource(id = R.string.no_image_available),
@@ -66,7 +71,6 @@ fun TmdbImage(
                 model = "https://image.tmdb.org/t/p/w${width}${imageUrl}",
                 contentDescription = null,
                 contentScale = contentScale,
-                alpha = alpha,
                 loading = {
                     Box(Modifier.fillMaxSize()) {
                         CircularProgressIndicator(

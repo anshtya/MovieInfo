@@ -59,8 +59,8 @@ androidComponents {
 dependencies {
     api(projects.core.model)
 
-    api(libs.androidx.room.ktx)
     implementation(libs.androidx.datastore)
+    implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.security.crypto)
     implementation(libs.protobuf.kotlin.lite)

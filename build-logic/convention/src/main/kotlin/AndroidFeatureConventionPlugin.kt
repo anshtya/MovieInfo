@@ -3,7 +3,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import util.getLibrary
+import com.anshtya.movieinfo.findLibrary
 
 class AndroidFeatureConventionPlugin: Plugin<Project> {
     override fun apply(target: Project) {
@@ -22,8 +22,8 @@ class AndroidFeatureConventionPlugin: Plugin<Project> {
                 dependencies {
                     add("implementation", project(":core:ui"))
 
-                    add("implementation", getLibrary("androidx-lifecycle-runtime-compose"))
-                    add("implementation", getLibrary("androidx-hilt-navigation-compose"))
+                    add("implementation", findLibrary("androidx-lifecycle-runtime-compose"))
+                    add("implementation", findLibrary("androidx-hilt-navigation-compose"))
                 }
             }
         }

@@ -1,7 +1,7 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import util.getLibrary
+import com.anshtya.movieinfo.findLibrary
 
 class AndroidHiltConventionPlugin: Plugin<Project> {
     override fun apply(target: Project) {
@@ -12,8 +12,8 @@ class AndroidHiltConventionPlugin: Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", getLibrary("hilt-android"))
-                add("ksp", getLibrary("hilt-android-compiler"))
+                add("implementation", findLibrary("hilt-android"))
+                add("ksp", findLibrary("hilt-android-compiler"))
             }
         }
     }

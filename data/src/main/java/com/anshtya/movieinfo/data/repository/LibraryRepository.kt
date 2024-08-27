@@ -22,7 +22,7 @@ interface LibraryRepository: UserLibrarySyncOperations, LibraryTaskSyncOperation
         mediaType: MediaType
     ): Boolean
 
-    suspend fun addOrRemoveFavorite(libraryItem: LibraryItem): Boolean
+    suspend fun addOrRemoveFavorite(libraryItem: LibraryItem)
 
-    suspend fun addOrRemoveFromWatchlist(libraryItem: LibraryItem): Boolean
+    suspend fun addOrRemoveFromWatchlist(libraryItem: LibraryItem)
 }

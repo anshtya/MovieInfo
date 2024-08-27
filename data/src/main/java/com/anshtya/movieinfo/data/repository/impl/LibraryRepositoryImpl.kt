@@ -17,11 +17,9 @@ import com.anshtya.movieinfo.core.network.model.library.WatchlistRequest
 import com.anshtya.movieinfo.core.network.retrofit.TmdbApi
 import com.anshtya.movieinfo.data.repository.LibraryRepository
 import com.anshtya.movieinfo.data.util.SyncScheduler
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -69,7 +67,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun addOrRemoveFavorite(libraryItem: LibraryItem): Boolean {
+    override suspend fun addOrRemoveFavorite(libraryItem: LibraryItem) {
         try {
             val itemExists = favoriteContentDao.checkFavoriteItemExists(
                 mediaId = libraryItem.id,
@@ -84,32 +82,18 @@ internal class LibraryRepositoryImpl @Inject constructor(
                 favoriteContentDao.insertFavoriteItem(libraryItem.asFavoriteContentEntity())
             }
 
-            withContext(NonCancellable) {
-                val accountId = accountDetailsDao.getAccountDetails()!!.id
-                val favoriteRequest = FavoriteRequest(
-                    mediaType = libraryItem.mediaType,
-                    mediaId = libraryItem.id,
-                    favorite = !itemExists
-                )
-
-                val response = tmdbApi.addOrRemoveFavorite(accountId, favoriteRequest)
-                if (!response.isSuccessful) {
-                    val libraryTask = LibraryTask.favoriteItemTask(
-                        mediaId = libraryItem.id,
-                        mediaType = enumValueOf<MediaType>(libraryItem.mediaType.uppercase()),
-                        itemExists = !itemExists
-                    )
-                    syncScheduler.scheduleLibraryTaskWork(libraryTask)
-                }
-            }
-
-            return itemExists
+            val libraryTask = LibraryTask.favoriteItemTask(
+                mediaId = libraryItem.id,
+                mediaType = enumValueOf<MediaType>(libraryItem.mediaType.uppercase()),
+                itemExists = !itemExists
+            )
+            syncScheduler.scheduleLibraryTaskWork(libraryTask)
         } catch (e: IOException) {
             throw e
         }
     }
 
-    override suspend fun addOrRemoveFromWatchlist(libraryItem: LibraryItem): Boolean {
+    override suspend fun addOrRemoveFromWatchlist(libraryItem: LibraryItem) {
         try {
             val itemExists = watchlistContentDao.checkWatchlistItemExists(
                 mediaId = libraryItem.id,
@@ -124,24 +108,12 @@ internal class LibraryRepositoryImpl @Inject constructor(
                 watchlistContentDao.insertWatchlistItem(libraryItem.asWatchlistContentEntity())
             }
 
-            withContext(NonCancellable) {
-                val accountId = accountDetailsDao.getAccountDetails()!!.id
-                val watchlistRequest = WatchlistRequest(
-                    mediaType = libraryItem.mediaType,
-                    mediaId = libraryItem.id,
-                    watchlist = !itemExists
-                )
-                val response = tmdbApi.addOrRemoveFromWatchlist(accountId, watchlistRequest)
-                if (!response.isSuccessful) {
-                    val libraryTask = LibraryTask.watchlistItemTask(
-                        mediaId = libraryItem.id,
-                        mediaType = enumValueOf<MediaType>(libraryItem.mediaType.uppercase()),
-                        itemExists = !itemExists
-                    )
-                    syncScheduler.scheduleLibraryTaskWork(libraryTask)
-                }
-            }
-            return itemExists
+            val libraryTask = LibraryTask.watchlistItemTask(
+                mediaId = libraryItem.id,
+                mediaType = enumValueOf<MediaType>(libraryItem.mediaType.uppercase()),
+                itemExists = !itemExists
+            )
+            syncScheduler.scheduleLibraryTaskWork(libraryTask)
         } catch (e: IOException) {
             throw e
         }
@@ -244,7 +216,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
                         item?.copy(
                             imagePath = contentItem.imagePath,
                             name = contentItem.name
-                        )?: LibraryItem(
+                        ) ?: LibraryItem(
                             id = contentItem.id,
                             mediaType = mediaTypeString,
                             imagePath = contentItem.imagePath,
@@ -325,7 +297,7 @@ internal class LibraryRepositoryImpl @Inject constructor(
                         item?.copy(
                             imagePath = contentItem.imagePath,
                             name = contentItem.name
-                        )?: LibraryItem(
+                        ) ?: LibraryItem(
                             id = contentItem.id,
                             mediaType = mediaTypeString,
                             imagePath = contentItem.imagePath,

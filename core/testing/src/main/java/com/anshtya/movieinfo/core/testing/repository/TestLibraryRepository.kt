@@ -44,12 +44,12 @@ class TestLibraryRepository : LibraryRepository {
         return testLibraryItems.find { it.id == mediaId } != null
     }
 
-    override suspend fun addOrRemoveFavorite(libraryItem: LibraryItem): Boolean {
+    override suspend fun addOrRemoveFavorite(libraryItem: LibraryItem) {
         return if (generateError) {
             throw IOException()
         } else {
             // For testing add
-            if (libraryItem.id == 0) return true
+            if (libraryItem.id == 0) return
 
             // For testing delete
             // Since delete button is present on items list, list needs to be updated
@@ -60,17 +60,15 @@ class TestLibraryRepository : LibraryRepository {
 
                 else -> {}
             }
-
-            true
         }
     }
 
-    override suspend fun addOrRemoveFromWatchlist(libraryItem: LibraryItem): Boolean {
+    override suspend fun addOrRemoveFromWatchlist(libraryItem: LibraryItem) {
         return if (generateError) {
             throw IOException()
         } else {
             // For testing add
-            if (libraryItem.id == 0) return true
+            if (libraryItem.id == 0) return
 
             // For testing delete
             // Since delete button is present on items list, list needs to be updated
@@ -81,8 +79,6 @@ class TestLibraryRepository : LibraryRepository {
 
                 else -> {}
             }
-
-            true
         }
     }
 

@@ -3,10 +3,10 @@ package com.anshtya.movieinfo.feature.you
 import com.anshtya.movieinfo.core.model.NetworkResponse
 import com.anshtya.movieinfo.core.model.SelectedDarkMode
 import com.anshtya.movieinfo.core.testing.MainDispatcherRule
-import com.anshtya.movieinfo.core.testing.repository.TestAuthRepository
-import com.anshtya.movieinfo.core.testing.repository.TestUserRepository
-import com.anshtya.movieinfo.core.testing.repository.testAccountDetails
-import com.anshtya.movieinfo.core.testing.repository.testUserData
+import com.anshtya.movieinfo.data.testdoubles.repository.TestAuthRepository
+import com.anshtya.movieinfo.data.testdoubles.repository.TestUserRepository
+import com.anshtya.movieinfo.data.testdoubles.repository.testAccountDetails
+import com.anshtya.movieinfo.data.testdoubles.repository.testUserData
 import junit.framework.TestCase
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi

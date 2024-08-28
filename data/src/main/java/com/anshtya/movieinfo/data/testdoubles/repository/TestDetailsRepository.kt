@@ -1,13 +1,13 @@
-package com.anshtya.movieinfo.core.testing.repository
+package com.anshtya.movieinfo.data.testdoubles.repository
 
 import com.anshtya.movieinfo.core.model.NetworkResponse
 import com.anshtya.movieinfo.core.model.details.MovieDetails
 import com.anshtya.movieinfo.core.model.details.people.PersonDetails
 import com.anshtya.movieinfo.core.model.details.tv.TvDetails
-import com.anshtya.movieinfo.core.testing.util.testMovieDetail
-import com.anshtya.movieinfo.core.testing.util.testPersonDetails
-import com.anshtya.movieinfo.core.testing.util.testTvShowDetails
 import com.anshtya.movieinfo.data.repository.DetailsRepository
+import com.anshtya.movieinfo.data.testdoubles.testMovieDetail
+import com.anshtya.movieinfo.data.testdoubles.testPersonDetails
+import com.anshtya.movieinfo.data.testdoubles.testTvShowDetails
 
 class TestDetailsRepository : DetailsRepository {
     private var generateError = false

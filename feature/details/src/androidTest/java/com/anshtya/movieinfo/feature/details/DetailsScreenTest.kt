@@ -4,7 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import com.anshtya.movieinfo.core.testing.util.testMovieDetail
+import com.anshtya.movieinfo.data.testdoubles.testMovieDetail
 import org.junit.Rule
 import org.junit.Test
 

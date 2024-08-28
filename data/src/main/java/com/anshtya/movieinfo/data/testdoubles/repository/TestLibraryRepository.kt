@@ -1,12 +1,12 @@
-package com.anshtya.movieinfo.core.testing.repository
+package com.anshtya.movieinfo.data.testdoubles.repository
 
 import com.anshtya.movieinfo.core.model.MediaType
 import com.anshtya.movieinfo.core.model.library.LibraryItem
 import com.anshtya.movieinfo.core.model.library.LibraryItemType
-import com.anshtya.movieinfo.core.testing.util.testLibraryItems
-import com.anshtya.movieinfo.core.testing.util.movieMediaType
-import com.anshtya.movieinfo.core.testing.util.tvMediaType
 import com.anshtya.movieinfo.data.repository.LibraryRepository
+import com.anshtya.movieinfo.data.testdoubles.movieMediaType
+import com.anshtya.movieinfo.data.testdoubles.testLibraryItems
+import com.anshtya.movieinfo.data.testdoubles.tvMediaType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -2,8 +2,8 @@ package com.anshtya.movieinfo.feature.auth
 
 import com.anshtya.movieinfo.core.model.NetworkResponse
 import com.anshtya.movieinfo.core.testing.MainDispatcherRule
-import com.anshtya.movieinfo.core.testing.repository.TestAuthRepository
-import com.anshtya.movieinfo.core.testing.repository.TestUserRepository
+import com.anshtya.movieinfo.data.testdoubles.repository.TestAuthRepository
+import com.anshtya.movieinfo.data.testdoubles.repository.TestUserRepository
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertTrue

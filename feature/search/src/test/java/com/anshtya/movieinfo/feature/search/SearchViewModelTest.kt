@@ -3,9 +3,9 @@ package com.anshtya.movieinfo.feature.search
 import com.anshtya.movieinfo.core.model.NetworkResponse
 import com.anshtya.movieinfo.core.model.SearchItem
 import com.anshtya.movieinfo.core.testing.MainDispatcherRule
-import com.anshtya.movieinfo.core.testing.repository.TestSearchRepository
-import com.anshtya.movieinfo.core.testing.repository.TestUserRepository
-import com.anshtya.movieinfo.core.testing.util.testSearchResults
+import com.anshtya.movieinfo.data.testdoubles.repository.TestSearchRepository
+import com.anshtya.movieinfo.data.testdoubles.repository.TestUserRepository
+import com.anshtya.movieinfo.data.testdoubles.testSearchResults
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -7,8 +7,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.data)
-
     api(libs.androidx.test.ext.junit)
     api(libs.androidx.test.runner)
     api(libs.junit)

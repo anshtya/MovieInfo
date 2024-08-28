@@ -3,8 +3,8 @@ package com.anshtya.movieinfo.feature.you.library_items
 import androidx.lifecycle.SavedStateHandle
 import com.anshtya.movieinfo.core.model.library.LibraryItemType
 import com.anshtya.movieinfo.core.testing.MainDispatcherRule
-import com.anshtya.movieinfo.core.testing.repository.TestLibraryRepository
-import com.anshtya.movieinfo.core.testing.util.testLibraryItems
+import com.anshtya.movieinfo.data.testdoubles.repository.TestLibraryRepository
+import com.anshtya.movieinfo.data.testdoubles.testLibraryItems
 import com.anshtya.movieinfo.feature.you.libraryItemTypeNavigationArgument
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull

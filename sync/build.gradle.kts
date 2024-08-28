@@ -16,7 +16,6 @@ dependencies {
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
 
     api(libs.androidx.hilt.work)
     api(libs.androidx.work.runtime.ktx)

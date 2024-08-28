@@ -24,6 +24,10 @@ internal fun Project.configureAndroidCompose(
             add("implementation", findLibrary("ui-tooling-preview"))
 
             add("androidTestImplementation", platform(bom))
+            add("androidTestImplementation", findLibrary("ui-test-junit4"))
+
+            add("debugImplementation", findLibrary("ui-test-manifest"))
+            add("debugImplementation", findLibrary("ui-tooling"))
         }
     }
 

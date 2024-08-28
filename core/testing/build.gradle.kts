@@ -1,6 +1,5 @@
 plugins {
     id("movieinfo.android.library")
-    id("movieinfo.android.library.compose")
 }
 
 android {
@@ -10,8 +9,7 @@ android {
 dependencies {
     implementation(projects.data)
 
+    api(libs.androidx.test.ext.junit)
     api(libs.junit)
-    api(libs.ui.test.junit4)
-
-    debugApi(libs.ui.test.manifest)
+    api(libs.kotlinx.coroutines.test)
 }

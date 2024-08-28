@@ -30,6 +30,5 @@ dependencies {
     ksp(libs.moshi.kotlin.codegen)
 
     testImplementation(projects.core.testing)
-    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
 }

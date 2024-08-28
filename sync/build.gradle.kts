@@ -19,5 +19,6 @@ dependencies {
 
     api(libs.androidx.hilt.work)
     api(libs.androidx.work.runtime.ktx)
-    ksp(libs.hilt.compiler)
+
+    ksp(libs.androidx.hilt.compiler)
 }

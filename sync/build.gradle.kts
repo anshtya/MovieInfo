@@ -14,8 +14,8 @@ android {
 dependencies {
     implementation(projects.data)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
+    testImplementation(projects.core.testing)
+    androidTestImplementation(projects.core.testing)
 
     api(libs.androidx.hilt.work)
     api(libs.androidx.work.runtime.ktx)

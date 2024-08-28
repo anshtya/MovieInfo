@@ -22,7 +22,7 @@ android {
 }
 
 dependencies {
-    api(projects.core.model)
+    implementation(projects.core.model)
 
     api(libs.retrofit)
     implementation(libs.converter.moshi)

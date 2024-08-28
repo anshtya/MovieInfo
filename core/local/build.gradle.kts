@@ -57,7 +57,7 @@ androidComponents {
 }
 
 dependencies {
-    api(projects.core.model)
+    implementation(projects.core.model)
 
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.room.ktx)
@@ -66,6 +66,5 @@ dependencies {
     implementation(libs.protobuf.kotlin.lite)
     ksp(libs.androidx.room.compiler)
 
-    testImplementation(projects.core.testing)
     androidTestImplementation(projects.core.testing)
 }

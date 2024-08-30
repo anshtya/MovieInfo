@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "com.anshtya.movieinfo"
-        versionCode = 7
-        versionName = "2.2.2"
+        versionCode = 8
+        versionName = "2.2.3"
 
         vectorDrawables {
             useSupportLibrary = true

@@ -126,7 +126,7 @@ internal fun AuthScreen(
             OutlinedTextField(
                 value = uiState.username,
                 onValueChange = onUsernameChange,
-                label = { Text(stringResource(id = R.string.username)) },
+                placeholder = { Text(stringResource(id = R.string.username)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 shape = RoundedCornerShape(20.dp),
@@ -138,7 +138,6 @@ internal fun AuthScreen(
             OutlinedTextField(
                 value = uiState.password,
                 onValueChange = onPasswordChange,
-                label = { Text(stringResource(id = R.string.password)) },
                 placeholder = { Text(stringResource(id = R.string.password)) },
                 singleLine = true,
                 visualTransformation = if (passwordVisible) {

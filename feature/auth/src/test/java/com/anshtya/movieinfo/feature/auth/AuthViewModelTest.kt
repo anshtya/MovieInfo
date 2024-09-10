@@ -6,7 +6,9 @@ import com.anshtya.movieinfo.data.testdoubles.repository.TestAuthRepository
 import com.anshtya.movieinfo.data.testdoubles.repository.TestUserRepository
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,6 +35,36 @@ class AuthViewModelTest {
             AuthUiState(),
             viewModel.uiState.value,
         )
+    }
+
+    @Test
+    fun `test login success when user onboards`() {
+        val username = "name"
+        val password = "1234"
+
+        viewModel.onUsernameChange(username)
+        viewModel.onPasswordChange(password)
+        viewModel.logIn()
+
+        assertFalse(viewModel.uiState.value.isLoggedIn)
+    }
+
+    @Test
+    fun `test login success when after onboarding`() = runTest {
+        userRepository.setHideOnboarding(true)
+        viewModel = AuthViewModel(
+            authRepository = authRepository,
+            userRepository = userRepository
+        )
+
+        val username = "name"
+        val password = "1234"
+
+        viewModel.onUsernameChange(username)
+        viewModel.onPasswordChange(password)
+        viewModel.logIn()
+
+        assertTrue(viewModel.uiState.value.isLoggedIn)
     }
 
     @Test

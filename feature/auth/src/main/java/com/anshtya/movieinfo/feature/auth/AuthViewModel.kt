@@ -46,7 +46,15 @@ class AuthViewModel @Inject constructor(
             when (response) {
                 is NetworkResponse.Success -> {
                     if (hideOnboarding == false) {
+                        /**
+                         * User has opened app for first time. This will recompose the NavHost
+                         * and user will be automatically navigated from AuthScreen.
+                         */
                         setHideOnboarding()
+                    } else {
+                        _uiState.update {
+                            it.copy(isLoggedIn = true)
+                        }
                     }
                 }
 
@@ -86,4 +94,5 @@ data class AuthUiState(
     val password: String = "",
     val errorMessage: String? = null,
     val isLoading: Boolean = false,
+    val isLoggedIn: Boolean = false
 )

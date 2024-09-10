@@ -1,4 +1,4 @@
-package com.anshtya.movieinfo.onboarding
+package com.anshtya.movieinfo.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -29,6 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.R
+
+const val onboardingNavigationRoute = "onboarding"
 
 @Composable
 fun OnboardingScreen(

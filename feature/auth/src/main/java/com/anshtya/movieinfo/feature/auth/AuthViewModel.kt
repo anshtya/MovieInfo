@@ -25,7 +25,7 @@ class AuthViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState = _uiState.asStateFlow()
 
-    internal var hideOnboarding: Boolean? by mutableStateOf(null)
+    var hideOnboarding: Boolean? by mutableStateOf(null)
 
     init {
         viewModelScope.launch {
@@ -45,13 +45,9 @@ class AuthViewModel @Inject constructor(
             )
             when (response) {
                 is NetworkResponse.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoggedIn = true,
-                            isLoading = false
-                        )
+                    if (hideOnboarding == false) {
+                        setHideOnboarding()
                     }
-                    setHideOnboarding()
                 }
 
                 is NetworkResponse.Error -> {
@@ -69,8 +65,6 @@ class AuthViewModel @Inject constructor(
     fun setHideOnboarding() {
         viewModelScope.launch {
             userRepository.setHideOnboarding(true)
-
-            _uiState.update { it.copy(isLoggedIn = true) }
         }
     }
 
@@ -92,5 +86,4 @@ data class AuthUiState(
     val password: String = "",
     val errorMessage: String? = null,
     val isLoading: Boolean = false,
-    val isLoggedIn: Boolean? = null
 )

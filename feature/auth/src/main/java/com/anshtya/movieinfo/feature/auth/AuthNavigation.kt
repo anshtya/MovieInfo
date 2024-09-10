@@ -8,15 +8,11 @@ private const val authScreenNavigationRoute = "auth"
 
 fun NavGraphBuilder.authScreen(
     onBackClick: () -> Unit,
-    navigateToMovies: () -> Unit = {}
 ) {
     composable(
         route = authScreenNavigationRoute
     ) {
-        AuthRoute(
-            navigateToMovies = navigateToMovies,
-            onBackClick = onBackClick
-        )
+        AuthRoute(onBackClick = onBackClick)
     }
 }
 

@@ -23,7 +23,6 @@ class AuthScreenTest {
                     errorMessage = errorMessage
                 ),
                 hideOnboarding = null,
-                onLogIn = {},
                 onLogInClick = {},
                 onErrorShown = {},
                 onUsernameChange = {},
@@ -52,7 +51,6 @@ class AuthScreenTest {
                     isLoading = true
                 ),
                 hideOnboarding = null,
-                onLogIn = {},
                 onLogInClick = {},
                 onErrorShown = {},
                 onUsernameChange = {},
@@ -80,7 +78,6 @@ class AuthScreenTest {
             AuthScreen(
                 uiState = AuthUiState(),
                 hideOnboarding = null,
-                onLogIn = {},
                 onLogInClick = {},
                 onErrorShown = {},
                 onUsernameChange = {},
@@ -104,7 +101,6 @@ class AuthScreenTest {
             AuthScreen(
                 uiState = AuthUiState(),
                 hideOnboarding = false,
-                onLogIn = {},
                 onLogInClick = {},
                 onErrorShown = {},
                 onUsernameChange = {},

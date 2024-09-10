@@ -28,7 +28,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,7 +59,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 internal fun AuthRoute(
-    navigateToMovies: () -> Unit,
     onBackClick: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
@@ -69,11 +67,6 @@ internal fun AuthRoute(
     AuthScreen(
         uiState = uiState,
         hideOnboarding = viewModel.hideOnboarding,
-        onLogIn = {
-            viewModel.hideOnboarding?.let {
-                if (it) onBackClick() else navigateToMovies()
-            }
-        },
         onBackClick = onBackClick,
         onLogInClick = viewModel::logIn,
         onContinueWithoutSignInClick = viewModel::setHideOnboarding,
@@ -88,7 +81,6 @@ internal fun AuthRoute(
 internal fun AuthScreen(
     uiState: AuthUiState,
     hideOnboarding: Boolean?,
-    onLogIn: () -> Unit,
     onBackClick: () -> Unit,
     onLogInClick: () -> Unit,
     onContinueWithoutSignInClick: () -> Unit,
@@ -98,10 +90,6 @@ internal fun AuthScreen(
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(uiState) {
-        uiState.isLoggedIn?.let { onLogIn() }
-    }
 
     uiState.errorMessage?.let {
         scope.launch { snackbarHostState.showSnackbar(it) }
@@ -294,7 +282,6 @@ private fun AuthScreenPreview() {
     AuthScreen(
         uiState = AuthUiState(),
         hideOnboarding = false,
-        onLogIn = {},
         onBackClick = {},
         onLogInClick = {},
         onContinueWithoutSignInClick = {},

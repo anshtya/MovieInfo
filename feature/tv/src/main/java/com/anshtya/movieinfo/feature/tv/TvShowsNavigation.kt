@@ -27,7 +27,9 @@ fun NavGraphBuilder.tvShowsScreen(
             val viewModel = hiltViewModel<TvShowsViewModel>(parentEntry)
             FeedRoute(
                 navigateToDetails = navigateToDetails,
-                navigateToItems = { navController.navigate("${TvShowsScreenRoutes.ITEMS}/$it") },
+                navigateToItems = {
+                    navController.navigate("${TvShowsScreenRoutes.ITEMS}/$it")
+                },
                 viewModel = viewModel,
             )
         }
@@ -45,7 +47,7 @@ fun NavGraphBuilder.tvShowsScreen(
             ItemsRoute(
                 categoryName = backStackEntry.arguments?.getString("category")!!,
                 onItemClick = navigateToDetails,
-                onBackClick = { navController.popBackStack() },
+                onBackClick = navController::navigateUp,
                 viewModel = viewModel
             )
         }

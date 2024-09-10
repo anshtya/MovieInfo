@@ -45,7 +45,7 @@ fun NavGraphBuilder.moviesScreen(
             ItemsRoute(
                 categoryName = backStackEntry.arguments?.getString("category")!!,
                 onItemClick = navigateToDetails,
-                onBackClick = { navController.popBackStack() },
+                onBackClick = navController::navigateUp,
                 viewModel = viewModel
             )
         }

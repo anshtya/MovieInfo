@@ -36,7 +36,7 @@ fun NavGraphBuilder.youScreen(
             )
         ) {
             LibraryItemsRoute(
-                onBackClick = navController::popBackStack,
+                onBackClick = navController::navigateUp,
                 navigateToDetails = navigateToDetails
             )
         }

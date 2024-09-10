@@ -1,8 +1,11 @@
 package com.anshtya.movieinfo.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -10,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -17,60 +21,25 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.anshtya.movieinfo.feature.movies.navigateToMovies
 import com.anshtya.movieinfo.feature.search.navigateToSearch
-import com.anshtya.movieinfo.feature.you.navigateToYou
 import com.anshtya.movieinfo.feature.tv.navigateToTvShows
-import com.anshtya.movieinfo.navigation.MovieInfoDestination
-import com.anshtya.movieinfo.navigation.MovieInfoNavigation
-import com.anshtya.movieinfo.onboarding.onboardingNavGraph
-import com.anshtya.movieinfo.onboarding.onboardingNavigationGraphRoute
+import com.anshtya.movieinfo.feature.you.navigateToYou
+import com.anshtya.movieinfo.ui.navigation.MovieInfoDestination
+import com.anshtya.movieinfo.ui.navigation.MovieInfoNavigation
 
 @Composable
 fun MovieInfoApp(
     hideOnboarding: Boolean,
     navController: NavHostController = rememberNavController()
 ) {
-    val mainNavigationGraphRoute = "main"
-    val startDestination = if (hideOnboarding) {
-        mainNavigationGraphRoute
-    } else {
-        onboardingNavigationGraphRoute
-    }
-    NavHost(
-        navController = navController,
-        startDestination = startDestination
-    ) {
-        onboardingNavGraph(
-            navController = navController,
-            navigateToMainGraph = {
-                navController.navigate(mainNavigationGraphRoute) {
-                    popUpTo(onboardingNavigationGraphRoute) { inclusive = true }
-                }
-            }
-        )
-
-        composable(
-            route = mainNavigationGraphRoute
-        ) {
-            MainGraph()
-        }
-    }
-}
-
-@Composable
-fun MainGraph(
-    navController: NavHostController = rememberNavController()
-) {
-    val bottomDestinations = MovieInfoDestination.entries
+    val bottomBarDestinations = remember { MovieInfoDestination.entries }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val showBottomBar = bottomDestinations.any { destination ->
+    val showBottomBar = bottomBarDestinations.any { destination ->
         currentDestination?.route?.contains(destination.name, true) ?: false
     }
 
@@ -78,21 +47,25 @@ fun MainGraph(
         bottomBar = {
             if (showBottomBar) {
                 MovieInfoNavigationBar(
-                    destinations = bottomDestinations,
+                    destinations = bottomBarDestinations,
                     currentDestination = currentDestination,
                     onNavigateToDestination = { destination ->
-                        navController.navigateToDestination(destination)
+                        navController.navigateToBottomBarDestination(destination)
                     }
                 )
             }
-        }
+        },
+        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            MovieInfoNavigation(navController = navController)
+            MovieInfoNavigation(
+                hideOnboarding = hideOnboarding,
+                navController = navController
+            )
         }
     }
 }
@@ -127,7 +100,7 @@ private fun NavDestination?.isDestinationInHierarchy(destination: MovieInfoDesti
     } ?: false
 }
 
-private fun NavController.navigateToDestination(destination: MovieInfoDestination) {
+private fun NavController.navigateToBottomBarDestination(destination: MovieInfoDestination) {
     val navOptions = navOptions {
         popUpTo(graph.findStartDestination().id) {
             saveState = true

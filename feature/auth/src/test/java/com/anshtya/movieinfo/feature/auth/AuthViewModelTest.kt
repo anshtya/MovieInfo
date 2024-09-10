@@ -6,7 +6,6 @@ import com.anshtya.movieinfo.data.testdoubles.repository.TestAuthRepository
 import com.anshtya.movieinfo.data.testdoubles.repository.TestUserRepository
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
-import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -37,18 +36,6 @@ class AuthViewModelTest {
     }
 
     @Test
-    fun `test login success`() {
-        val username = "name"
-        val password = "1234"
-
-        viewModel.onUsernameChange(username)
-        viewModel.onPasswordChange(password)
-        viewModel.logIn()
-
-        assertTrue(viewModel.uiState.value.isLoggedIn!!)
-    }
-
-    @Test
     fun `test login failure`() = runTest {
         val username = "error"
         val password = "1234"
@@ -67,7 +54,6 @@ class AuthViewModelTest {
             errorResponse.errorMessage,
             viewModel.uiState.value.errorMessage
         )
-        assertNull(viewModel.uiState.value.isLoggedIn)
     }
 
     @Test

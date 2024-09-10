@@ -1,4 +1,4 @@
-package com.anshtya.movieinfo.navigation
+package com.anshtya.movieinfo.ui.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons

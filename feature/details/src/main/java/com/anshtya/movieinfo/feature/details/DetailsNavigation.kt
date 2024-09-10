@@ -29,7 +29,7 @@ fun NavGraphBuilder.detailsScreen(
             val viewModel = hiltViewModel<DetailsViewModel>(parentEntry)
 
             DetailsRoute(
-                onBackClick = navController::popBackStack,
+                onBackClick = navController::navigateUp,
                 onItemClick = navController::navigateToDetails,
                 onSeeAllCastClick = navController::navigateToCredits,
                 navigateToAuth = navigateToAuth,
@@ -48,7 +48,7 @@ fun NavGraphBuilder.detailsScreen(
             CreditsRoute(
                 viewModel = viewModel,
                 onItemClick = navController::navigateToDetails,
-                onBackClick = navController::popBackStack
+                onBackClick = navController::navigateUp
             )
         }
     }

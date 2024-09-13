@@ -7,6 +7,10 @@ plugins {
 android {
     namespace = "com.anshtya.movieinfo"
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.anshtya.movieinfo"
         versionCode = 9

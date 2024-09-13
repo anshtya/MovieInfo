@@ -24,8 +24,14 @@ class MovieInfoApplication : Application(), ImageLoaderFactory, Configuration.Pr
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .setMinimumLoggingLevel(android.util.Log.DEBUG)
+            .apply {
+                setWorkerFactory(workerFactory)
+                if (BuildConfig.DEBUG) {
+                    setMinimumLoggingLevel(android.util.Log.DEBUG)
+                } else {
+                    setMinimumLoggingLevel(android.util.Log.ERROR)
+                }
+            }
             .build()
 
     override fun newImageLoader(): ImageLoader {

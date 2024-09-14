@@ -11,15 +11,15 @@ import com.anshtya.movieinfo.data.util.SyncScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val userRepository: UserRepository,
+    userRepository: UserRepository,
     private val authRepository: AuthRepository,
     private val syncScheduler: SyncScheduler
 ) : ViewModel() {
@@ -40,14 +40,12 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun executeLibrarySyncWork() {
-        combine(
-            userRepository.userData.map { it.hideOnboarding },
-            authRepository.isLoggedIn
-        ) { hideOnboarding, isLoggedIn ->
-            if (hideOnboarding && isLoggedIn) {
+        viewModelScope.launch {
+            val loggedIn = authRepository.isLoggedIn.first()
+            if (loggedIn) {
                 syncScheduler.scheduleLibrarySyncWork()
             }
-        }.launchIn(viewModelScope)
+        }
     }
 }
 

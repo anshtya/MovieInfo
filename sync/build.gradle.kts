@@ -10,7 +10,7 @@ android {
 dependencies {
     implementation(projects.data)
 
-    api(libs.androidx.hilt.work)
-    api(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.androidx.hilt.compiler)
 }

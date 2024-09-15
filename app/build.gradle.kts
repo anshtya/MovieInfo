@@ -36,17 +36,6 @@ android {
             )
             isDebuggable = false
         }
-        create("demoRelease") {
-            initWith(buildTypes.getByName("release"))
-            applicationIdSuffix = ".demoRelease"
-            signingConfig = signingConfigs.getByName("debug")
-            matchingFallbacks += listOf("release")
-        }
-        create("benchmark") {
-            initWith(buildTypes.getByName("release"))
-            signingConfig = signingConfigs.getByName("debug")
-            matchingFallbacks += listOf("release")
-        }
     }
 
     packaging {

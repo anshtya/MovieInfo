@@ -26,13 +26,12 @@ internal fun Project.configureAndroidCompose(
             add("androidTestImplementation", platform(bom))
             add("androidTestImplementation", findLibrary("ui-test-junit4"))
 
-            add("debugImplementation", findLibrary("ui-test-manifest"))
+//            add("debugImplementation", findLibrary("ui-test-manifest"))
             add("debugImplementation", findLibrary("ui-tooling"))
         }
     }
 
     extensions.configure<ComposeCompilerGradlePluginExtension> {
-        enableStrongSkippingMode = true
         reportsDestination = layout.buildDirectory.dir("compose_compiler")
         metricsDestination = layout.buildDirectory.dir("compose_compiler")
     }

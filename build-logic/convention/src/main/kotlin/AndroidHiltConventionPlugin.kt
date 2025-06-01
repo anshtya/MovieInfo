@@ -12,8 +12,8 @@ class AndroidHiltConventionPlugin: Plugin<Project> {
             }
 
             dependencies {
-                add("implementation", findLibrary("hilt-android"))
-                add("ksp", findLibrary("hilt-android-compiler"))
+                add("implementation", findLibrary("dagger-hilt-android"))
+                add("ksp", findLibrary("dagger-hilt-compiler"))
             }
         }
     }

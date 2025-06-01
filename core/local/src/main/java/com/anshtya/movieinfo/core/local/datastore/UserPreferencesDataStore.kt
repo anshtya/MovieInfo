@@ -1,62 +1,57 @@
 package com.anshtya.movieinfo.core.local.datastore
 
 import androidx.datastore.core.DataStore
-import com.anshtya.movieinfo.core.local.proto.DarkMode
-import com.anshtya.movieinfo.core.local.proto.UserPreferences
-import com.anshtya.movieinfo.core.local.proto.copy
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.anshtya.movieinfo.core.model.SelectedDarkMode
 import com.anshtya.movieinfo.core.model.user.UserData
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class UserPreferencesDataStore @Inject constructor(
-    private val userPreferences: DataStore<UserPreferences>
+    private val userPreferences: DataStore<Preferences>
 ) {
-    val userData = userPreferences.data
-        .map {
-            UserData(
-                useDynamicColor = it.useDynamicColor,
-                includeAdultResults = it.includeAdultResults,
-                darkMode = when (it.darkMode) {
-                    null,
-                    DarkMode.UNRECOGNIZED,
-                    DarkMode.DARK_MODE_SYSTEM
-                    -> SelectedDarkMode.SYSTEM
+    companion object {
+        val DARK_MODE = stringPreferencesKey("dark_mode")
+        val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
+        val INCLUDE_ADULT_RESULTS =  booleanPreferencesKey("include_adult_results")
+        val HIDE_ONBOARDING = booleanPreferencesKey("hide_onboarding")
+    }
 
-                    DarkMode.DARK_MODE_DARK -> SelectedDarkMode.DARK
-                    DarkMode.DARK_MODE_LIGHT -> SelectedDarkMode.LIGHT
-                },
-                hideOnboarding = it.hideOnboarding
+    val userData = userPreferences.data
+        .map { preferences ->
+            UserData(
+                useDynamicColor = preferences[DYNAMIC_COLOR] == true,
+                includeAdultResults = preferences[INCLUDE_ADULT_RESULTS] == true,
+                darkMode = preferences[DARK_MODE]?.let { enumValueOf<SelectedDarkMode>(it) }
+                    ?: SelectedDarkMode.SYSTEM,
+                hideOnboarding = preferences[HIDE_ONBOARDING] == true
             )
         }
 
     suspend fun setDynamicColorPreference(useDynamicColor: Boolean) {
-        userPreferences.updateData {
-            it.copy { this.useDynamicColor = useDynamicColor }
+        userPreferences.edit {
+            it[DYNAMIC_COLOR] = useDynamicColor
         }
     }
 
     suspend fun setAdultResultPreference(includeAdultResults: Boolean) {
-        userPreferences.updateData {
-            it.copy { this.includeAdultResults = includeAdultResults }
+        userPreferences.edit {
+            it[INCLUDE_ADULT_RESULTS] = includeAdultResults
         }
     }
 
     suspend fun setDarkModePreference(selectedDarkMode: SelectedDarkMode) {
-        userPreferences.updateData {
-            it.copy {
-                this.darkMode = when (selectedDarkMode) {
-                    SelectedDarkMode.SYSTEM -> DarkMode.DARK_MODE_SYSTEM
-                    SelectedDarkMode.DARK -> DarkMode.DARK_MODE_DARK
-                    SelectedDarkMode.LIGHT -> DarkMode.DARK_MODE_LIGHT
-                }
-            }
+        userPreferences.edit {
+            it[DARK_MODE] = selectedDarkMode.name
         }
     }
 
     suspend fun setHideOnboarding(hideOnboarding: Boolean) {
-        userPreferences.updateData {
-            it.copy { this.hideOnboarding = hideOnboarding }
+        userPreferences.edit {
+            it[HIDE_ONBOARDING] = hideOnboarding
         }
     }
 }

@@ -25,10 +25,11 @@ dependencies {
     implementation(projects.core.model)
 
     api(libs.retrofit)
-    implementation(libs.converter.moshi)
+    implementation(libs.retrofit.converter.moshi)
     implementation(libs.okhttp.logging.interceptor)
     ksp(libs.moshi.kotlin.codegen)
 
-    testImplementation(projects.core.testing)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
 }

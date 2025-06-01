@@ -1,11 +1,10 @@
 package com.anshtya.movieinfo.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -54,13 +53,14 @@ fun MovieInfoApp(
                     }
                 )
             }
-        },
-        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
+        }
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .consumeWindowInsets(padding)
+                .imePadding()
         ) {
             MovieInfoNavigation(
                 hideOnboarding = hideOnboarding,

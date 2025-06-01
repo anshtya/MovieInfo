@@ -1,45 +1,37 @@
 package com.anshtya.movieinfo.core.local.session
 
-import android.content.SharedPreferences
-import kotlinx.coroutines.channels.awaitClose
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class SessionManager @Inject constructor(
-    private val sharedPreferences: SharedPreferences
+    private val datastore: DataStore<Preferences>
 ) {
     companion object {
-        const val USER_SESSION_ID = "user_sesion_id"
+        val USER_SESSION_ID = stringPreferencesKey("user_session_id")
     }
 
-    val isLoggedIn: Flow<Boolean> = callbackFlow {
-        trySend(getSessionId() != null)
+    val isLoggedIn: Flow<Boolean> = datastore.data.map {
+        it[USER_SESSION_ID]?.isNotEmpty() ?: false
+    }
 
-        val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == USER_SESSION_ID) {
-                trySend(getSessionId() != null)
-            }
-        }
-        sharedPreferences.registerOnSharedPreferenceChangeListener(prefListener)
-        awaitClose {
-            sharedPreferences.unregisterOnSharedPreferenceChangeListener(prefListener)
+    suspend fun storeSessionId(sessionId: String) {
+        datastore.edit {
+            it[USER_SESSION_ID] = sessionId
         }
     }
 
-    fun storeSessionId(sessionId: String) {
-        sharedPreferences.edit()
-            .putString(USER_SESSION_ID, sessionId)
-            .apply()
-    }
+    suspend fun getSessionId(): String? =
+        datastore.data.map { it[USER_SESSION_ID] }.first()
 
-    fun getSessionId(): String? {
-        return sharedPreferences.getString(USER_SESSION_ID, null)
-    }
-
-    fun deleteSessionId() {
-        sharedPreferences.edit()
-            .putString(USER_SESSION_ID, null)
-            .apply()
+    suspend fun deleteSessionId() {
+        datastore.edit {
+            it[USER_SESSION_ID] = ""
+        }
     }
 }

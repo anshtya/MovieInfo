@@ -3,9 +3,9 @@ package com.anshtya.movieinfo.feature.you.library_items
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.movieinfo.core.data.repository.LibraryRepository
-import com.anshtya.movieinfo.core.model.library.LibraryItem
-import com.anshtya.movieinfo.core.model.library.LibraryItemType
+import com.anshtya.movieinfo.data.model.library.LibraryItem
+import com.anshtya.movieinfo.data.model.library.LibraryItemType
+import com.anshtya.movieinfo.data.repository.LibraryRepository
 import com.anshtya.movieinfo.feature.you.libraryItemTypeNavigationArgument
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

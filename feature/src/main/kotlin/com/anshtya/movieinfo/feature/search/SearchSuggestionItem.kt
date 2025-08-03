@@ -8,8 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import com.anshtya.movieinfo.core.ui.MediaItemCard
-import com.anshtya.movieinfo.core.ui.noRippleClickable
+import com.anshtya.movieinfo.feature.ui.MediaItemCard
+import com.anshtya.movieinfo.feature.ui.noRippleClickable
 
 @Composable
 internal fun SearchSuggestionItem(

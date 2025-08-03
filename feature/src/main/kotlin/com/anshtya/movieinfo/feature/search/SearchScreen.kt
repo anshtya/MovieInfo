@@ -24,8 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.movieinfo.core.model.SearchItem
-import com.anshtya.movieinfo.core.ui.MovieInfoSearchBar
+import com.anshtya.movieinfo.data.model.SearchItem
+import com.anshtya.movieinfo.feature.ui.MovieInfoSearchBar
 import kotlinx.coroutines.launch
 
 private val horizontalPadding = 8.dp

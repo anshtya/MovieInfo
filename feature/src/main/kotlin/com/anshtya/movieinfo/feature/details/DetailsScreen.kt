@@ -37,13 +37,13 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.movieinfo.core.model.library.LibraryItem
-import com.anshtya.movieinfo.core.ui.AnimatedText
-import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
+import com.anshtya.movieinfo.data.model.library.LibraryItem
 import com.anshtya.movieinfo.feature.R
 import com.anshtya.movieinfo.feature.details.content.MovieDetailsContent
 import com.anshtya.movieinfo.feature.details.content.PersonDetailsContent
 import com.anshtya.movieinfo.feature.details.content.TvShowDetailsContent
+import com.anshtya.movieinfo.feature.ui.AnimatedText
+import com.anshtya.movieinfo.feature.ui.TopAppBarWithBackButton
 import kotlinx.coroutines.launch
 
 internal val horizontalPadding = 8.dp

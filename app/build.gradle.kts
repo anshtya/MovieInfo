@@ -58,9 +58,7 @@ composeCompiler {
 }
 
 dependencies {
-    implementation(projects.core.data)
-    implementation(projects.core.ui)
-    implementation(projects.core.work)
+    implementation(projects.data)
     implementation(projects.feature)
 
     implementation(platform(libs.compose.bom))
@@ -70,6 +68,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.material.icons.extended)
     implementation(libs.coil)
     implementation(libs.core.ktx)
     implementation(libs.material3)

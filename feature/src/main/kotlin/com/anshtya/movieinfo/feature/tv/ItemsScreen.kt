@@ -19,12 +19,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.movieinfo.core.model.MediaType
-import com.anshtya.movieinfo.core.model.content.TvShowListCategory
-import com.anshtya.movieinfo.core.ui.LazyVerticalContentGrid
-import com.anshtya.movieinfo.core.ui.MediaItemCard
-import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
+import com.anshtya.movieinfo.data.model.MediaType
+import com.anshtya.movieinfo.data.model.content.TvShowListCategory
 import com.anshtya.movieinfo.feature.R
+import com.anshtya.movieinfo.feature.ui.LazyVerticalContentGrid
+import com.anshtya.movieinfo.feature.ui.MediaItemCard
+import com.anshtya.movieinfo.feature.ui.TopAppBarWithBackButton
 
 private val horizontalPadding = 8.dp
 

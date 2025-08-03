@@ -2,10 +2,10 @@ package com.anshtya.movieinfo.feature.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.movieinfo.core.data.repository.SearchRepository
-import com.anshtya.movieinfo.core.data.repository.UserRepository
-import com.anshtya.movieinfo.core.model.NetworkResponse
-import com.anshtya.movieinfo.core.model.SearchItem
+import com.anshtya.movieinfo.data.model.NetworkResponse
+import com.anshtya.movieinfo.data.model.SearchItem
+import com.anshtya.movieinfo.data.repository.SearchRepository
+import com.anshtya.movieinfo.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay

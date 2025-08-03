@@ -1,9 +1,9 @@
 package com.anshtya.movieinfo.feature.you.library_items
 
 import androidx.lifecycle.SavedStateHandle
-import com.anshtya.movieinfo.core.data.testdoubles.repository.TestLibraryRepository
-import com.anshtya.movieinfo.core.data.testdoubles.testLibraryItems
-import com.anshtya.movieinfo.core.model.library.LibraryItemType
+import com.anshtya.movieinfo.data.model.library.LibraryItemType
+import com.anshtya.movieinfo.data.repository.test.TestLibraryRepository
+import com.anshtya.movieinfo.data.repository.test.data.testLibraryItems
 import com.anshtya.movieinfo.feature.MainDispatcherRule
 import com.anshtya.movieinfo.feature.you.libraryItemTypeNavigationArgument
 import junit.framework.TestCase.assertEquals

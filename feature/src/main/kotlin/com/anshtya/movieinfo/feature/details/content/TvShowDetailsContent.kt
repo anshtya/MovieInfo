@@ -7,9 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.anshtya.movieinfo.core.model.MediaType
-import com.anshtya.movieinfo.core.model.details.tv.TvDetails
-import com.anshtya.movieinfo.core.model.library.LibraryItem
+import com.anshtya.movieinfo.data.model.MediaType
+import com.anshtya.movieinfo.data.model.details.tv.TvDetails
+import com.anshtya.movieinfo.data.model.library.LibraryItem
 import com.anshtya.movieinfo.feature.R
 
 @Composable

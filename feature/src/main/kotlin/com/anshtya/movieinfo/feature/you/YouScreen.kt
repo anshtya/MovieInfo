@@ -59,14 +59,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.svg.SvgDecoder
-import com.anshtya.movieinfo.core.model.SelectedDarkMode
-import com.anshtya.movieinfo.core.model.SelectedDarkMode.DARK
-import com.anshtya.movieinfo.core.model.SelectedDarkMode.LIGHT
-import com.anshtya.movieinfo.core.model.SelectedDarkMode.SYSTEM
-import com.anshtya.movieinfo.core.model.library.LibraryItemType
-import com.anshtya.movieinfo.core.model.user.AccountDetails
-import com.anshtya.movieinfo.core.ui.PersonImage
+import com.anshtya.movieinfo.data.model.SelectedDarkMode
+import com.anshtya.movieinfo.data.model.SelectedDarkMode.DARK
+import com.anshtya.movieinfo.data.model.SelectedDarkMode.LIGHT
+import com.anshtya.movieinfo.data.model.SelectedDarkMode.SYSTEM
+import com.anshtya.movieinfo.data.model.library.LibraryItemType
+import com.anshtya.movieinfo.data.model.user.AccountDetails
 import com.anshtya.movieinfo.feature.R
+import com.anshtya.movieinfo.feature.ui.PersonImage
 import kotlinx.coroutines.launch
 
 @Composable

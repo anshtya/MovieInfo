@@ -24,12 +24,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.movieinfo.core.model.MediaType
-import com.anshtya.movieinfo.core.model.details.people.Credits
-import com.anshtya.movieinfo.core.ui.PersonImage
-import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
-import com.anshtya.movieinfo.core.ui.noRippleClickable
+import com.anshtya.movieinfo.data.model.MediaType
+import com.anshtya.movieinfo.data.model.details.people.Credits
 import com.anshtya.movieinfo.feature.R
+import com.anshtya.movieinfo.feature.ui.PersonImage
+import com.anshtya.movieinfo.feature.ui.TopAppBarWithBackButton
+import com.anshtya.movieinfo.feature.ui.noRippleClickable
 
 @Composable
 internal fun CreditsRoute(

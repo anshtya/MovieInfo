@@ -54,9 +54,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.movieinfo.core.ui.AnnotatedClickableText
-import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
 import com.anshtya.movieinfo.feature.R
+import com.anshtya.movieinfo.feature.ui.AnnotatedClickableText
+import com.anshtya.movieinfo.feature.ui.TopAppBarWithBackButton
 import kotlinx.coroutines.launch
 
 @Composable

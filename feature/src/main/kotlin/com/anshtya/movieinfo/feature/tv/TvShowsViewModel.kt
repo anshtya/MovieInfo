@@ -2,10 +2,10 @@ package com.anshtya.movieinfo.feature.tv
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.movieinfo.core.data.repository.ContentRepository
-import com.anshtya.movieinfo.core.model.NetworkResponse
-import com.anshtya.movieinfo.core.model.content.ContentItem
-import com.anshtya.movieinfo.core.model.content.TvShowListCategory
+import com.anshtya.movieinfo.data.model.NetworkResponse
+import com.anshtya.movieinfo.data.model.content.ContentItem
+import com.anshtya.movieinfo.data.model.content.TvShowListCategory
+import com.anshtya.movieinfo.data.repository.ContentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -38,12 +38,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anshtya.movieinfo.core.model.library.LibraryItem
-import com.anshtya.movieinfo.core.model.library.LibraryItemType
-import com.anshtya.movieinfo.core.ui.LazyVerticalContentGrid
-import com.anshtya.movieinfo.core.ui.MediaItemCard
-import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
+import com.anshtya.movieinfo.data.model.library.LibraryItem
+import com.anshtya.movieinfo.data.model.library.LibraryItemType
 import com.anshtya.movieinfo.feature.R
+import com.anshtya.movieinfo.feature.ui.LazyVerticalContentGrid
+import com.anshtya.movieinfo.feature.ui.MediaItemCard
+import com.anshtya.movieinfo.feature.ui.TopAppBarWithBackButton
 import kotlinx.coroutines.launch
 
 @Composable

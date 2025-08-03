@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshtya.movieinfo.MainActivityUiState.Loading
 import com.anshtya.movieinfo.MainActivityUiState.Success
-import com.anshtya.movieinfo.core.data.repository.AuthRepository
-import com.anshtya.movieinfo.core.data.repository.UserRepository
-import com.anshtya.movieinfo.core.data.util.SyncScheduler
-import com.anshtya.movieinfo.core.model.SelectedDarkMode
+import com.anshtya.movieinfo.data.model.SelectedDarkMode
+import com.anshtya.movieinfo.data.repository.AuthRepository
+import com.anshtya.movieinfo.data.repository.UserRepository
+import com.anshtya.movieinfo.data.repository.util.SyncScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

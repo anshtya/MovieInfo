@@ -16,7 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.anshtya.movieinfo.MainActivityUiState.Loading
 import com.anshtya.movieinfo.MainActivityUiState.Success
-import com.anshtya.movieinfo.core.model.SelectedDarkMode
+import com.anshtya.movieinfo.data.model.SelectedDarkMode
 import com.anshtya.movieinfo.ui.MovieInfoApp
 import com.anshtya.movieinfo.ui.theme.MovieInfoTheme
 import dagger.hilt.android.AndroidEntryPoint

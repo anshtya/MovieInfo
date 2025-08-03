@@ -20,11 +20,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.anshtya.movieinfo.core.model.details.people.PersonDetails
-import com.anshtya.movieinfo.core.ui.MediaItemCard
-import com.anshtya.movieinfo.core.ui.TopAppBarWithBackButton
+import com.anshtya.movieinfo.data.model.details.people.PersonDetails
 import com.anshtya.movieinfo.feature.R
 import com.anshtya.movieinfo.feature.details.OverviewSection
+import com.anshtya.movieinfo.feature.ui.MediaItemCard
+import com.anshtya.movieinfo.feature.ui.TopAppBarWithBackButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

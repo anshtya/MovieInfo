@@ -1,15 +1,15 @@
 package com.anshtya.movieinfo.feature.details
 
 import androidx.lifecycle.SavedStateHandle
-import com.anshtya.movieinfo.core.data.repository.test.TestAuthRepository
-import com.anshtya.movieinfo.core.data.repository.test.TestDetailsRepository
-import com.anshtya.movieinfo.core.data.testdoubles.repository.TestLibraryRepository
-import com.anshtya.movieinfo.core.data.testdoubles.testLibraryItems
-import com.anshtya.movieinfo.core.data.testdoubles.testMovieDetail
-import com.anshtya.movieinfo.core.data.testdoubles.testPersonDetails
-import com.anshtya.movieinfo.core.data.testdoubles.testTvShowDetails
-import com.anshtya.movieinfo.core.model.MediaType
-import com.anshtya.movieinfo.core.model.NetworkResponse
+import com.anshtya.movieinfo.data.model.MediaType
+import com.anshtya.movieinfo.data.model.NetworkResponse
+import com.anshtya.movieinfo.data.repository.test.TestAuthRepository
+import com.anshtya.movieinfo.data.repository.test.TestDetailsRepository
+import com.anshtya.movieinfo.data.repository.test.TestLibraryRepository
+import com.anshtya.movieinfo.data.repository.test.data.testLibraryItems
+import com.anshtya.movieinfo.data.repository.test.data.testMovieDetail
+import com.anshtya.movieinfo.data.repository.test.data.testPersonDetails
+import com.anshtya.movieinfo.data.repository.test.data.testTvShowDetails
 import com.anshtya.movieinfo.feature.MainDispatcherRule
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse

@@ -13,13 +13,14 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.data)
-    implementation(projects.core.ui)
+    implementation(projects.data)
 
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.coil.svg)
+    implementation(libs.material.icons.extended)
     implementation(libs.ui.tooling.preview)
 
     testImplementation(libs.junit)
@@ -29,4 +30,5 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.ui.test.junit4)
+    androidTestImplementation(libs.ui.test.manifest)
 }

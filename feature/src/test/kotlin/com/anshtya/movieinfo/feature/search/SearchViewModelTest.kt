@@ -1,10 +1,10 @@
 package com.anshtya.movieinfo.feature.search
 
-import com.anshtya.movieinfo.core.data.testdoubles.repository.TestSearchRepository
-import com.anshtya.movieinfo.core.data.testdoubles.repository.TestUserRepository
-import com.anshtya.movieinfo.core.data.testdoubles.testSearchResults
-import com.anshtya.movieinfo.core.model.NetworkResponse
-import com.anshtya.movieinfo.core.model.SearchItem
+import com.anshtya.movieinfo.data.model.NetworkResponse
+import com.anshtya.movieinfo.data.model.SearchItem
+import com.anshtya.movieinfo.data.repository.test.TestSearchRepository
+import com.anshtya.movieinfo.data.repository.test.data.testSearchResults
+import com.anshtya.movieinfo.data.repository.testdoubles.repository.TestUserRepository
 import com.anshtya.movieinfo.feature.MainDispatcherRule
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull

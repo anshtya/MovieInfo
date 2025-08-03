@@ -2,11 +2,11 @@ package com.anshtya.movieinfo.feature.you
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.movieinfo.core.data.repository.AuthRepository
-import com.anshtya.movieinfo.core.data.repository.UserRepository
-import com.anshtya.movieinfo.core.model.NetworkResponse
-import com.anshtya.movieinfo.core.model.SelectedDarkMode
-import com.anshtya.movieinfo.core.model.user.AccountDetails
+import com.anshtya.movieinfo.data.model.NetworkResponse
+import com.anshtya.movieinfo.data.model.SelectedDarkMode
+import com.anshtya.movieinfo.data.model.user.AccountDetails
+import com.anshtya.movieinfo.data.repository.AuthRepository
+import com.anshtya.movieinfo.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

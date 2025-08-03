@@ -1,6 +1,7 @@
 package com.anshtya.movieinfo.core.local.datastore
 
-import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import com.anshtya.movieinfo.core.model.SelectedDarkMode
 import junit.framework.TestCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -18,10 +19,9 @@ class UserPreferencesDataStoreTest {
     @Before
     fun setUp() {
         userPreferencesDataStore = UserPreferencesDataStore(
-            DataStoreFactory.create(
-                serializer = UserPreferencesSerializer,
-                produceFile = { tmpFolder.newFile("user_prefs_test.pb") }
-            )
+            PreferenceDataStoreFactory.create {
+                tmpFolder.newFile("user_prefs_test.preferences_pb")
+            }
         )
     }
 
@@ -46,7 +46,7 @@ class UserPreferencesDataStoreTest {
     fun darkModeDefaultIsSystem() = runTest {
         TestCase.assertEquals(
             userPreferencesDataStore.userData.first().darkMode,
-            com.anshtya.movieinfo.core.model.SelectedDarkMode.SYSTEM
+            SelectedDarkMode.SYSTEM
         )
     }
 }

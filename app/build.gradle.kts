@@ -1,11 +1,13 @@
 plugins {
-    id("movieinfo.android.application")
-    id("movieinfo.android.application.compose")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     id("movieinfo.android.hilt")
 }
 
 android {
     namespace = "com.anshtya.movieinfo"
+    compileSdk = 36
 
     buildFeatures {
         buildConfig = true
@@ -13,6 +15,8 @@ android {
 
     defaultConfig {
         applicationId = "com.anshtya.movieinfo"
+        minSdk = 26
+        targetSdk = 36
         versionCode = 10
         versionName = "2.2.5"
 
@@ -37,37 +41,38 @@ android {
             isDebuggable = false
         }
     }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+    buildFeatures {
+        compose = true
     }
 }
 
-dependencies {
-    implementation(projects.core.ui)
-    implementation(projects.data)
-    implementation(projects.feature.auth)
-    implementation(projects.feature.details)
-    implementation(projects.feature.movies)
-    implementation(projects.feature.search)
-    implementation(projects.feature.tv)
-    implementation(projects.feature.you)
-    implementation(projects.sync)
+kotlin {
+    compilerOptions {
+        jvmToolchain(21)
+    }
+}
 
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+}
+
+dependencies {
+    implementation(projects.core.data)
+    implementation(projects.core.ui)
+    implementation(projects.core.work)
+    implementation(projects.feature)
+
+    implementation(platform(libs.compose.bom))
     implementation(libs.activity.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.work.runtime.ktx)
-    implementation(libs.coil.kt.compose)
+    implementation(libs.coil)
     implementation(libs.core.ktx)
-    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.material3)
     implementation(libs.ui)
     implementation(libs.ui.graphics)
-
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-    testImplementation(libs.junit)
 }

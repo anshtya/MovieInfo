@@ -5,7 +5,3 @@ plugins {
 android {
     namespace = "com.anshtya.movieinfo.core.model"
 }
-
-dependencies {
-
-}

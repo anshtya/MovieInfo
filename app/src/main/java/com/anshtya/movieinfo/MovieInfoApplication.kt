@@ -1,15 +1,17 @@
 package com.anshtya.movieinfo
 
 import android.app.Application
+import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import coil.ImageLoader
-import coil.ImageLoaderFactory
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.request.crossfade
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 @HiltAndroidApp
-class MovieInfoApplication : Application(), ImageLoaderFactory, Configuration.Provider {
+class MovieInfoApplication : Application(), SingletonImageLoader.Factory, Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -26,8 +28,8 @@ class MovieInfoApplication : Application(), ImageLoaderFactory, Configuration.Pr
             }
             .build()
 
-    override fun newImageLoader(): ImageLoader {
-        return ImageLoader.Builder(this)
+    override fun newImageLoader(context: Context): ImageLoader {
+        return ImageLoader.Builder(context)
             .crossfade(true)
             .build()
     }

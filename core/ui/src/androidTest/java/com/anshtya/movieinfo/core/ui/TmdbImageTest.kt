@@ -1,9 +1,8 @@
 package com.anshtya.movieinfo.core.ui
 
 import android.content.Context
-import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Rule
@@ -11,7 +10,7 @@ import org.junit.Test
 
 class TmdbImageTest {
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+    val composeTestRule = createComposeRule()
 
     private val testContext = ApplicationProvider.getApplicationContext<Context>()
 

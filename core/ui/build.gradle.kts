@@ -1,6 +1,6 @@
 plugins {
     id("movieinfo.android.library")
-    id("movieinfo.android.library.compose")
+    id("movieinfo.compose")
 }
 
 android {
@@ -12,8 +12,12 @@ android {
 }
 
 dependencies {
-    api(libs.compose.material.iconsExtended)
-    implementation(libs.coil.kt.compose)
+    api(libs.material.icons.extended)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
-    androidTestImplementation(projects.core.testing)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.ui.test.junit4)
+
+    debugImplementation(libs.ui.test.manifest)
 }

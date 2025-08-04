@@ -25,10 +25,11 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.ui.tooling)
 
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.ui.test.junit4)
-    androidTestImplementation(libs.ui.test.manifest)
+
+    debugImplementation(libs.ui.test.manifest)
+    debugImplementation(libs.ui.tooling)
 }

@@ -1,6 +1,8 @@
 # MovieInfo
 Provides movies, tv shows and person information from [TMDB API](https://api.tmdb.org/).
 
+**Note:** Migrated to [MovieInfo-kmp](github.com/anshtya/movieinfo-kmp).
+
 ## 📸 Screenshots
 |   |   |   |   |
 |---|---|---|---|

@@ -16,8 +16,7 @@ android {
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("BASE_URL") ?: ""
-        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
+        buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
         val accessToken = gradleLocalProperties(rootDir, providers)
             .getProperty("ACCESS_TOKEN") ?: ""
         buildConfigField("String", "ACCESS_TOKEN", "\"$accessToken\"")

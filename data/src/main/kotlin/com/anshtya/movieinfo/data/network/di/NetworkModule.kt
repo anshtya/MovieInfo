@@ -29,7 +29,7 @@ internal object NetworkModule {
             .addInterceptor(logging)
             .addInterceptor(Interceptor { chain ->
                 val newRequest = chain.request().newBuilder()
-                    .addHeader("Authorization", BuildConfig.ACCESS_TOKEN)
+                    .addHeader("Authorization", "Bearer ${BuildConfig.ACCESS_TOKEN}")
                     .build()
 
                 chain.proceed(newRequest)

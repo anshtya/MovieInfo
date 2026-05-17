@@ -29,7 +29,6 @@ Open the project in Android Studio.
 Visit [TMDB API](https://api.tmdb.org/) to obtain Access Token. Open `local.poperties` file and type the following:
 ```
 ACCESS_TOKEN = your_access_token
-BASE_URL=https://api.themoviedb.org/3/
 ```
 
 and rebuild the project.

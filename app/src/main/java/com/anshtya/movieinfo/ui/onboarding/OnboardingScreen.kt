@@ -1,4 +1,4 @@
-package com.anshtya.movieinfo.ui
+package com.anshtya.movieinfo.ui.onboarding
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -30,11 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.R
 
-const val onboardingNavigationRoute = "onboarding"
-
 @Composable
 fun OnboardingScreen(
-    navigateToAuth: () -> Unit
+    onOnboardingCompleted: () -> Unit
 ) {
     Box(Modifier.fillMaxSize()) {
         var contentVisible by rememberSaveable { mutableStateOf(false) }
@@ -92,7 +90,7 @@ fun OnboardingScreen(
                 )
             ) {
                 Button(
-                    onClick = navigateToAuth,
+                    onClick = onOnboardingCompleted,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)

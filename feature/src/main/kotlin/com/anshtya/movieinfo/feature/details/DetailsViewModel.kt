@@ -3,6 +3,7 @@ package com.anshtya.movieinfo.feature.details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.anshtya.movieinfo.data.model.MediaType
 import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.details.MovieDetails
@@ -34,10 +35,7 @@ class DetailsViewModel @Inject constructor(
     private val libraryRepository: LibraryRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
-    private val idDetailsString = savedStateHandle.getStateFlow(
-        key = idNavigationArgument,
-        initialValue = ""
-    )
+    private val idDetailsString = MutableStateFlow(savedStateHandle.toRoute<Details>().id)
 
     private val _uiState = MutableStateFlow(DetailsUiState())
     val uiState = _uiState.asStateFlow()

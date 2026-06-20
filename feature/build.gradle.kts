@@ -2,6 +2,7 @@ plugins {
     id("movieinfo.android.library")
     id("movieinfo.android.hilt")
     id("movieinfo.compose")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -15,8 +16,10 @@ android {
 dependencies {
     implementation(projects.data)
 
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.coil.svg)

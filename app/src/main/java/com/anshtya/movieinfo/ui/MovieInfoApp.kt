@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -39,7 +40,7 @@ fun MovieInfoApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val showBottomBar = bottomBarDestinations.any { destination ->
-        currentDestination?.route?.contains(destination.name, true) ?: false
+        currentDestination.isDestinationInHierarchy(destination)
     }
 
     Scaffold(
@@ -96,7 +97,7 @@ fun MovieInfoNavigationBar(
 
 private fun NavDestination?.isDestinationInHierarchy(destination: MovieInfoDestination): Boolean {
     return this?.hierarchy?.any {
-        it.route?.contains(destination.name, true) ?: false
+        it.hasRoute(destination.route::class)
     } ?: false
 }
 

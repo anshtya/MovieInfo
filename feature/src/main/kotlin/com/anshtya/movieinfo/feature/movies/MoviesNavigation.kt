@@ -5,45 +5,47 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
+import kotlinx.serialization.Serializable
 
-const val moviesNavigationRoute = "movies"
+@Serializable
+data object Movies
+
+@Serializable
+private data object MoviesFeed
+
+@Serializable
+private data class MoviesItems(val category: String)
 
 fun NavGraphBuilder.moviesScreen(
     navController: NavController,
     navigateToDetails: (String) -> Unit
 ) {
-    navigation(
-        route = moviesNavigationRoute,
-        startDestination = MoviesScreenRoutes.FEED
+    navigation<Movies>(
+        startDestination = MoviesFeed
     ) {
-        composable(route = MoviesScreenRoutes.FEED) { backStackEntry ->
+        composable<MoviesFeed> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(moviesNavigationRoute)
+                navController.getBackStackEntry(Movies)
             }
             val viewModel = hiltViewModel<MoviesViewModel>(parentEntry)
             FeedRoute(
                 navigateToDetails = navigateToDetails,
-                navigateToItems = { navController.navigate("${MoviesScreenRoutes.ITEMS}/$it") },
+                navigateToItems = { navController.navigateToMoviesItems(it) },
                 viewModel = viewModel,
             )
         }
 
-        composable(
-            route = "${MoviesScreenRoutes.ITEMS}/{category}",
-            arguments = listOf(
-                navArgument("category") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
+        composable<MoviesItems> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(moviesNavigationRoute)
+                navController.getBackStackEntry(Movies)
             }
             val viewModel = hiltViewModel<MoviesViewModel>(parentEntry)
+            val args = backStackEntry.toRoute<MoviesItems>()
             ItemsRoute(
-                categoryName = backStackEntry.arguments?.getString("category")!!,
+                categoryName = args.category,
                 onItemClick = navigateToDetails,
                 onBackClick = navController::navigateUp,
                 viewModel = viewModel
@@ -52,11 +54,10 @@ fun NavGraphBuilder.moviesScreen(
     }
 }
 
-internal object MoviesScreenRoutes {
-    const val FEED = "movies_feed"
-    const val ITEMS = "movies_items"
+fun NavController.navigateToMovies(navOptions: NavOptions) {
+    navigate(Movies, navOptions)
 }
 
-fun NavController.navigateToMovies(navOptions: NavOptions) {
-    navigate(moviesNavigationRoute, navOptions)
+fun NavController.navigateToMoviesItems(category: String) {
+    navigate(MoviesItems(category))
 }

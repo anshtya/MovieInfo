@@ -3,38 +3,35 @@ package com.anshtya.movieinfo.feature.you
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.anshtya.movieinfo.feature.you.library_items.LibraryItemsRoute
+import kotlinx.serialization.Serializable
 
-private const val youNavigationGraphRoute = "you_nav_graph"
-private const val youNavigationRoute = "you"
-private const val libraryItemsNavigationRoute = "library_items"
-const val libraryItemTypeNavigationArgument = "type"
+@Serializable
+data object YouGraph
+
+@Serializable
+private data object You
+
+@Serializable
+internal data class LibraryItems(val type: String)
 
 fun NavGraphBuilder.youScreen(
     navController: NavController,
     navigateToAuth: () -> Unit,
     navigateToDetails: (String) -> Unit,
 ) {
-    navigation(
-        route = youNavigationGraphRoute,
-        startDestination = youNavigationRoute
+    navigation<YouGraph>(
+        startDestination = You
     ) {
-        composable(route = youNavigationRoute) {
+        composable<You> {
             YouRoute(
                 navigateToAuth = navigateToAuth,
                 navigateToLibraryItem = navController::navigateToLibraryItem
             )
         }
-        composable(
-            route = "$libraryItemsNavigationRoute/{$libraryItemTypeNavigationArgument}",
-            arguments = listOf(
-                navArgument(libraryItemTypeNavigationArgument) { type = NavType.StringType }
-            )
-        ) {
+        composable<LibraryItems> {
             LibraryItemsRoute(
                 onBackClick = navController::navigateUp,
                 navigateToDetails = navigateToDetails
@@ -44,9 +41,9 @@ fun NavGraphBuilder.youScreen(
 }
 
 fun NavController.navigateToYou(navOptions: NavOptions) {
-    navigate(youNavigationRoute, navOptions)
+    navigate(You, navOptions)
 }
 
 fun NavController.navigateToLibraryItem(type: String) {
-    navigate("$libraryItemsNavigationRoute/$type")
+    navigate(LibraryItems(type))
 }

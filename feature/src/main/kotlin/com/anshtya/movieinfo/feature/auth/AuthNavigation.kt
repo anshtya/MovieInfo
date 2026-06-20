@@ -3,19 +3,19 @@ package com.anshtya.movieinfo.feature.auth
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
 
-private const val authScreenNavigationRoute = "auth"
+@Serializable
+private data object Auth
 
 fun NavGraphBuilder.authScreen(
     onBackClick: () -> Unit,
 ) {
-    composable(
-        route = authScreenNavigationRoute
-    ) {
+    composable<Auth> {
         AuthRoute(onBackClick = onBackClick)
     }
 }
 
 fun NavController.navigateToAuth() {
-    navigate(authScreenNavigationRoute)
+    navigate(Auth)
 }

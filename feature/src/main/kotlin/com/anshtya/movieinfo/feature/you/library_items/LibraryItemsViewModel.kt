@@ -3,10 +3,11 @@ package com.anshtya.movieinfo.feature.you.library_items
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.anshtya.movieinfo.data.model.library.LibraryItem
 import com.anshtya.movieinfo.data.model.library.LibraryItemType
 import com.anshtya.movieinfo.data.repository.LibraryRepository
-import com.anshtya.movieinfo.feature.you.libraryItemTypeNavigationArgument
+import com.anshtya.movieinfo.feature.you.LibraryItems
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,10 +33,7 @@ class LibraryItemsViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
 
-    private val libraryItemTypeString = savedStateHandle.getStateFlow(
-        key = libraryItemTypeNavigationArgument,
-        initialValue = ""
-    )
+    private val libraryItemTypeString = MutableStateFlow(savedStateHandle.toRoute<LibraryItems>().type)
 
     val libraryItemType: StateFlow<LibraryItemType?> = libraryItemTypeString
         .map {

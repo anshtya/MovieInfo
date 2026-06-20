@@ -6,25 +6,27 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import kotlinx.serialization.Serializable
 
-private const val detailsNavigationRoute = "details"
-private const val creditsNavigationRoute = "credits"
-internal const val idNavigationArgument = "id"
-private const val detailsNavigationRouteWithArg = "$detailsNavigationRoute/{$idNavigationArgument}"
+@Serializable
+data class Details(val id: String)
+
+@Serializable
+private data object DetailsScreen
+
+@Serializable
+private data object Credits
 
 fun NavGraphBuilder.detailsScreen(
     navController: NavController,
     navigateToAuth: () -> Unit
 ) {
-    navigation(
-        route = detailsNavigationRouteWithArg,
-        startDestination = detailsNavigationRoute
+    navigation<Details>(
+        startDestination = DetailsScreen
     ) {
-        composable(
-            route = detailsNavigationRoute
-        ) { backStackEntry ->
+        composable<DetailsScreen> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(detailsNavigationRouteWithArg)
+                navController.getBackStackEntry<Details>()
             }
             val viewModel = hiltViewModel<DetailsViewModel>(parentEntry)
 
@@ -37,11 +39,9 @@ fun NavGraphBuilder.detailsScreen(
             )
         }
 
-        composable(
-            route = creditsNavigationRoute
-        ) { backStackEntry ->
+        composable<Credits> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(detailsNavigationRouteWithArg)
+                navController.getBackStackEntry<Details>()
             }
             val viewModel = hiltViewModel<DetailsViewModel>(parentEntry)
 
@@ -55,9 +55,9 @@ fun NavGraphBuilder.detailsScreen(
 }
 
 fun NavController.navigateToDetails(id: String) {
-    navigate("$detailsNavigationRoute/$id")
+    navigate(Details(id))
 }
 
 private fun NavController.navigateToCredits() {
-    navigate(creditsNavigationRoute)
+    navigate(Credits)
 }

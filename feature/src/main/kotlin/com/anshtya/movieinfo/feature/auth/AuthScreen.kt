@@ -32,7 +32,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +56,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anshtya.movieinfo.feature.R
 import com.anshtya.movieinfo.feature.ui.AnnotatedClickableText
 import com.anshtya.movieinfo.feature.ui.TopAppBarWithBackButton
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun AuthRoute(
@@ -96,12 +94,13 @@ internal fun AuthScreen(
         }
     }
 
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    uiState.errorMessage?.let {
-        scope.launch { snackbarHostState.showSnackbar(it) }
-        onErrorShown()
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            onErrorShown()
+        }
     }
 
     Scaffold(

@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import com.anshtya.movieinfo.feature.R
 import org.junit.Rule
@@ -31,6 +32,12 @@ class AuthScreenTest {
                 onBackClick = {},
                 onContinueWithoutSignInClick = {}
             )
+        }
+
+        composeTestRule.waitUntil(timeoutMillis = 5000L) {
+            composeTestRule
+                .onAllNodesWithText(errorMessage)
+                .fetchSemanticsNodes().isNotEmpty()
         }
 
         composeTestRule

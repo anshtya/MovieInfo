@@ -15,9 +15,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,7 +29,6 @@ import com.anshtya.movieinfo.feature.R
 import com.anshtya.movieinfo.feature.ui.ContentSectionHeader
 import com.anshtya.movieinfo.feature.ui.LazyRowContentSection
 import com.anshtya.movieinfo.feature.ui.MediaItemCard
-import kotlinx.coroutines.launch
 
 private val horizontalPadding = 8.dp
 
@@ -71,11 +70,12 @@ internal fun FeedScreen(
     onErrorShown: () -> Unit
 ) {
     val snackbarState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
-    errorMessage?.let {
-        scope.launch { snackbarState.showSnackbar(it) }
-        onErrorShown()
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarState.showSnackbar(it)
+            onErrorShown()
+        }
     }
 
     Scaffold(

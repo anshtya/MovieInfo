@@ -5,7 +5,6 @@ import com.anshtya.movieinfo.data.model.library.LibraryItemType
 import com.anshtya.movieinfo.data.repository.test.TestLibraryRepository
 import com.anshtya.movieinfo.data.repository.test.data.testLibraryItems
 import com.anshtya.movieinfo.feature.MainDispatcherRule
-import com.anshtya.movieinfo.feature.you.libraryItemTypeNavigationArgument
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,8 +14,11 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class LibraryItemsViewModelTest {
     private val libraryRepository = TestLibraryRepository()
     private lateinit var viewModel: LibraryItemsViewModel
@@ -199,7 +201,7 @@ class LibraryItemsViewModelTest {
         navigationArgument: String
     ) = LibraryItemsViewModel(
         savedStateHandle = SavedStateHandle(
-            mapOf(libraryItemTypeNavigationArgument to navigationArgument)
+            mapOf("type" to navigationArgument)
         ),
         libraryRepository = libraryRepository
     )

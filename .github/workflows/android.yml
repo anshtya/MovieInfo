@@ -84,7 +84,13 @@ jobs:
     needs: validation
     strategy:
       matrix:
-        api-level: [26, 30]
+        include:
+          - api-level: 26
+            target: google_apis
+            arch: x86
+          - api-level: 30
+            target: google_apis
+            arch: x86_64
     permissions:
       contents: read
       checks: write
@@ -101,6 +107,11 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          arch: ${{ matrix.arch }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
           script: ./gradlew connectedDebugAndroidTest
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}

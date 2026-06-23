@@ -18,8 +18,10 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: gradle/actions/wrapper-validation@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@v4
 
   lint:
     name: Code Quality (Lint)
@@ -29,8 +31,9 @@ jobs:
       contents: read
       checks: write
     steps:
-      - uses: actions/checkout@v4
-      - name: set up JDK 21
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -54,8 +57,9 @@ jobs:
       contents: read
       checks: write
     steps:
-      - uses: actions/checkout@v4
-      - name: set up JDK 21
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -84,19 +88,20 @@ jobs:
     needs: validation
     strategy:
       matrix:
-        include:
-          - api-level: 26
-            target: google_apis
-            arch: x86
-          - api-level: 30
-            target: google_apis
-            arch: x86_64
+        api-level: [26, 34]
     permissions:
       contents: read
       checks: write
     steps:
-      - uses: actions/checkout@v4
-      - name: set up JDK 21
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          ls /dev/kvm
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -107,12 +112,11 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
+          arch: x86_64
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest
+          script: ./gradlew connectedDebugAndroidTest --daemon
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
       - name: Upload Instrumentation Test Reports
@@ -138,8 +142,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - name: set up JDK 21
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'

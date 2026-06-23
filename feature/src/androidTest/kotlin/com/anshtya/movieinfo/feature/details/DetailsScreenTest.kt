@@ -3,6 +3,7 @@ package com.anshtya.movieinfo.feature.details
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import com.anshtya.movieinfo.data.repository.test.data.testMovieDetail
 import com.anshtya.movieinfo.feature.R
@@ -58,8 +59,10 @@ class DetailsScreenTest {
             )
         }
 
-        composeTestRule
-            .onNodeWithContentDescription(signInSheetContentDescription)
-            .assertExists()
+        composeTestRule.waitUntil(timeoutMillis = 5000L) {
+            composeTestRule
+                .onAllNodesWithContentDescription(signInSheetContentDescription)
+                .fetchSemanticsNodes().isNotEmpty()
+        }
     }
 }

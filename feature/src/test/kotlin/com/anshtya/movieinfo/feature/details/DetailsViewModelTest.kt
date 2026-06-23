@@ -23,8 +23,11 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class DetailsViewModelTest {
     private val detailsRepository = TestDetailsRepository()
     private val libraryRepository = TestLibraryRepository()
@@ -242,7 +245,7 @@ class DetailsViewModelTest {
         navigationArgument: String = ""
     ) = DetailsViewModel(
         savedStateHandle = SavedStateHandle(
-            mapOf(idNavigationArgument to navigationArgument)
+            mapOf("id" to navigationArgument)
         ),
         detailsRepository = detailsRepository,
         libraryRepository = libraryRepository,

@@ -38,10 +38,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -67,7 +67,6 @@ import com.anshtya.movieinfo.data.model.library.LibraryItemType
 import com.anshtya.movieinfo.data.model.user.AccountDetails
 import com.anshtya.movieinfo.feature.R
 import com.anshtya.movieinfo.feature.ui.PersonImage
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun YouRoute(
@@ -110,12 +109,13 @@ internal fun YouScreen(
     onRefresh: () -> Unit,
     onErrorShown: () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    uiState.errorMessage?.let {
-        scope.launch { snackbarHostState.showSnackbar(it) }
-        onErrorShown()
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            onErrorShown()
+        }
     }
 
     var showSettingsDialog by rememberSaveable { mutableStateOf(false) }

@@ -76,4 +76,7 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.ui)
     implementation(libs.ui.graphics)
+
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
 }

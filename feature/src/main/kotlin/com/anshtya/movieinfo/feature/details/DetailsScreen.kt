@@ -7,18 +7,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -89,71 +88,23 @@ internal fun DetailsScreen(
     onBackClick: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
-
     val snackbarHostState = remember { SnackbarHostState() }
-    val bottomSheetState = rememberModalBottomSheetState()
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = bottomSheetState
-    )
 
-    LaunchedEffect(uiState.showSignInSheet) {
-        if (uiState.showSignInSheet) {
-            scaffoldState.bottomSheetState.expand()
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            onErrorShown()
         }
     }
 
+    val sheetState = rememberModalBottomSheetState()
+
     var isBackdropImageCollapsed by rememberSaveable { mutableStateOf(false) }
 
-    BottomSheetScaffold(
-        scaffoldState = scaffoldState,
+    Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
-        },
-        sheetContent = {
-            val signInSheetContentDescription = stringResource(
-                id = R.string.details_sign_in_sheet
-            )
-            if (uiState.showSignInSheet) {
-                ModalBottomSheet(
-                    onDismissRequest = onHideBottomSheet,
-                    sheetState = bottomSheetState,
-                    modifier = Modifier.semantics {
-                        contentDescription = signInSheetContentDescription
-                    }
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = horizontalPadding, vertical = verticalPadding)
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.sign_in_sheet_text),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-
-                        Spacer(Modifier.height(50.dp))
-
-                        Button(
-                            onClick = {
-                                scope.launch {
-                                    scaffoldState.bottomSheetState.hide()
-                                }.invokeOnCompletion {
-                                    onHideBottomSheet()
-                                }
-                                onSignInClick()
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                        ) {
-                            Text(text = stringResource(id = R.string.sign_in))
-                        }
-                    }
-                }
-            }
-        },
-        sheetPeekHeight = 0.dp
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -175,10 +126,6 @@ internal fun DetailsScreen(
                 }
 
                 ContentDetailUiState.Empty -> {
-                    uiState.errorMessage?.let {
-                        scope.launch { snackbarHostState.showSnackbar(it) }
-                        onErrorShown()
-                    }
                 }
 
                 is ContentDetailUiState.Movie -> {
@@ -235,6 +182,51 @@ internal fun DetailsScreen(
                     },
                     onBackClick = onBackClick
                 )
+            }
+        }
+    }
+
+    if (uiState.showSignInSheet) {
+        val signInSheetContentDescription = stringResource(
+            id = R.string.details_sign_in_sheet
+        )
+        ModalBottomSheet(
+            onDismissRequest = onHideBottomSheet,
+            sheetState = sheetState,
+            modifier = Modifier.semantics {
+                contentDescription = signInSheetContentDescription
+            }
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = horizontalPadding, vertical = verticalPadding)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.sign_in_sheet_text),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+                Spacer(Modifier.height(50.dp))
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                        }.invokeOnCompletion {
+                            if (!sheetState.isVisible) {
+                                onHideBottomSheet()
+                            }
+                        }
+                        onSignInClick()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text(text = stringResource(id = R.string.sign_in))
+                }
             }
         }
     }

@@ -1,12 +1,13 @@
 package com.anshtya.movieinfo.data.repository.impl
 
-import com.anshtya.movieinfo.data.local.database.dao.AccountDetailsDao
+import com.anshtya.movieinfo.core.database.dao.AccountDetailsDao
+import com.anshtya.movieinfo.core.network.model.content.NetworkContentItem
+import com.anshtya.movieinfo.core.network.retrofit.TmdbApi
 import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.content.ContentItem
 import com.anshtya.movieinfo.data.model.content.MovieListCategory
 import com.anshtya.movieinfo.data.model.content.TvShowListCategory
-import com.anshtya.movieinfo.data.network.model.content.NetworkContentItem
-import com.anshtya.movieinfo.data.network.retrofit.TmdbApi
+import com.anshtya.movieinfo.data.model.content.asModel
 import com.anshtya.movieinfo.data.repository.ContentRepository
 import retrofit2.HttpException
 import java.io.IOException

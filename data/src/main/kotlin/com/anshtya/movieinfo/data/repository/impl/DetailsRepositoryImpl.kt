@@ -1,10 +1,13 @@
 package com.anshtya.movieinfo.data.repository.impl
 
+import com.anshtya.movieinfo.core.network.retrofit.TmdbApi
 import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.details.MovieDetails
+import com.anshtya.movieinfo.data.model.details.asModel
 import com.anshtya.movieinfo.data.model.details.people.PersonDetails
+import com.anshtya.movieinfo.data.model.details.people.asModel
 import com.anshtya.movieinfo.data.model.details.tv.TvDetails
-import com.anshtya.movieinfo.data.network.retrofit.TmdbApi
+import com.anshtya.movieinfo.data.model.details.tv.asModel
 import com.anshtya.movieinfo.data.repository.DetailsRepository
 import retrofit2.HttpException
 import java.io.IOException

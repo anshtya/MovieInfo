@@ -1,9 +1,9 @@
 package com.anshtya.movieinfo.data.repository.impl
 
+import com.anshtya.movieinfo.core.network.retrofit.TmdbApi
 import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SearchItem
-import com.anshtya.movieinfo.data.network.model.search.asModel
-import com.anshtya.movieinfo.data.network.retrofit.TmdbApi
+import com.anshtya.movieinfo.data.model.asModel
 import com.anshtya.movieinfo.data.repository.SearchRepository
 import retrofit2.HttpException
 import java.io.IOException

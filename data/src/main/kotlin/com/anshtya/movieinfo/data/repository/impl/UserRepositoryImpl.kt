@@ -1,14 +1,15 @@
 package com.anshtya.movieinfo.data.repository.impl
 
-import com.anshtya.movieinfo.data.local.database.dao.AccountDetailsDao
-import com.anshtya.movieinfo.data.local.database.entity.asEntity
+import com.anshtya.movieinfo.core.database.dao.AccountDetailsDao
+import com.anshtya.movieinfo.core.network.retrofit.TmdbApi
 import com.anshtya.movieinfo.data.local.datastore.UserPreferencesDataStore
 import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SelectedDarkMode
 import com.anshtya.movieinfo.data.model.user.AccountDetails
 import com.anshtya.movieinfo.data.model.user.UserData
-import com.anshtya.movieinfo.data.network.retrofit.TmdbApi
+import com.anshtya.movieinfo.data.model.user.asModel
 import com.anshtya.movieinfo.data.repository.UserRepository
+import com.anshtya.movieinfo.data.util.asEntity
 import kotlinx.coroutines.flow.Flow
 import retrofit2.HttpException
 import java.io.IOException

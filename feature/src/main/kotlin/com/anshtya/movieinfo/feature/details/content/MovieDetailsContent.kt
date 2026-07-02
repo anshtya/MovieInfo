@@ -9,6 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anshtya.movieinfo.data.model.MediaType
 import com.anshtya.movieinfo.data.model.details.MovieDetails
+import com.anshtya.movieinfo.data.model.details.asLibraryItem
 import com.anshtya.movieinfo.data.model.library.LibraryItem
 import com.anshtya.movieinfo.feature.R
 

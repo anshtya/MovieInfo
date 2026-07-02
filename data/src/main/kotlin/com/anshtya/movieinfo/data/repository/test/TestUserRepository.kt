@@ -1,4 +1,4 @@
-package com.anshtya.movieinfo.data.repository.testdoubles.repository
+package com.anshtya.movieinfo.data.repository.test
 
 import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SelectedDarkMode

@@ -1,10 +1,10 @@
 package com.anshtya.movieinfo.data.repository.util
 
+import com.anshtya.movieinfo.core.network.model.content.NetworkContentItem
 import com.anshtya.movieinfo.data.model.MediaType
 import com.anshtya.movieinfo.data.model.library.LibraryItem
 import com.anshtya.movieinfo.data.model.library.LibraryItemType
 import com.anshtya.movieinfo.data.model.library.LibraryTask
-import com.anshtya.movieinfo.data.network.model.content.NetworkContentItem
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import retrofit2.HttpException

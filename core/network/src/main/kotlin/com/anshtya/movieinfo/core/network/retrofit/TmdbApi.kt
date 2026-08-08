@@ -23,45 +23,45 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface TmdbApi {
+internal interface TmdbApi {
     @GET("movie/{category}")
     suspend fun getMovieLists(
         @Path("category") category: String,
         @Query("language") language: String = "en-US",
         @Query("page") page: Int,
         @Query("region") region: String? = null
-    ): NetworkContentResponse
+    ): Response<NetworkContentResponse>
 
     @GET("tv/{category}")
     suspend fun getTvShowLists(
         @Path("category") category: String,
         @Query("language") language: String = "en-US",
         @Query("page") page: Int
-    ): NetworkContentResponse
+    ): Response<NetworkContentResponse>
 
     @GET("search/multi")
     suspend fun multiSearch(
         @Query("page") page: Int = 1,
         @Query("query") query: String,
         @Query("include_adult") includeAdult: Boolean
-    ): SearchResponse
+    ): Response<SearchResponse>
 
     @GET("movie/{movie_id}")
     suspend fun getMovieDetails(
         @Path("movie_id") id: Int,
         @Query("append_to_response") appendToResponse: String = "recommendations,credits"
-    ): NetworkMovieDetails
+    ): Response<NetworkMovieDetails>
 
     @GET("tv/{series_id}")
     suspend fun getTvShowDetails(
         @Path("series_id") id: Int,
         @Query("append_to_response") appendToResponse: String = "recommendations,credits"
-    ): NetworkTvDetails
+    ): Response<NetworkTvDetails>
 
     @GET("person/{person_id}")
     suspend fun getPersonDetails(
         @Path("person_id") id: Int
-    ): NetworkPersonDetails
+    ): Response<NetworkPersonDetails>
 
     @GET("account/{account_id}/{item_type}/{media_type}")
     suspend fun getLibraryItems(
@@ -69,7 +69,7 @@ interface TmdbApi {
         @Path("item_type") itemType: String,
         @Path("media_type") mediaType: String,
         @Query("page") page: Int
-    ): NetworkContentResponse
+    ): Response<NetworkContentResponse>
 
     @Headers("content-type: application/json")
     @POST("account/{account_id}/favorite")
@@ -86,33 +86,33 @@ interface TmdbApi {
     ): Response<Unit>
 
     @GET("authentication/token/new")
-    suspend fun createRequestToken(): RequestTokenResponse
+    suspend fun createRequestToken(): Response<RequestTokenResponse>
 
     @Headers("content-type: application/json")
     @POST("authentication/token/validate_with_login")
     suspend fun validateWithLogin(
         @Body loginRequest: LoginRequest
-    ): LoginResponse
+    ): Response<LoginResponse>
 
     @Headers("content-type: application/json")
     @POST("authentication/session/new")
     suspend fun createSession(
         @Body sessionRequest: SessionRequest
-    ): SessionResponse
+    ): Response<SessionResponse>
 
     @GET("account")
     suspend fun getAccountDetails(
         @Query("session_id") sessionId: String
-    ): NetworkAccountDetails
+    ): Response<NetworkAccountDetails>
 
     @GET("account/{account_id}")
     suspend fun getAccountDetailsWithId(
        @Path("account_id") accountId: Int
-    ): NetworkAccountDetails
+    ): Response<NetworkAccountDetails>
 
     @Headers("content-type: application/json")
     @HTTP(method = "DELETE", path = "authentication/session", hasBody = true)
     suspend fun deleteSession(
         @Body deleteSessionRequest: DeleteSessionRequest
-    )
+    ): Response<Unit>
 }

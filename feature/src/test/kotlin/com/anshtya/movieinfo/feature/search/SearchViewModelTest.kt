@@ -1,6 +1,5 @@
 package com.anshtya.movieinfo.feature.search
 
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SearchItem
 import com.anshtya.movieinfo.data.repository.test.TestSearchRepository
 import com.anshtya.movieinfo.data.repository.test.TestUserRepository
@@ -81,8 +80,7 @@ class SearchViewModelTest {
         }
 
         searchRepository.generateError(true)
-        val errorResponse = searchRepository.getSearchSuggestions("test", false)
-                as NetworkResponse.Error
+        val errorResult = searchRepository.getSearchSuggestions("test", false)
         viewModel.changeSearchQuery("test")
         advanceUntilIdle()
 
@@ -92,7 +90,7 @@ class SearchViewModelTest {
         )
 
         assertEquals(
-            errorResponse.errorMessage,
+            errorResult.exceptionOrNull()?.message,
             viewModel.errorMessage.value
         )
 

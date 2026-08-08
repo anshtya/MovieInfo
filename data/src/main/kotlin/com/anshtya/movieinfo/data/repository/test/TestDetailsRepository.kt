@@ -1,6 +1,5 @@
 package com.anshtya.movieinfo.data.repository.test
 
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.details.MovieDetails
 import com.anshtya.movieinfo.data.model.details.people.PersonDetails
 import com.anshtya.movieinfo.data.model.details.tv.TvDetails
@@ -12,27 +11,27 @@ import com.anshtya.movieinfo.data.repository.test.data.testTvShowDetails
 class TestDetailsRepository : DetailsRepository {
     private var generateError = false
 
-    override suspend fun getMovieDetails(id: Int): NetworkResponse<MovieDetails> {
+    override suspend fun getMovieDetails(id: Int): Result<MovieDetails> {
         return if (!generateError) {
-            NetworkResponse.Success(data = testMovieDetail)
+            Result.success(testMovieDetail)
         } else {
-            NetworkResponse.Error()
+            Result.failure(Exception("An error occurred"))
         }
     }
 
-    override suspend fun getTvShowDetails(id: Int): NetworkResponse<TvDetails> {
+    override suspend fun getTvShowDetails(id: Int): Result<TvDetails> {
         return if (!generateError) {
-            NetworkResponse.Success(data = testTvShowDetails)
+            Result.success(testTvShowDetails)
         } else {
-            NetworkResponse.Error()
+            Result.failure(Exception("An error occurred"))
         }
     }
 
-    override suspend fun getPersonDetails(id: Int): NetworkResponse<PersonDetails> {
+    override suspend fun getPersonDetails(id: Int): Result<PersonDetails> {
         return if (!generateError) {
-            NetworkResponse.Success(data = testPersonDetails)
+            Result.success(testPersonDetails)
         } else {
-            NetworkResponse.Error()
+            Result.failure(Exception("An error occurred"))
         }
     }
 

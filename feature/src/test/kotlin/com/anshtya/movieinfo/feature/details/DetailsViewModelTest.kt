@@ -2,7 +2,6 @@ package com.anshtya.movieinfo.feature.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.anshtya.movieinfo.data.model.MediaType
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.repository.test.TestAuthRepository
 import com.anshtya.movieinfo.data.repository.test.TestDetailsRepository
 import com.anshtya.movieinfo.data.repository.test.TestLibraryRepository
@@ -115,7 +114,7 @@ class DetailsViewModelTest {
     @Test
     fun `test error in movie details content state`() = runTest {
         detailsRepository.generateError(true)
-        val errorResponse = detailsRepository.getMovieDetails(0) as NetworkResponse.Error
+        val errorResult = detailsRepository.getMovieDetails(0)
         viewModel = createViewModel(navigationArgument = "100,${MediaType.MOVIE}")
 
         val collectJob = launch(UnconfinedTestDispatcher()) {
@@ -128,7 +127,7 @@ class DetailsViewModelTest {
         )
 
         assertEquals(
-            errorResponse.errorMessage,
+            errorResult.exceptionOrNull()?.message,
             viewModel.uiState.value.errorMessage
         )
 
@@ -138,7 +137,7 @@ class DetailsViewModelTest {
     @Test
     fun `test error in tv show details content state`() = runTest {
         detailsRepository.generateError(true)
-        val errorResponse = detailsRepository.getTvShowDetails(0) as NetworkResponse.Error
+        val errorResult = detailsRepository.getTvShowDetails(0)
         viewModel = createViewModel(navigationArgument = "101,${MediaType.TV}")
 
         val collectJob = launch(UnconfinedTestDispatcher()) {
@@ -151,7 +150,7 @@ class DetailsViewModelTest {
         )
 
         assertEquals(
-            errorResponse.errorMessage,
+            errorResult.exceptionOrNull()?.message,
             viewModel.uiState.value.errorMessage
         )
 
@@ -161,7 +160,7 @@ class DetailsViewModelTest {
     @Test
     fun `test error in person details content state`() = runTest {
         detailsRepository.generateError(true)
-        val errorResponse = detailsRepository.getPersonDetails(0) as NetworkResponse.Error
+        val errorResult = detailsRepository.getPersonDetails(0)
         viewModel = createViewModel(navigationArgument = "102,${MediaType.PERSON}")
 
         val collectJob = launch(UnconfinedTestDispatcher()) {
@@ -174,7 +173,7 @@ class DetailsViewModelTest {
         )
 
         assertEquals(
-            errorResponse.errorMessage,
+            errorResult.exceptionOrNull()?.message,
             viewModel.uiState.value.errorMessage
         )
 

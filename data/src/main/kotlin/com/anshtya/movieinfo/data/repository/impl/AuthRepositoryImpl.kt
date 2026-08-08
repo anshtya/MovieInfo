@@ -3,25 +3,22 @@ package com.anshtya.movieinfo.data.repository.impl
 import com.anshtya.movieinfo.core.database.dao.AccountDetailsDao
 import com.anshtya.movieinfo.core.database.dao.FavoriteContentDao
 import com.anshtya.movieinfo.core.database.dao.WatchlistContentDao
+import com.anshtya.movieinfo.core.network.datasource.TmdbNetworkDataSource
 import com.anshtya.movieinfo.core.network.model.auth.DeleteSessionRequest
 import com.anshtya.movieinfo.core.network.model.auth.LoginRequest
 import com.anshtya.movieinfo.core.network.model.auth.SessionRequest
-import com.anshtya.movieinfo.core.network.model.auth.getErrorMessage
-import com.anshtya.movieinfo.core.network.retrofit.TmdbApi
 import com.anshtya.movieinfo.data.local.datastore.UserPreferencesDataStore
 import com.anshtya.movieinfo.data.local.session.SessionManager
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.repository.AuthRepository
 import com.anshtya.movieinfo.data.repository.util.SyncScheduler
+import com.anshtya.movieinfo.data.repository.util.toResult
 import com.anshtya.movieinfo.data.util.asEntity
-import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
-    private val tmdbApi: TmdbApi,
+    private val networkDataSource: TmdbNetworkDataSource,
     private val favoriteContentDao: FavoriteContentDao,
     private val watchlistContentDao: WatchlistContentDao,
     private val accountDetailsDao: AccountDetailsDao,
@@ -34,55 +31,48 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun login(
         username: String,
         password: String
-    ): NetworkResponse<Unit> {
-        return try {
-            val response = tmdbApi.createRequestToken()
-            val loginRequest = LoginRequest(
-                username = username,
-                password = password,
-                requestToken = response.requestToken
-            )
-            val loginResponse = tmdbApi.validateWithLogin(loginRequest)
+    ): Result<Unit> {
+        val tokenResponse = networkDataSource.createRequestToken()
+            .toResult { it }
+            .getOrElse { return Result.failure(it) }
+        val loginRequest = LoginRequest(
+            username = username,
+            password = password,
+            requestToken = tokenResponse.requestToken
+        )
+        val loginResponse = networkDataSource.validateWithLogin(loginRequest)
+            .toResult { it }
+            .getOrElse { return Result.failure(it) }
 
-            val sessionRequest = SessionRequest(loginResponse.requestToken)
-            val sessionResponse = tmdbApi.createSession(sessionRequest)
+        val sessionRequest = SessionRequest(loginResponse.requestToken)
+        val sessionResponse = networkDataSource.createSession(sessionRequest)
+            .toResult { it }
+            .getOrElse { return Result.failure(it) }
 
-            val accountDetails =
-                tmdbApi.getAccountDetails(sessionResponse.sessionId).asEntity()
+        val accountDetails = networkDataSource.getAccountDetails(sessionResponse.sessionId)
+            .toResult { it }
+            .getOrElse { return Result.failure(it) }
+            .asEntity()
 
-            sessionManager.storeSessionId(sessionResponse.sessionId)
-            accountDetailsDao.addAccountDetails(accountDetails)
-            userPreferencesDataStore.setAdultResultPreference(accountDetails.includeAdult)
+        sessionManager.storeSessionId(sessionResponse.sessionId)
+        accountDetailsDao.addAccountDetails(accountDetails)
+        userPreferencesDataStore.setAdultResultPreference(accountDetails.includeAdult)
 
-            syncScheduler.scheduleLibrarySyncWork()
+        syncScheduler.scheduleLibrarySyncWork()
 
-            NetworkResponse.Success(Unit)
-        } catch (e: IOException) {
-            NetworkResponse.Error()
-        } catch (e: HttpException) {
-            val errorMessage = getErrorMessage(e)
-            NetworkResponse.Error(errorMessage)
-        }
+        return Result.success(Unit)
     }
 
-    override suspend fun logout(accountId: Int): NetworkResponse<Unit> {
-        return try {
-            val sessionId = sessionManager.getSessionId()!!
-            val deleteSessionRequest = DeleteSessionRequest(sessionId)
+    override suspend fun logout(accountId: Int): Result<Unit> {
+        val sessionId = sessionManager.getSessionId()!!
+        val deleteSessionRequest = DeleteSessionRequest(sessionId)
 
-            tmdbApi.deleteSession(deleteSessionRequest)
+        return networkDataSource.deleteSession(deleteSessionRequest).toResult {
             sessionManager.deleteSessionId()
             accountDetailsDao.deleteAccountDetails(accountId)
 
             favoriteContentDao.deleteAllFavoriteItems()
             watchlistContentDao.deleteAllWatchlistItems()
-
-            NetworkResponse.Success(Unit)
-        } catch (e: IOException) {
-            NetworkResponse.Error()
-        } catch (e: HttpException) {
-            val errorMessage = getErrorMessage(e)
-            NetworkResponse.Error(errorMessage)
         }
     }
 }

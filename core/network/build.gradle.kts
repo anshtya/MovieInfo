@@ -3,6 +3,7 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     id("movieinfo.android.library")
     id("movieinfo.android.hilt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -25,6 +26,8 @@ android {
 
 dependencies {
     ksp(libs.moshi.kotlin.codegen)
+
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.moshi)

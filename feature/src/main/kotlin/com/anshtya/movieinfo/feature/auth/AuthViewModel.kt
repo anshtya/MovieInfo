@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.repository.AuthRepository
 import com.anshtya.movieinfo.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,8 +42,8 @@ class AuthViewModel @Inject constructor(
                 username = _uiState.value.username,
                 password = _uiState.value.password
             )
-            when (response) {
-                is NetworkResponse.Success -> {
+            response.fold(
+                onSuccess = {
                     if (hideOnboarding == false) {
                         /**
                          * User has opened app for first time. This will recompose the NavHost
@@ -56,17 +55,16 @@ class AuthViewModel @Inject constructor(
                             it.copy(isLoggedIn = true)
                         }
                     }
-                }
-
-                is NetworkResponse.Error -> {
+                },
+                onFailure = { error ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessage = response.errorMessage
+                            errorMessage = error.message
                         )
                     }
                 }
-            }
+            )
         }
     }
 

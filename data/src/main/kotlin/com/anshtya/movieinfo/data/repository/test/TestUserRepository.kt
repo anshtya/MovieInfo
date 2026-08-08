@@ -1,6 +1,5 @@
 package com.anshtya.movieinfo.data.repository.test
 
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SelectedDarkMode
 import com.anshtya.movieinfo.data.model.user.AccountDetails
 import com.anshtya.movieinfo.data.model.user.UserData
@@ -55,11 +54,11 @@ class TestUserRepository: UserRepository {
         }
     }
 
-    override suspend fun updateAccountDetails(accountId: Int): NetworkResponse<Unit> {
+    override suspend fun updateAccountDetails(accountId: Int): Result<Unit> {
         return if (generateError) {
-            NetworkResponse.Error()
+            Result.failure(Exception("An error occurred"))
         } else {
-            NetworkResponse.Success(Unit)
+            Result.success(Unit)
         }
     }
 

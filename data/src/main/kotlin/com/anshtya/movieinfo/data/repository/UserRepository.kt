@@ -1,6 +1,5 @@
 package com.anshtya.movieinfo.data.repository
 
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SelectedDarkMode
 import com.anshtya.movieinfo.data.model.user.AccountDetails
 import com.anshtya.movieinfo.data.model.user.UserData
@@ -17,7 +16,7 @@ interface UserRepository {
 
     suspend fun setDarkModePreference(selectedDarkMode: SelectedDarkMode)
 
-    suspend fun updateAccountDetails(accountId: Int): NetworkResponse<Unit>
+    suspend fun updateAccountDetails(accountId: Int): Result<Unit>
 
     suspend fun setHideOnboarding(hideOnboarding: Boolean)
 }

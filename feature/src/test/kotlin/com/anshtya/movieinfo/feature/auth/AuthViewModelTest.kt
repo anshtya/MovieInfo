@@ -1,6 +1,5 @@
 package com.anshtya.movieinfo.feature.auth
 
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.repository.test.TestAuthRepository
 import com.anshtya.movieinfo.data.repository.test.TestUserRepository
 import com.anshtya.movieinfo.feature.MainDispatcherRule
@@ -73,17 +72,17 @@ class AuthViewModelTest {
         val password = "1234"
 
         authRepository.generateError(true)
-        val errorResponse = authRepository.login(
+        val errorResult = authRepository.login(
             username = username,
             password = password
-        ) as NetworkResponse.Error
+        )
 
         viewModel.onUsernameChange(username)
         viewModel.onPasswordChange(password)
         viewModel.logIn()
 
         assertEquals(
-            errorResponse.errorMessage,
+            errorResult.exceptionOrNull()?.message,
             viewModel.uiState.value.errorMessage
         )
     }

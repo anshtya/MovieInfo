@@ -1,6 +1,5 @@
 package com.anshtya.movieinfo.data.repository.test
 
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,19 +11,19 @@ class TestAuthRepository : AuthRepository {
     private val _isLoggedIn = MutableStateFlow(false)
     override val isLoggedIn = _isLoggedIn.asStateFlow()
 
-    override suspend fun login(username: String, password: String): NetworkResponse<Unit> {
+    override suspend fun login(username: String, password: String): Result<Unit> {
         return if (generateError) {
-            NetworkResponse.Error()
+            Result.failure(Exception("An error occurred"))
         } else {
-            NetworkResponse.Success(Unit)
+            Result.success(Unit)
         }
     }
 
-    override suspend fun logout(accountId: Int): NetworkResponse<Unit> {
+    override suspend fun logout(accountId: Int): Result<Unit> {
         return if (generateError) {
-            NetworkResponse.Error()
+            Result.failure(Exception("An error occurred"))
         } else {
-            NetworkResponse.Success(Unit)
+            Result.success(Unit)
         }
     }
 

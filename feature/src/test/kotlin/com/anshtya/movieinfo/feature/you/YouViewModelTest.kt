@@ -1,6 +1,5 @@
 package com.anshtya.movieinfo.feature.you
 
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SelectedDarkMode
 import com.anshtya.movieinfo.data.repository.test.TestAuthRepository
 import com.anshtya.movieinfo.data.repository.test.TestUserRepository
@@ -129,11 +128,11 @@ class YouViewModelTest {
             generateError(true)
         }
 
-        val errorResponse = authRepository.logout(0) as NetworkResponse.Error
+        val errorResult = authRepository.logout(0)
         viewModel.logOut()
 
         assertEquals(
-            errorResponse.errorMessage,
+            errorResult.exceptionOrNull()?.message,
             viewModel.uiState.value.errorMessage
         )
 
@@ -152,12 +151,11 @@ class YouViewModelTest {
 
         authRepository.setAuthStatus(true)
         userRepository.generateError(true)
-        val errorResponse = userRepository.updateAccountDetails(0)
-                as NetworkResponse.Error
+        val errorResult = userRepository.updateAccountDetails(0)
         viewModel.onRefresh()
 
         assertEquals(
-            errorResponse.errorMessage,
+            errorResult.exceptionOrNull()?.message,
             viewModel.uiState.value.errorMessage
         )
 

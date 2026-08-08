@@ -5,8 +5,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
-import com.anshtya.movieinfo.data.repository.test.data.testMovieDetail
 import com.anshtya.movieinfo.feature.R
+import com.anshtya.movieinfo.feature.testdata.testMovieDetail
 import org.junit.Rule
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.anshtya.movieinfo.data.repository.test.data
+package com.anshtya.movieinfo.feature.testdata
 
 import com.anshtya.movieinfo.data.model.details.MovieDetails
 import com.anshtya.movieinfo.data.model.details.people.Credits

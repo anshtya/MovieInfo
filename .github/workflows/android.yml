@@ -75,7 +75,7 @@ jobs:
           name: unit-test-reports
           path: '**/build/reports/tests/testDebugUnitTest/'
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         if: always()
         with:
           name: Unit Test Results
@@ -129,8 +129,9 @@ jobs:
             **/build/reports/androidTests/connected/
             **/build/outputs/androidTest-results/connected/
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         if: always()
+        continue-on-error: true
         with:
           name: Instrumentation Test Results (API ${{ matrix.api-level }})
           path: '**/build/outputs/androidTest-results/connected/**/*.xml'

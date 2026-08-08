@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.anshtya.movieinfo.data.model.MediaType
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.details.MovieDetails
 import com.anshtya.movieinfo.data.model.details.people.PersonDetails
 import com.anshtya.movieinfo.data.model.details.tv.TvDetails
@@ -130,11 +129,10 @@ class DetailsViewModel @Inject constructor(
     }
 
     private suspend fun handleMovieDetailsResponse(
-        response: NetworkResponse<MovieDetails>
+        response: Result<MovieDetails>
     ): ContentDetailUiState {
-        return when (response) {
-            is NetworkResponse.Success -> {
-                val data = response.data
+        return response.fold(
+            onSuccess = { data ->
                 _uiState.update {
                     it.copy(
                         markedFavorite = libraryRepository.itemInFavoritesExists(
@@ -148,21 +146,19 @@ class DetailsViewModel @Inject constructor(
                     )
                 }
                 ContentDetailUiState.Movie(data = data)
-            }
-
-            is NetworkResponse.Error -> {
-                _uiState.update { it.copy(errorMessage = response.errorMessage) }
+            },
+            onFailure = { error ->
+                _uiState.update { it.copy(errorMessage = error.message) }
                 ContentDetailUiState.Empty
             }
-        }
+        )
     }
 
     private suspend fun handleTvDetailsResponse(
-        response: NetworkResponse<TvDetails>
+        response: Result<TvDetails>
     ): ContentDetailUiState {
-        return when (response) {
-            is NetworkResponse.Success -> {
-                val data = response.data
+        return response.fold(
+            onSuccess = { data ->
                 _uiState.update {
                     it.copy(
                         markedFavorite = libraryRepository.itemInFavoritesExists(
@@ -176,28 +172,24 @@ class DetailsViewModel @Inject constructor(
                     )
                 }
                 ContentDetailUiState.TV(data = data)
-            }
-
-            is NetworkResponse.Error -> {
-                _uiState.update { it.copy(errorMessage = response.errorMessage) }
+            },
+            onFailure = { error ->
+                _uiState.update { it.copy(errorMessage = error.message) }
                 ContentDetailUiState.Empty
             }
-        }
+        )
     }
 
     private fun handlePeopleDetailsResponse(
-        response: NetworkResponse<PersonDetails>
+        response: Result<PersonDetails>
     ): ContentDetailUiState {
-        return when (response) {
-            is NetworkResponse.Success -> {
-                ContentDetailUiState.Person(data = response.data)
-            }
-
-            is NetworkResponse.Error -> {
-                _uiState.update { it.copy(errorMessage = response.errorMessage) }
+        return response.fold(
+            onSuccess = { data -> ContentDetailUiState.Person(data = data) },
+            onFailure = { error ->
+                _uiState.update { it.copy(errorMessage = error.message) }
                 ContentDetailUiState.Empty
             }
-        }
+        )
     }
 }
 

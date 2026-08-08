@@ -2,7 +2,6 @@ package com.anshtya.movieinfo.feature.movies
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.content.ContentItem
 import com.anshtya.movieinfo.data.model.content.MovieListCategory
 import com.anshtya.movieinfo.data.repository.ContentRepository
@@ -168,19 +167,15 @@ class MoviesViewModel @Inject constructor(
     }
 
     private fun handleResponse(
-        response: NetworkResponse<List<ContentItem>>
+        response: Result<List<ContentItem>>
     ): Pair<List<ContentItem>, Boolean> {
-        return when (response) {
-            is NetworkResponse.Success -> {
-                val items = response.data
-                Pair(items, items.isEmpty())
-            }
-
-            is NetworkResponse.Error -> {
-                _errorMessage.update { response.errorMessage }
+        return response.fold(
+            onSuccess = { items -> Pair(items, items.isEmpty()) },
+            onFailure = { error ->
+                _errorMessage.update { error.message }
                 Pair(emptyList(), false)
             }
-        }
+        )
     }
 }
 

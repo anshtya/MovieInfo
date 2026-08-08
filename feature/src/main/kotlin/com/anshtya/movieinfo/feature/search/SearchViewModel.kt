@@ -2,7 +2,6 @@ package com.anshtya.movieinfo.feature.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SearchItem
 import com.anshtya.movieinfo.data.repository.SearchRepository
 import com.anshtya.movieinfo.data.repository.UserRepository
@@ -49,14 +48,13 @@ class SearchViewModel @Inject constructor(
                 query = query,
                 includeAdult = includeAdult
             )
-            when (response) {
-                is NetworkResponse.Success -> response.data
-
-                is NetworkResponse.Error -> {
-                    _errorMessage.update { response.errorMessage }
+            response.fold(
+                onSuccess = { it },
+                onFailure = { error ->
+                    _errorMessage.update { error.message }
                     emptyList()
                 }
-            }
+            )
         }
         .stateIn(
             scope = viewModelScope,

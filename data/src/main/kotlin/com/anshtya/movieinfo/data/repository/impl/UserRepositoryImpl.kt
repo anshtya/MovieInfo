@@ -1,22 +1,21 @@
 package com.anshtya.movieinfo.data.repository.impl
 
-import com.anshtya.movieinfo.data.local.database.dao.AccountDetailsDao
-import com.anshtya.movieinfo.data.local.database.entity.asEntity
+import com.anshtya.movieinfo.core.database.dao.AccountDetailsDao
+import com.anshtya.movieinfo.core.network.datasource.TmdbNetworkDataSource
 import com.anshtya.movieinfo.data.local.datastore.UserPreferencesDataStore
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SelectedDarkMode
 import com.anshtya.movieinfo.data.model.user.AccountDetails
 import com.anshtya.movieinfo.data.model.user.UserData
-import com.anshtya.movieinfo.data.network.retrofit.TmdbApi
+import com.anshtya.movieinfo.data.model.user.asModel
 import com.anshtya.movieinfo.data.repository.UserRepository
+import com.anshtya.movieinfo.data.repository.util.toResult
+import com.anshtya.movieinfo.data.util.asEntity
 import kotlinx.coroutines.flow.Flow
-import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 
 internal class UserRepositoryImpl @Inject constructor(
     private val userPreferencesDataStore: UserPreferencesDataStore,
-    private val tmdbApi: TmdbApi,
+    private val networkDataSource: TmdbNetworkDataSource,
     private val accountDetailsDao: AccountDetailsDao,
 ) : UserRepository {
     override val userData: Flow<UserData> = userPreferencesDataStore.userData
@@ -36,17 +35,11 @@ internal class UserRepositoryImpl @Inject constructor(
         userPreferencesDataStore.setDarkModePreference(selectedDarkMode)
     }
 
-    override suspend fun updateAccountDetails(accountId: Int): NetworkResponse<Unit> {
-        return try {
-            val accountDetails = tmdbApi.getAccountDetailsWithId(accountId).asEntity()
+    override suspend fun updateAccountDetails(accountId: Int): Result<Unit> {
+        return networkDataSource.getAccountDetailsWithId(accountId).toResult { response ->
+            val accountDetails = response.asEntity()
             accountDetailsDao.addAccountDetails(accountDetails)
             userPreferencesDataStore.setAdultResultPreference(accountDetails.includeAdult)
-
-            NetworkResponse.Success(Unit)
-        } catch (e: IOException) {
-            NetworkResponse.Error()
-        } catch (e: HttpException) {
-            NetworkResponse.Error()
         }
     }
 

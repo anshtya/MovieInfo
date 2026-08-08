@@ -1,16 +1,21 @@
 package com.anshtya.movieinfo.feature.you
 
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SelectedDarkMode
-import com.anshtya.movieinfo.data.repository.test.TestAuthRepository
-import com.anshtya.movieinfo.data.repository.testdoubles.repository.TestUserRepository
-import com.anshtya.movieinfo.data.repository.testdoubles.repository.testAccountDetails
-import com.anshtya.movieinfo.data.repository.testdoubles.repository.testUserData
+import com.anshtya.movieinfo.data.repository.AuthRepository
+import com.anshtya.movieinfo.data.repository.UserRepository
 import com.anshtya.movieinfo.feature.MainDispatcherRule
+import com.anshtya.movieinfo.feature.testdata.testAccountDetails
+import com.anshtya.movieinfo.feature.testdata.testUserData
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import junit.framework.TestCase
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -21,8 +26,10 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class YouViewModelTest {
-    private val authRepository = TestAuthRepository()
-    private val userRepository = TestUserRepository()
+    private val authRepository = mockk<AuthRepository>()
+    private val userRepository = mockk<UserRepository>()
+    private val isLoggedInFlow = MutableStateFlow(false)
+    private val userDataFlow = MutableStateFlow(testUserData)
     private lateinit var viewModel: YouViewModel
 
     @get:Rule
@@ -30,6 +37,25 @@ class YouViewModelTest {
 
     @Before
     fun setUp() {
+        every { authRepository.isLoggedIn } returns isLoggedInFlow.asStateFlow()
+        every { userRepository.userData } returns userDataFlow
+        coEvery { userRepository.getAccountDetails() } returns testAccountDetails
+        coEvery {
+            userRepository.setDynamicColorPreference(any())
+        } answers {
+            userDataFlow.update { it.copy(useDynamicColor = firstArg()) }
+        }
+        coEvery {
+            userRepository.setAdultResultPreference(any())
+        } answers {
+            userDataFlow.update { it.copy(includeAdultResults = firstArg()) }
+        }
+        coEvery {
+            userRepository.setDarkModePreference(any())
+        } answers {
+            userDataFlow.update { it.copy(darkMode = firstArg()) }
+        }
+
         viewModel = YouViewModel(
             authRepository = authRepository,
             userRepository = userRepository
@@ -53,7 +79,7 @@ class YouViewModelTest {
             viewModel.isLoggedIn.collect()
         }
 
-        authRepository.setAuthStatus(isLoggedIn = true)
+        isLoggedInFlow.value = true
         assertEquals(
             YouUiState(accountDetails = testAccountDetails),
             viewModel.uiState.value
@@ -117,6 +143,8 @@ class YouViewModelTest {
 
     @Test
     fun `test logout error`() = runTest {
+        val exception = Exception("An error occurred")
+
         val uiStateCollectJob = launch(UnconfinedTestDispatcher()) {
             viewModel.uiState.collect()
         }
@@ -124,16 +152,13 @@ class YouViewModelTest {
             viewModel.isLoggedIn.collect()
         }
 
-        with(authRepository) {
-            setAuthStatus(true)
-            generateError(true)
-        }
+        isLoggedInFlow.value = true
+        coEvery { authRepository.logout(any()) } returns Result.failure(exception)
 
-        val errorResponse = authRepository.logout(0) as NetworkResponse.Error
         viewModel.logOut()
 
         assertEquals(
-            errorResponse.errorMessage,
+            exception.message,
             viewModel.uiState.value.errorMessage
         )
 
@@ -143,6 +168,8 @@ class YouViewModelTest {
 
     @Test
     fun `test refresh error`() = runTest {
+        val exception = Exception("An error occurred")
+
         val uiStateCollectJob = launch(UnconfinedTestDispatcher()) {
             viewModel.uiState.collect()
         }
@@ -150,14 +177,13 @@ class YouViewModelTest {
             viewModel.isLoggedIn.collect()
         }
 
-        authRepository.setAuthStatus(true)
-        userRepository.generateError(true)
-        val errorResponse = userRepository.updateAccountDetails(0)
-                as NetworkResponse.Error
+        isLoggedInFlow.value = true
+        coEvery { userRepository.updateAccountDetails(any()) } returns Result.failure(exception)
+
         viewModel.onRefresh()
 
         assertEquals(
-            errorResponse.errorMessage,
+            exception.message,
             viewModel.uiState.value.errorMessage
         )
 

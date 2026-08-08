@@ -1,14 +1,13 @@
 package com.anshtya.movieinfo.data.repository.util
 
+import com.anshtya.movieinfo.core.network.model.content.NetworkContentItem
 import com.anshtya.movieinfo.data.model.MediaType
 import com.anshtya.movieinfo.data.model.library.LibraryItem
 import com.anshtya.movieinfo.data.model.library.LibraryItemType
 import com.anshtya.movieinfo.data.model.library.LibraryTask
-import com.anshtya.movieinfo.data.network.model.content.NetworkContentItem
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Interface for class which schedules sync work.
@@ -131,9 +130,9 @@ interface Synchronizer {
             )
 
             return true
-        } catch (e: IOException) {
-            false
-        } catch (e: HttpException) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
             false
         }
     }

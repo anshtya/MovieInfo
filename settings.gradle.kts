@@ -21,3 +21,5 @@ rootProject.name = "MovieInfo"
 include(":app")
 include(":feature")
 include(":data")
+include(":core:database")
+include(":core:network")

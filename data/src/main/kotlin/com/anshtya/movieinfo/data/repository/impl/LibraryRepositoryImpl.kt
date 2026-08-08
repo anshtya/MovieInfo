@@ -1,31 +1,33 @@
 package com.anshtya.movieinfo.data.repository.impl
 
-import com.anshtya.movieinfo.data.local.database.dao.AccountDetailsDao
-import com.anshtya.movieinfo.data.local.database.dao.FavoriteContentDao
-import com.anshtya.movieinfo.data.local.database.dao.WatchlistContentDao
-import com.anshtya.movieinfo.data.local.database.entity.FavoriteContentEntity
-import com.anshtya.movieinfo.data.local.database.entity.WatchlistContentEntity
-import com.anshtya.movieinfo.data.local.database.entity.asFavoriteContentEntity
-import com.anshtya.movieinfo.data.local.database.entity.asWatchlistContentEntity
+import com.anshtya.movieinfo.core.database.dao.AccountDetailsDao
+import com.anshtya.movieinfo.core.database.dao.FavoriteContentDao
+import com.anshtya.movieinfo.core.database.dao.WatchlistContentDao
+import com.anshtya.movieinfo.core.database.entity.FavoriteContentEntity
+import com.anshtya.movieinfo.core.database.entity.WatchlistContentEntity
+import com.anshtya.movieinfo.core.network.datasource.TmdbNetworkDataSource
+import com.anshtya.movieinfo.core.network.model.NetworkResult
+import com.anshtya.movieinfo.core.network.model.content.NetworkContentItem
+import com.anshtya.movieinfo.core.network.model.library.FavoriteRequest
+import com.anshtya.movieinfo.core.network.model.library.WatchlistRequest
 import com.anshtya.movieinfo.data.model.MediaType
+import com.anshtya.movieinfo.data.model.content.asModel
 import com.anshtya.movieinfo.data.model.library.LibraryItem
 import com.anshtya.movieinfo.data.model.library.LibraryItemType
 import com.anshtya.movieinfo.data.model.library.LibraryTask
-import com.anshtya.movieinfo.data.network.model.content.NetworkContentItem
-import com.anshtya.movieinfo.data.network.model.library.FavoriteRequest
-import com.anshtya.movieinfo.data.network.model.library.WatchlistRequest
-import com.anshtya.movieinfo.data.network.retrofit.TmdbApi
+import com.anshtya.movieinfo.data.model.library.asFavoriteContentEntity
+import com.anshtya.movieinfo.data.model.library.asLibraryItem
+import com.anshtya.movieinfo.data.model.library.asWatchlistContentEntity
 import com.anshtya.movieinfo.data.repository.LibraryRepository
 import com.anshtya.movieinfo.data.repository.util.SyncScheduler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
 internal class LibraryRepositoryImpl @Inject constructor(
-    private val tmdbApi: TmdbApi,
+    private val networkDataSource: TmdbNetworkDataSource,
     private val favoriteContentDao: FavoriteContentDao,
     private val watchlistContentDao: WatchlistContentDao,
     private val accountDetailsDao: AccountDetailsDao,
@@ -126,32 +128,26 @@ internal class LibraryRepositoryImpl @Inject constructor(
         itemExistsLocally: Boolean
     ): Boolean {
         val accountId = accountDetailsDao.getAccountDetails()?.id ?: return false
-        return try {
-            when (libraryItemType) {
-                LibraryItemType.FAVORITE -> {
-                    val favoriteRequest = FavoriteRequest(
-                        mediaType = mediaType.name.lowercase(),
-                        mediaId = id,
-                        favorite = itemExistsLocally
-                    )
-                    tmdbApi.addOrRemoveFavorite(accountId, favoriteRequest)
-                }
-
-                LibraryItemType.WATCHLIST -> {
-                    val watchlistRequest = WatchlistRequest(
-                        mediaType = mediaType.name.lowercase(),
-                        mediaId = id,
-                        watchlist = itemExistsLocally
-                    )
-                    tmdbApi.addOrRemoveFromWatchlist(accountId, watchlistRequest)
-                }
+        val result = when (libraryItemType) {
+            LibraryItemType.FAVORITE -> {
+                val favoriteRequest = FavoriteRequest(
+                    mediaType = mediaType.name.lowercase(),
+                    mediaId = id,
+                    favorite = itemExistsLocally
+                )
+                networkDataSource.addOrRemoveFavorite(accountId, favoriteRequest)
             }
-            true
-        } catch (e: IOException) {
-            false
-        } catch (e: HttpException) {
-            false
+
+            LibraryItemType.WATCHLIST -> {
+                val watchlistRequest = WatchlistRequest(
+                    mediaType = mediaType.name.lowercase(),
+                    mediaId = id,
+                    watchlist = itemExistsLocally
+                )
+                networkDataSource.addOrRemoveFromWatchlist(accountId, watchlistRequest)
+            }
         }
+        return result is NetworkResult.Success
     }
 
     /**
@@ -168,12 +164,18 @@ internal class LibraryRepositoryImpl @Inject constructor(
 
                 var favoriteItemsPage = 1
                 do {
-                    val result = tmdbApi.getLibraryItems(
-                        accountId = accountId,
-                        itemType = favoriteItemTypeString,
-                        mediaType = mediaTypeString,
-                        page = favoriteItemsPage++
-                    ).results
+                    val result = when (
+                        val response = networkDataSource.getLibraryItems(
+                            accountId = accountId,
+                            itemType = favoriteItemTypeString,
+                            mediaType = mediaTypeString,
+                            page = favoriteItemsPage++
+                        )
+                    ) {
+                        is NetworkResult.Success -> response.data.results
+                        is NetworkResult.Failure.HttpError -> throw IOException(response.errorMessage)
+                        is NetworkResult.Failure.Unknown -> throw IOException(response.exception)
+                    }
 
                     favoriteItemsNetworkResults.addAll(result)
                 } while (result.isNotEmpty())
@@ -249,12 +251,18 @@ internal class LibraryRepositoryImpl @Inject constructor(
 
                 var watchlistItemsPage = 1
                 do {
-                    val result = tmdbApi.getLibraryItems(
-                        accountId = accountId,
-                        itemType = watchlistItemTypeString,
-                        mediaType = mediaTypeString,
-                        page = watchlistItemsPage++
-                    ).results
+                    val result = when (
+                        val response = networkDataSource.getLibraryItems(
+                            accountId = accountId,
+                            itemType = watchlistItemTypeString,
+                            mediaType = mediaTypeString,
+                            page = watchlistItemsPage++
+                        )
+                    ) {
+                        is NetworkResult.Success -> response.data.results
+                        is NetworkResult.Failure.HttpError -> throw IOException(response.errorMessage)
+                        is NetworkResult.Failure.Unknown -> throw IOException(response.exception)
+                    }
 
                     watchlistItemsNetworkResults.addAll(result)
                 } while (result.isNotEmpty())

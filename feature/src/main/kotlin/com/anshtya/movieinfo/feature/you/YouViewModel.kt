@@ -2,7 +2,6 @@ package com.anshtya.movieinfo.feature.you
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshtya.movieinfo.data.model.NetworkResponse
 import com.anshtya.movieinfo.data.model.SelectedDarkMode
 import com.anshtya.movieinfo.data.model.user.AccountDetails
 import com.anshtya.movieinfo.data.repository.AuthRepository
@@ -99,13 +98,8 @@ class YouViewModel @Inject constructor(
             val response = authRepository.logout(
                 accountId = _uiState.value.accountDetails!!.id
             )
-            when (response) {
-                is NetworkResponse.Success -> {}
-
-                is NetworkResponse.Error -> {
-                    val errorMessage = response.errorMessage
-                    _uiState.update { it.copy(errorMessage = errorMessage) }
-                }
+            response.onFailure { error ->
+                _uiState.update { it.copy(errorMessage = error.message) }
             }
 
             _uiState.update { it.copy(isLoggingOut = false) }
@@ -119,13 +113,8 @@ class YouViewModel @Inject constructor(
             val response = userRepository.updateAccountDetails(
                 accountId = _uiState.value.accountDetails!!.id
             )
-            when (response) {
-                is NetworkResponse.Success -> {}
-
-                is NetworkResponse.Error -> {
-                    val errorMessage = response.errorMessage
-                    _uiState.update { it.copy(errorMessage = errorMessage) }
-                }
+            response.onFailure { error ->
+                _uiState.update { it.copy(errorMessage = error.message) }
             }
 
             _uiState.update { it.copy(isRefreshing = false) }

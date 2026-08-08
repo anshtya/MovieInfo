@@ -1,11 +1,11 @@
 package com.anshtya.movieinfo.core.network.model.library
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class WatchlistRequest(
-    @Json(name = "media_type") val mediaType: String,
-    @Json(name = "media_id") val mediaId: Int,
+    @SerialName("media_type") val mediaType: String,
+    @SerialName("media_id") val mediaId: Int,
     val watchlist: Boolean
 )

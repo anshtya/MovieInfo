@@ -1,14 +1,14 @@
 package com.anshtya.movieinfo.core.network.model.search
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NetworkSearchItem(
     val id: Int,
     val name: String?,
     val title: String?,
-    @Json(name = "media_type") val mediaType: String,
-    @Json(name = "poster_path") val posterPath: String?,
-    @Json(name = "profile_path") val profilePath: String?,
+    @SerialName("media_type") val mediaType: String,
+    @SerialName("poster_path") val posterPath: String?,
+    @SerialName("profile_path") val profilePath: String?,
 )

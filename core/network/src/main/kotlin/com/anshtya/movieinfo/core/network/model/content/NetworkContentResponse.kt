@@ -1,12 +1,12 @@
 package com.anshtya.movieinfo.core.network.model.content
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NetworkContentResponse(
     val page: Int,
     val results: List<NetworkContentItem>,
-    @Json(name = "total_pages") val totalPages: Int,
-    @Json(name = "total_results") val totalResults: Int
+    @SerialName("total_pages") val totalPages: Int,
+    @SerialName("total_results") val totalResults: Int
 )

@@ -10,13 +10,15 @@ import com.anshtya.movieinfo.core.network.retrofit.TmdbApi
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.net.HttpURLConnection
 
 class TmdbNetworkDataSourceImplTest {
@@ -26,9 +28,13 @@ class TmdbNetworkDataSourceImplTest {
     @Before
     fun setUp() {
         mockWebServer = MockWebServer()
+        val json = Json {
+            ignoreUnknownKeys = true
+            explicitNulls = false
+        }
         val tmdbApi = Retrofit.Builder()
             .baseUrl(mockWebServer.url("/"))
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
             .create(TmdbApi::class.java)
         dataSource = TmdbNetworkDataSourceImpl(tmdbApi)

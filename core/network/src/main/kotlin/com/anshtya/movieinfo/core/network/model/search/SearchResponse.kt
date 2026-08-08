@@ -1,11 +1,11 @@
 package com.anshtya.movieinfo.core.network.model.search
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class SearchResponse(
     val page: Int,
     val results: List<NetworkSearchItem>,
-    @Json(name = "total_pages") val totalPages: Int
+    @SerialName("total_pages") val totalPages: Int
 )

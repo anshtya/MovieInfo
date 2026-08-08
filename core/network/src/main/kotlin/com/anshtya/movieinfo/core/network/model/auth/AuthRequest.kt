@@ -1,21 +1,21 @@
 package com.anshtya.movieinfo.core.network.model.auth
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class LoginRequest(
     val username: String,
     val password: String,
-    @Json(name = "request_token") val requestToken: String
+    @SerialName("request_token") val requestToken: String
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class SessionRequest(
-    @Json(name = "request_token") val requestToken: String
+    @SerialName("request_token") val requestToken: String
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class DeleteSessionRequest(
-    @Json(name = "session_id") val sessionId: String
+    @SerialName("session_id") val sessionId: String
 )

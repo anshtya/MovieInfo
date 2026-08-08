@@ -25,12 +25,10 @@ android {
 }
 
 dependencies {
-    ksp(libs.moshi.kotlin.codegen)
-
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.moshi)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

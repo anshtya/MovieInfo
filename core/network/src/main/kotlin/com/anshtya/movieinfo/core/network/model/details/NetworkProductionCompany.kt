@@ -1,12 +1,12 @@
 package com.anshtya.movieinfo.core.network.model.details
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class NetworkProductionCompany(
     val id: Int,
-    @Json(name = "logo_path") val logoPath: String?,
+    @SerialName("logo_path") val logoPath: String?,
     val name: String,
-    @Json(name = "origin_country") val originCountry: String
+    @SerialName("origin_country") val originCountry: String
 )

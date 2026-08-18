@@ -29,14 +29,6 @@ class MovieInfoDatabaseMigrationTest {
         listOf(Migration5to6())
     )
 
-    // KNOWN FAILING TEST: MIGRATION_1_2's `ALTER TABLE trending_content ADD COLUMN
-    // remote_id INTEGER NOT NULL` has no DEFAULT, which SQLite rejects outright
-    // ("Cannot add a NOT NULL column with default value NULL"), and its second
-    // statement (`ALTER TABLE ... MODIFY COLUMN ...`) is not valid SQLite syntax
-    // either. This test intentionally exercises the real migration as-shipped
-    // rather than papering over it; it fails on device, confirming any user still
-    // on schema version 1 would crash migrating to version 2. Left un-ignored so
-    // the bug stays visible pending a decision on how to fix MIGRATION_1_2.
     @Test
     @Throws(IOException::class)
     fun migrate1To2() {
@@ -182,13 +174,6 @@ class MovieInfoDatabaseMigrationTest {
         }
     }
 
-    // KNOWN FAILING TEST: the 5->6 AutoMigration already creates `favorite_content`
-    // (it's present in schemas/6.json, added by Room's auto-generated diff between
-    // 5.json and 6.json), but MIGRATION_6_7 unconditionally does
-    // `CREATE TABLE favorite_content (...)` with no `IF NOT EXISTS` or prior DROP.
-    // Any user migrating from version 6 to 7 hits "table favorite_content already
-    // exists" and crashes. Left un-ignored so the bug stays visible pending a
-    // decision on how to fix MIGRATION_6_7.
     @Test
     @Throws(IOException::class)
     fun migrate6To7() {

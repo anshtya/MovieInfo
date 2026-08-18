@@ -2,9 +2,11 @@ name: Android CI
 
 on:
   push:
-    branches: [ "main", "staging" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main", "staging" ]
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency:

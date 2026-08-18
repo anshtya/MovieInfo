@@ -38,15 +38,24 @@ internal abstract class MovieInfoDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
                     """
-                    ALTER TABLE trending_content ADD COLUMN remote_id INTEGER NOT NULL
+                    CREATE TABLE trending_content_temp (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    remote_id INTEGER NOT NULL,
+                    image_path TEXT NOT NULL,
+                    name TEXT NOT NULL,
+                    overview TEXT NOT NULL)
                     """.trimIndent()
                 )
+
                 db.execSQL(
                     """
-                    ALTER TABLE trending_content 
-                    MODIFY COLUMN id INTEGER AUTOINCREMENT NOT NULL
+                    INSERT INTO trending_content_temp (remote_id, image_path, name, overview)
+                    SELECT id, image_path, name, overview FROM trending_content
                     """.trimIndent()
                 )
+
+                db.execSQL("DROP TABLE trending_content")
+                db.execSQL("ALTER TABLE trending_content_temp RENAME TO trending_content")
             }
         }
 
@@ -146,6 +155,7 @@ internal abstract class MovieInfoDatabase : RoomDatabase() {
 
         val MIGRATION_6_7 = object : Migration(6, 7) {
             override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE favorite_content")
                 db.execSQL(
                     """
                     CREATE TABLE favorite_content (

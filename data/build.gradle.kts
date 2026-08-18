@@ -5,6 +5,10 @@ plugins {
 
 android {
     namespace = "com.anshtya.movieinfo.data"
+
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }
 
 dependencies {

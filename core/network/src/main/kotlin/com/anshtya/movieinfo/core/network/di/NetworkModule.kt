@@ -18,9 +18,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 internal object NetworkModule {
+    @Provides
+    fun provideBaseUrl(): String = BuildConfig.BASE_URL
+
     @Singleton
     @Provides
-    fun provideTmdbApi(): TmdbApi {
+    fun provideTmdbApi(baseUrl: String): TmdbApi {
         val logging = HttpLoggingInterceptor()
             .apply {
                 if (BuildConfig.DEBUG) {
@@ -42,7 +45,7 @@ internal object NetworkModule {
             explicitNulls = false
         }
         return Retrofit.Builder()
-            .baseUrl("https://api.themoviedb.org/3/")
+            .baseUrl(baseUrl)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .client(client)
             .build()

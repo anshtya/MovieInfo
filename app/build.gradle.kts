@@ -25,7 +25,7 @@ android {
             useSupportLibrary = true
         }
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.anshtya.movieinfo.HiltTestRunner"
     }
 
     buildTypes {
@@ -79,4 +79,6 @@ dependencies {
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.dagger.hilt.android.testing)
+    kspAndroidTest(libs.dagger.hilt.compiler)
 }
